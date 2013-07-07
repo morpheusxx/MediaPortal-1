@@ -118,8 +118,8 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
       // 
       // tabControl1
       // 
-      this.tabControl1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+      this.tabControl1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
       this.tabControl1.Controls.Add(this.tpSettings);
       this.tabControl1.Controls.Add(this.tpCustom);
@@ -146,8 +146,8 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
       // 
       // groupBox1
       // 
-      this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+      this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
       this.groupBox1.Controls.Add(this.groupBoxRecording);
       this.groupBox1.Controls.Add(this.groupBoxScheduler);
@@ -161,7 +161,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
       // 
       // groupBoxRecording
       // 
-      this.groupBoxRecording.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+      this.groupBoxRecording.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
       this.groupBoxRecording.Controls.Add(this.label48);
       this.groupBoxRecording.Controls.Add(this.numericUpDownMaxFreeCardsToTry);
@@ -202,7 +202,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
       // 
       // groupBoxScheduler
       // 
-      this.groupBoxScheduler.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+      this.groupBoxScheduler.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
       this.groupBoxScheduler.Controls.Add(this.lblWeekend);
       this.groupBoxScheduler.Controls.Add(this.comboBoxWeekend);
@@ -283,7 +283,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
       // 
       // groupBoxGap
       // 
-      this.groupBoxGap.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+      this.groupBoxGap.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
       this.groupBoxGap.Controls.Add(this.label1);
       this.groupBoxGap.Controls.Add(this.label2);
@@ -386,8 +386,8 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
       // 
       // groupBox2
       // 
-      this.groupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+      this.groupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
       this.groupBox2.AutoSize = true;
       this.groupBox2.Controls.Add(this.labelCustomFormat);
@@ -407,7 +407,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
       // 
       // labelCustomFormat
       // 
-      this.labelCustomFormat.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+      this.labelCustomFormat.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
       this.labelCustomFormat.AutoSize = true;
       this.labelCustomFormat.Location = new System.Drawing.Point(85, 124);
@@ -418,7 +418,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
       // 
       // textBoxCustomFormat
       // 
-      this.textBoxCustomFormat.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+      this.textBoxCustomFormat.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
       this.textBoxCustomFormat.Location = new System.Drawing.Point(88, 101);
       this.textBoxCustomFormat.Name = "textBoxCustomFormat";
@@ -429,7 +429,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
       // 
       // comboBoxFormat
       // 
-      this.comboBoxFormat.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+      this.comboBoxFormat.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
       this.comboBoxFormat.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
       this.comboBoxFormat.FormattingEnabled = true;
@@ -441,7 +441,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
       // 
       // groupBox3
       // 
-      this.groupBox3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+      this.groupBox3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
       this.groupBox3.Controls.Add(this.mpLabel1);
       this.groupBox3.Controls.Add(this.mpLabel2);
@@ -498,7 +498,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
       // 
       // textBoxSample
       // 
-      this.textBoxSample.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+      this.textBoxSample.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
       this.textBoxSample.Enabled = false;
       this.textBoxSample.Location = new System.Drawing.Point(88, 148);
@@ -536,7 +536,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
       // 
       // comboBoxMovies
       // 
-      this.comboBoxMovies.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+      this.comboBoxMovies.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
       this.comboBoxMovies.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
       this.comboBoxMovies.FormattingEnabled = true;
@@ -677,8 +677,8 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
       // 
       // groupBoxRecordSettings
       // 
-      this.groupBoxRecordSettings.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+      this.groupBoxRecordSettings.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
       this.groupBoxRecordSettings.AutoSize = true;
       this.groupBoxRecordSettings.Controls.Add(this.buttonSameRecFolder);
@@ -728,7 +728,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
       // 
       // comboBoxCards
       // 
-      this.comboBoxCards.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+      this.comboBoxCards.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
       this.comboBoxCards.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
       this.comboBoxCards.FormattingEnabled = true;
@@ -749,7 +749,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
       // 
       // textBoxFolder
       // 
-      this.textBoxFolder.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+      this.textBoxFolder.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
       this.textBoxFolder.Location = new System.Drawing.Point(23, 186);
       this.textBoxFolder.Name = "textBoxFolder";
@@ -839,8 +839,8 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
       // 
       // tvTagRecs
       // 
-      this.tvTagRecs.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+      this.tvTagRecs.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
       this.tvTagRecs.CheckBoxes = true;
       this.tvTagRecs.FullRowSelect = true;
@@ -864,7 +864,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
       // 
       // cbRecPaths
       // 
-      this.cbRecPaths.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+      this.cbRecPaths.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
       this.cbRecPaths.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
       this.cbRecPaths.FormattingEnabled = true;

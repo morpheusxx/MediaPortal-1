@@ -15,7 +15,6 @@ set progpath=%ProgramFiles%
 if not "%ProgramFiles(x86)%".=="". set progpath=%ProgramFiles(x86)%
 
 REM Select Visual Studio version
-set vsver=10.0
 
 REM set other MP related paths
 set GIT_ROOT=..

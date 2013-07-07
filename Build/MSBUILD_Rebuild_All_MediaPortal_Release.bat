@@ -11,6 +11,10 @@ rem %DeployVersionGIT% /git="%GIT_ROOT%" /path="%MediaPortal%" >> %log%
 %DeployVersionGIT% /git="%GIT_ROOT%" /path="%CommonMPTV%" >> %log%
 
 echo.
+echo Building native components...
+call VS_Rebuild_Release_DirectShowFilters.bat
+
+echo.
 echo Building MediaPortal...
 set xml=Build_Report_%BUILD_TYPE%_MediaPortal.xml
 set html=Build_Report_%BUILD_TYPE%_MediaPortal.html
@@ -49,21 +53,21 @@ rem %DeployVersionGIT% /git="%GIT_ROOT%" /path="%TVLibrary%" >> %log%
 
 echo.
 echo Building TV Server...
-set xml=Build_Report_%BUILD_TYPE%_TvServer.xml
-set html=Build_Report_%BUILD_TYPE%_TvServer.html
+set xml=Build_Report_%BUILD_TYPE%_TvLibrary.xml
+set html=Build_Report_%BUILD_TYPE%_TvLibrary.html
 set logger=/l:XmlFileLogger,"BuildReport\MSBuild.ExtensionPack.Loggers.dll";logfile=%xml%
 
 "%WINDIR%\Microsoft.NET\Framework\v4.0.30319\MSBUILD.exe" %logger% /target:Rebuild /property:Configuration=%BUILD_TYPE%;Platform=x86 "%TVLibrary%\Mediaportal.TV.Server.sln" >> %log%
 BuildReport\msxsl %xml% _BuildReport_Files\BuildReport.xslt -o %html%
 
-rem echo.
-rem echo Building TV Client plugin...
-rem set xml=Build_Report_%BUILD_TYPE%_TvPlugin.xml
-rem set html=Build_Report_%BUILD_TYPE%_TvPlugin.html
-rem set logger=/l:XmlFileLogger,"BuildReport\MSBuild.ExtensionPack.Loggers.dll";logfile=%xml%
+echo.
+echo Building TV Client plugin...
+set xml=Build_Report_%BUILD_TYPE%_TvPlugin.xml
+set html=Build_Report_%BUILD_TYPE%_TvPlugin.html
+set logger=/l:XmlFileLogger,"BuildReport\MSBuild.ExtensionPack.Loggers.dll";logfile=%xml%
 
-rem "%WINDIR%\Microsoft.NET\Framework\v4.0.30319\MSBUILD.exe" %logger% /target:Rebuild /property:Configuration=%BUILD_TYPE%;Platform=x86 "%TVLibrary%\TvPlugin\TvPlugin.sln" >> %log%
-rem BuildReport\msxsl %xml% _BuildReport_Files\BuildReport.xslt -o %html%
+rem "%WINDIR%\Microsoft.NET\Framework\v4.0.30319\MSBUILD.exe" %logger% /tv:3.5 /p:TargetFrameworkVersion=v3.5 /target:Rebuild /property:Configuration=%BUILD_TYPE%;Platform=x86 "%TVLibrary%\TvPlugin\TvPlugin.sln" >> %log%
+BuildReport\msxsl %xml% _BuildReport_Files\BuildReport.xslt -o %html%
 
 echo.
 echo Reverting assemblies...

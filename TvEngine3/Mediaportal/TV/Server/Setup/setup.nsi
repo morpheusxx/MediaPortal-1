@@ -364,6 +364,8 @@ ${MementoSection} "MediaPortal TV Server" SecServer
   ${LOG_TEXT} "INFO" "Terminating processes ..."
   ${StopService} "TVservice"
   ${KillProcess} "SetupTv.exe"
+  ; ffmpeg
+  ${KillProcess} "ffmpeg.exe"
 
   SetOverwrite on
 
@@ -379,13 +381,13 @@ ${MementoSection} "MediaPortal TV Server" SecServer
   #---------------------------- File Copy ----------------------
   ; Tuning Parameter Directory
   SetOutPath "${COMMON_APPDATA}\TuningParameters"
-  File /r "${TVSERVER.BASE}\TuningParameters\*"
+  File /r /x .git "${TVSERVER.BASE}\TuningParameters\*"
   ; WebEPG Grabbers Directory
   SetOutPath "${COMMON_APPDATA}\WebEPG"
-  File /r "${TVSERVER.BASE}\WebEPG\*"
+  File /r /x .git "${TVSERVER.BASE}\WebEPG\*"
   ; XMLTV Data Directory
   SetOutPath "${COMMON_APPDATA}\xmltv"
-  File /r "${TVSERVER.BASE}\xmltv\*"
+  File /r /x .git "${TVSERVER.BASE}\xmltv\*"
 
   ; Rest of Files
   SetOutPath "$INSTDIR"
@@ -424,7 +426,7 @@ ${MementoSection} "MediaPortal TV Server" SecServer
   File "${git_TVServer}\Server\TvService\bin\${BUILD_TYPE}\TvService.exe.config"
   File "${git_TVServer}\Server\SetupControls\bin\${BUILD_TYPE}\Mediaportal.TV.Server.SetupControls.dll"
   File "${git_TVServer}\Server\TVLibrary.Utils\bin\${BUILD_TYPE}\Mediaportal.TV.Server.TVLibrary.Utils.dll"
-  File "${git_TVServer}\Server\TVLibrary.Utils\bin\${BUILD_TYPE}\Interop.SHDocVw.dll"
+  ;File "${git_TVServer}\Server\TVLibrary.Utils\bin\${BUILD_TYPE}\Interop.SHDocVw.dll"
   File "${git_TVServer}\Server\TVDatabase\Presentation\bin\${BUILD_TYPE}\Mediaportal.TV.Server.TVDatabase.Presentation.dll"
   File "${git_TVServer}\Server\TvLibrary.Integration.MP1\bin\${BUILD_TYPE}\Mediaportal.TV.Server.TVLibrary.Integration.MP1.dll"
   File "${git_TVServer}\Server\TvLibrary.IntegrationProvider.Interfaces\bin\${BUILD_TYPE}\Mediaportal.TV.Server.TVLibrary.IntegrationProvider.Interfaces.dll"
@@ -433,7 +435,11 @@ ${MementoSection} "MediaPortal TV Server" SecServer
   File "${TVSERVER.BASE}\Ionic.Zip.dll"
   File "${git_DirectShowFilters}\StreamingServer\bin\${BUILD_TYPE}\StreamingServer.dll"
   File "${git_DirectShowFilters}\DXErr9\bin\${BUILD_TYPE}\dxerr9.dll"
-  
+
+  ; thumbnail software
+  File "${TVSERVER.BASE}\ffmpeg.exe"
+  ;File "${git_TVServer}\TvThumbnails\bin\${BUILD_TYPE}\TvThumbnails.dll" // TODO Resolve
+
   ; CustomDevice plugin 3rd party resource assemblies
   SetOutPath "$INSTDIR\Plugins\CustomDevices\Resources"
   File "${TVSERVER.BASE}\Ionic.Zip.dll"
@@ -443,6 +449,7 @@ ${MementoSection} "MediaPortal TV Server" SecServer
   File "${TVSERVER.BASE}\TbsCIapi.dll"
   File "${TVSERVER.BASE}\tevii.dll"
   File "${TVSERVER.BASE}\ttBdaDrvApi_Dll.dll"
+  File "${TVSERVER.BASE}\ttdvbacc.dll"
   
   File "${git_DirectShowFilters}\StreamingServer\bin\${BUILD_TYPE}\StreamingServer.dll"
 
@@ -513,7 +520,7 @@ ${MementoSection} "MediaPortal TV Server" SecServer
   File "${git_TVServer}\Server\TVLibrary\bin\${BUILD_TYPE}\Mediaportal.TV.Server.TVLibrary.dll"
   File "${git_TVServer}\Server\SetupControls\bin\${BUILD_TYPE}\Mediaportal.TV.Server.SetupControls.dll"
   File "${git_TVServer}\Server\TVLibrary.Utils\bin\${BUILD_TYPE}\Mediaportal.TV.Server.TVLibrary.Utils.dll"
-  File "${git_TVServer}\Server\TVLibrary.Utils\bin\${BUILD_TYPE}\Interop.SHDocVw.dll"
+  ;File "${git_TVServer}\Server\TVLibrary.Utils\bin\${BUILD_TYPE}\Interop.SHDocVw.dll"
   File "${git_TVServer}\Server\TVDatabase\Presentation\bin\${BUILD_TYPE}\Mediaportal.TV.Server.TVDatabase.Presentation.dll"
   File "${git_TVServer}\Server\TvLibrary.IntegrationProvider.Interfaces\bin\${BUILD_TYPE}\Mediaportal.TV.Server.TVLibrary.IntegrationProvider.Interfaces.dll"
   File "${EXTBIN}\log4net.dll"
@@ -574,6 +581,8 @@ ${MementoSectionEnd}
   ${LOG_TEXT} "INFO" "Terminating processes ..."
   ${StopService} "TVservice"
   ${KillProcess} "SetupTv.exe"
+  ; ffmpeg
+  ${KillProcess} "ffmpeg.exe"
 
   #---------------------------------------------------------------------------
   # CLEARING DATABASE if RemoveAll was selected
@@ -627,6 +636,7 @@ ${MementoSectionEnd}
   Delete "$INSTDIR\Plugins\CustomDevices\Resources\TbsCIapi.dll"
   Delete "$INSTDIR\Plugins\CustomDevices\Resources\tevii.dll"
   Delete "$INSTDIR\Plugins\CustomDevices\Resources\ttBdaDrvApi_Dll.dll"
+  Delete "$INSTDIR\Plugins\CustomDevices\Resources\ttdvbacc.dll"
   RMDir "$INSTDIR\Plugins\CustomDevices\Resources"
 
   ; Remove Plugins
@@ -712,8 +722,10 @@ ${MementoSectionEnd}
   Delete "$INSTDIR\hauppauge.dll"
   Delete "$INSTDIR\StreamingServer.dll"
   Delete "$INSTDIR\Ionic.Zip.dll"
-  Delete "$INSTDIR\Interop.SHDocVw.dll"
-  
+  ;Delete "$INSTDIR\Interop.SHDocVw.dll"
+  Delete "$INSTDIR\ffmpeg.exe"
+  ;Delete "$INSTDIR\TvThumbnails.dll"  // TODO Resolve
+
   ; Remove SetupTV Plugins files installed
   Delete "$INSTDIR\Plugins\Mediaportal.TV.Server.Plugins.ComSkipLauncher.dll"
   Delete "$INSTDIR\Plugins\Mediaportal.TV.Server.Plugins.ConflictsManager.dll"
@@ -786,7 +798,7 @@ ${MementoSectionEnd}
   Delete "${SETUP_TV_FOLDER}\Mediaportal.TV.Server.RuleBasedScheduler.dll"
   Delete "${SETUP_TV_FOLDER}\Mediaportal.TV.Server.SetupControls.dll"
   Delete "${SETUP_TV_FOLDER}\Mediaportal.TV.Server.TVDatabase.Presentation.dll"
-  Delete "${SETUP_TV_FOLDER}\Interop.SHDocVw.dll"
+  ;Delete "${SETUP_TV_FOLDER}\Interop.SHDocVw.dll"
   Delete "${SETUP_TV_FOLDER}\Integration\Mediaportal.TV.Server.TVLibrary.Integration.MP1.dll"
   Delete "${SETUP_TV_FOLDER}\Mediaportal.TV.Server.TVLibrary.IntegrationProvider.Interfaces.dll"
   Delete "${SETUP_TV_FOLDER}\log4net.dll"
@@ -842,13 +854,13 @@ ${MementoSection} "MediaPortal TV Client plugin" SecClient
   #---------------------------- File Copy ----------------------
   ; Tuning Parameter Directory
   SetOutPath "${COMMON_APPDATA}\TuningParameters"
-  File /r "${TVSERVER.BASE}\TuningParameters\*"
+  File /r /x .git "${TVSERVER.BASE}\TuningParameters\*"
   ; WebEPG Grabbers Directory
   SetOutPath "${COMMON_APPDATA}\WebEPG"
-  File /r "${TVSERVER.BASE}\WebEPG\*"
+  File /r /x .git "${TVSERVER.BASE}\WebEPG\*"
   ; XMLTV Data Directory
   SetOutPath "${COMMON_APPDATA}\xmltv"
-  File /r "${TVSERVER.BASE}\xmltv\*"
+  File /r /x .git "${TVSERVER.BASE}\xmltv\*"
 
   ; Common Files
   SetOutPath "$MPdir.Base"
@@ -904,7 +916,7 @@ ${MementoSection} "MediaPortal TV Client plugin" SecClient
   File "${git_TVServer}\Server\TVLibrary\bin\${BUILD_TYPE}\Mediaportal.TV.Server.TVLibrary.dll"
   File "${git_TVServer}\Server\SetupControls\bin\${BUILD_TYPE}\Mediaportal.TV.Server.SetupControls.dll"
   File "${git_TVServer}\Server\TVLibrary.Utils\bin\${BUILD_TYPE}\Mediaportal.TV.Server.TVLibrary.Utils.dll"
-  File "${git_TVServer}\Server\TVLibrary.Utils\bin\${BUILD_TYPE}\Interop.SHDocVw.dll"
+  ;File "${git_TVServer}\Server\TVLibrary.Utils\bin\${BUILD_TYPE}\Interop.SHDocVw.dll"
   File "${git_TVServer}\Server\TVDatabase\Presentation\bin\${BUILD_TYPE}\Mediaportal.TV.Server.TVDatabase.Presentation.dll"
   File "${git_TVServer}\Server\TvLibrary.IntegrationProvider.Interfaces\bin\${BUILD_TYPE}\Mediaportal.TV.Server.TVLibrary.IntegrationProvider.Interfaces.dll"
   File "${EXTBIN}\Castle.Core.dll"
@@ -969,6 +981,7 @@ ${MementoSection} "MediaPortal TV Client plugin" SecClient
   File "${TVSERVER.BASE}\TbsCIapi.dll"
   File "${TVSERVER.BASE}\tevii.dll"
   File "${TVSERVER.BASE}\ttBdaDrvApi_Dll.dll"
+  File "${TVSERVER.BASE}\ttdvbacc.dll"
 
   ; Integration plugin
   SetOutPath "${SETUP_TV_FOLDER}\Integration"
@@ -1084,7 +1097,7 @@ ${MementoSectionEnd}
   ;Delete "${SETUP_TV_FOLDER}\Mediaportal.TV.Server.TVService.ServiceAgents.dll"
   Delete "${SETUP_TV_FOLDER}\Mediaportal.TV.Server.RuleBasedScheduler.dll"
   Delete "${SETUP_TV_FOLDER}\Mediaportal.TV.Server.SetupControls.dll"
-  Delete "${SETUP_TV_FOLDER}\Interop.SHDocVw.dll"
+  ;Delete "${SETUP_TV_FOLDER}\Interop.SHDocVw.dll"
   Delete "${SETUP_TV_FOLDER}\Mediaportal.TV.Server.TVDatabase.Presentation.dll"
   Delete "${SETUP_TV_FOLDER}\Integration\Mediaportal.TV.Server.TVLibrary.Integration.MP1.dll"
   Delete "${SETUP_TV_FOLDER}\Mediaportal.TV.Server.TVLibrary.IntegrationProvider.Interfaces.dll"
@@ -1304,9 +1317,9 @@ Function .onInit
   ;${ReadCommandlineParameter} "noStartMenuSC"
   ${ReadCommandlineParameter} "DeployMode"
   ClearErrors
-  ${GetOptions} $R0 "/DeploySql:" $DeploySql
+  ${GetOptions} $R0 "--DeploySql:" $DeploySql
   ClearErrors
-  ${GetOptions} $R0 "/DeployPwd:" $DeployPwd
+  ${GetOptions} $R0 "--DeployPwd:" $DeployPwd
 
   ClearErrors
   ${GetOptions} $R0 "/UpdateMode" $R1
