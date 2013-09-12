@@ -47,7 +47,7 @@ namespace TvLibrary.Implementations.DVB
     /// </summary>
     private readonly int _decryptLimit;
 
-    private readonly CamType _CamType = CamType.Default;
+    private readonly CamType _camType = CamType.Default;
     private readonly DigitalEverywhere _digitalEveryWhere;
     private readonly TechnoTrendAPI _technoTrend;
     private readonly Twinhan _twinhan;
@@ -99,9 +99,10 @@ namespace TvLibrary.Implementations.DVB
     /// <param name="tunerFilter">The tuner filter.</param>
     /// <param name="analyzerFilter">The capture filter.</param>
     /// <param name="winTvUsbCiFilter">The WinTV CI filter.</param>
+    /// <param name="digitalDevices">A Digital Device CI handler (if present).</param>
     /// <param name="card">Determines the type of TV card</param>    
     public ConditionalAccess(IBaseFilter tunerFilter, IBaseFilter analyzerFilter, IBaseFilter winTvUsbCiFilter,
-                             TvCardBase card)
+                             TvCardBase card, DigitalDevices digitalDevices)
     {
       try
       {
@@ -113,8 +114,8 @@ namespace TvLibrary.Implementations.DVB
           Card c = layer.GetCardByDevicePath(card.DevicePath);
           _decryptLimit = c.DecryptLimit;
           _useCam = c.CAM;
-          _CamType = (CamType)c.CamType;
-          Log.Log.WriteFile("CAM is {0} model", _CamType);
+          _camType = (CamType)c.CamType;
+          Log.Log.WriteFile("CAM is {0} model", _camType);
         }
 
         _mapSubChannels = new Dictionary<int, ConditionalAccessContext>();
@@ -245,17 +246,12 @@ namespace TvLibrary.Implementations.DVB
           Release.DisposeToNull(ref _TeVii);
 
           // DigitalDevices support
-          _DigitalDevices = new DigitalDevices(tunerFilter);
-          if (_DigitalDevices.IsGenericBDAS)
+          if (digitalDevices != null && digitalDevices.IsDigitalDevices)
           {
-            _genericbdas = _DigitalDevices;
-            if (_DigitalDevices.IsSupported)
-            {
-              _ciMenu = _DigitalDevices;
-            }
+            _DigitalDevices = digitalDevices;
+            _ciMenu = _DigitalDevices;
             return; // detected
           }
-          Release.DisposeToNull(ref _DigitalDevices);
 
           Log.Log.WriteFile("Check for Conexant based card");
           _conexant = new ConexantBDA(tunerFilter);
@@ -345,26 +341,21 @@ namespace TvLibrary.Implementations.DVB
     }
 
     /// <summary>
-    /// Adds the sub channel.
+    /// Create a new conditional access sub channel.
     /// </summary>
-    /// <param name="id">The id.</param>
-    /// <param name="channel">The channel</param>
-    public void AddSubChannel(int id, IChannel channel)
+    /// <param name="id">The subchannel ID.</param>
+    public void AddSubChannel(int id)
     {
       if (!_mapSubChannels.ContainsKey(id))
       {
         _mapSubChannels[id] = new ConditionalAccessContext();
-        if (channel is DVBBaseChannel)
-        {
-          _mapSubChannels[id].Channel = (DVBBaseChannel)channel;
-        }
       }
     }
 
     /// <summary>
-    /// Frees the sub channel.
+    /// Free a conditional access sub channel.
     /// </summary>
-    /// <param name="id">The id.</param>
+    /// <param name="id">The subchannel ID.</param>
     public void FreeSubChannel(int id)
     {
       if (_mapSubChannels.ContainsKey(id))
@@ -489,6 +480,10 @@ namespace TvLibrary.Implementations.DVB
         if (_knc != null)
         {
           _knc.ResetCI();
+        }
+        if (_DigitalDevices != null)
+        {
+          _DigitalDevices.ResetCi();
         }
       }
       catch (Exception ex)
@@ -634,44 +629,50 @@ namespace TvLibrary.Implementations.DVB
     }
 
     /// <summary>
-    /// Sends the PMT to the CI module
+    /// Ask the conditional access interface to start decrypting a channel by
+    /// sending PMT to the interface.
     /// </summary>
     /// <param name="subChannel">The sub channel.</param>
-    /// <param name="channel">channel on which we are tuned</param>
-    /// <param name="PMT">byte array containing the PMT</param>
-    /// <param name="pmtLength">length of the pmt array</param>
-    /// <param name="audioPid">pid of the current audio stream</param>
-    /// <returns></returns>
-    public bool SendPMT(int subChannel, DVBBaseChannel channel, byte[] PMT, int pmtLength, int audioPid)
+    /// <param name="channel">The channel to decrypt.</param>
+    /// <param name="pmt">A byte array containing the PMT.</param>
+    /// <param name="pmtLength">The number of data bytes in the PMT array.</param>
+    /// <param name="audioPid">The PID of the current audio stream.</param>
+    /// <returns><c>true</c> if the conditional access interface successfully starts decrypting the channel, otherwise <c>false</c></returns>
+    public bool SendPmt(int subChannel, DVBBaseChannel channel, byte[] pmt, int pmtLength, int audioPid)
     {
       try
       {
         if (!_useCam)
+        {
           return true;
+        }
+        // No need to descramble FTA channels.
         if (channel.FreeToAir)
-          return true; //no need to descramble this one...
+        {
+          return true;
+        }
 
-        AddSubChannel(subChannel, channel);
+        // Now add this sub-channel to the map.
+        AddSubChannel(subChannel);
         ConditionalAccessContext context = _mapSubChannels[subChannel];
-        context.CamType = _CamType;
+        context.CamType = _camType;
         context.Channel = channel;
-        if (_CamType == CamType.Astoncrypt2)
+        if (_camType == CamType.Astoncrypt2)
         {
           int newLength;
-          context.PMT = PatchPMT_AstonCrypt2(PMT, pmtLength, out newLength);
-          context.PMTLength = newLength;
+          context.Pmt = PatchPMT_AstonCrypt2(pmt, pmtLength, out newLength);
+          context.PmtLength = newLength;
         }
         else
         {
-          context.PMT = PMT;
-          context.PMTLength = pmtLength;
+          context.Pmt = pmt;
+          context.PmtLength = pmtLength;
         }
         context.AudioPid = audioPid;
-        context.ServiceId = channel.ServiceId;
 
         if (_winTvCiModule != null)
         {
-          int hr = _winTvCiModule.SendPMT(PMT, pmtLength);
+          int hr = _winTvCiModule.SendPMT(pmt, pmtLength);
           if (hr != 0)
           {
             Log.Log.Info("Conditional Access:  sendPMT to WinTVCI failed");
@@ -683,14 +684,14 @@ namespace TvLibrary.Implementations.DVB
         if (_knc != null)
         {
           ChannelInfo info = new ChannelInfo();
-          info.DecodePmt(PMT);
+          info.DecodePmt(pmt);
           int caPmtLen;
           byte[] caPmt = info.caPMT.CaPmtStruct(out caPmtLen);
           return _knc.SendPMT(caPmt, caPmtLen);
         }
         if (_DigitalDevices != null)
         {
-          return _DigitalDevices.SendServiceIdToCam(channel.ServiceId);
+          return _DigitalDevices.SendPmt(ListManagementType.Only, CommandIdType.Descrambling, context.Pmt, context.PmtLength);
         }
         if (_digitalEveryWhere != null)
         {
@@ -704,7 +705,7 @@ namespace TvLibrary.Implementations.DVB
         if (_twinhan != null)
         {
           ChannelInfo info = new ChannelInfo();
-          info.DecodePmt(PMT);
+          info.DecodePmt(pmt);
 
           int caPmtLen;
           byte[] caPmt = info.caPMT.CaPmtStruct(out caPmtLen);
@@ -799,12 +800,12 @@ namespace TvLibrary.Implementations.DVB
       {
         List<ushort> HwPids = new List<ushort>();
 
-        _mapSubChannels[subChannel].HwPids = pids;
+        _mapSubChannels[subChannel].Pids = pids;
 
         Dictionary<int, ConditionalAccessContext>.Enumerator enSubch = _mapSubChannels.GetEnumerator();
         while (enSubch.MoveNext())
         {
-          List<ushort> enPid = enSubch.Current.Value.HwPids;
+          List<ushort> enPid = enSubch.Current.Value.Pids;
           if (enPid != null)
           {
             for (int i = 0; i < enPid.Count; ++i)
