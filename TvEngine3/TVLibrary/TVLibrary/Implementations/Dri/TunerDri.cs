@@ -597,7 +597,7 @@ namespace TvLibrary.Implementations.Dri
         // This shouldn't be required, but it enables us to reuse TvCardDvbBase
         // and use CI menus for delivering messages from the CableCARD to the
         // user.
-        _conditionalAccess = new ConditionalAccess(null, null, null, this);
+        _conditionalAccess = new ConditionalAccess(null, null, null, this, null);
 
         _graphState = GraphState.Created;
         if (_eventSignalLock == null)
