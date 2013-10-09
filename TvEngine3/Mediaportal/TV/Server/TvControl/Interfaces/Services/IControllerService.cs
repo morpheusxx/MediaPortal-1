@@ -558,6 +558,11 @@ namespace Mediaportal.TV.Server.TVControl.Interfaces.Services
     [OperationContract]
     bool IsTimeShifting(string userName);
 
+    [OperationContract]
+    bool getTimeshiftParams(ref int maxFiles, ref Int64 maximumFileSize);
+
+    [OperationContract]
+    bool CopyTimeShiftFile(object itemlist);
 
     /// <summary>
     /// Returns the rotation time for a specific teletext page
@@ -641,21 +646,6 @@ namespace Mediaportal.TV.Server.TVControl.Interfaces.Services
     /// <returns>Teletext pagenumber for the blue button</returns>
     [OperationContract]
     int GetTeletextBluePageNumber(string userName);
-
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="position1"></param>
-    /// <param name="bufferFile1"></param>
-    /// <param name="position2"></param>
-    /// <param name="bufferFile2"></param>
-    /// <param name="recordingFile"></param>
-    [OperationContract]
-    void CopyTimeShiftFile(Int64 position1, string bufferFile1, Int64 position2, string bufferFile2,
-                           string recordingFile);
-
-
-
 
     /// <summary>
     /// Stops the card.

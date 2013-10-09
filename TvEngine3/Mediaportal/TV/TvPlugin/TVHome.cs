@@ -2032,6 +2032,7 @@ namespace Mediaportal.TV.TvPlugin
               case 875:
                 //record current program                  
                 TVProgramInfo.CreateProgram(prog.Entity, (int)ScheduleRecordingType.Once, dialogId);
+                TvTimeShiftPositionWatcher.needToCheck = true;
                 return true;
 
               case 876:
@@ -2040,6 +2041,7 @@ namespace Mediaportal.TV.TvPlugin
                 if (!doesManuelScheduleAlreadyExist)
                 {
                   StartRecordingSchedule(channel, true);
+                  TvTimeShiftPositionWatcher.needToCheck = true;
                   return true;
                 }
                 break;
@@ -2050,6 +2052,7 @@ namespace Mediaportal.TV.TvPlugin
         {
           //manual record
           StartRecordingSchedule(channel, true);
+          TvTimeShiftPositionWatcher.needToCheck = true;
           return true;
         }
       }

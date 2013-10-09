@@ -657,6 +657,16 @@ namespace Mediaportal.TV.Server.TVLibrary.Services
       return Service.TimeShiftGetCurrentFilePosition(userName, ref position, ref bufferId);
     }
 
+    public bool CopyTimeShiftFile(object itemlist)
+    {
+      return Service.CopyTimeShiftFile(itemlist);
+    }
+
+    public bool getTimeshiftParams(ref int maxFiles, ref Int64 maximumFileSize)
+    {
+      return Service.getTimeshiftParams(ref maxFiles, ref maximumFileSize);
+    } 
+
     /// <summary>
     /// Returns if the card is currently timeshifting or not
     /// </summary>
@@ -767,21 +777,6 @@ namespace Mediaportal.TV.Server.TVLibrary.Services
     {
       return Service.GetTeletextBluePageNumber(userName);
     }
-
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="position1"></param>
-    /// <param name="bufferFile1"></param>
-    /// <param name="position2"></param>
-    /// <param name="bufferFile2"></param>
-    /// <param name="recordingFile"></param>
-    public void CopyTimeShiftFile(long position1, string bufferFile1, long position2, string bufferFile2, string recordingFile)
-    {
-      Service.CopyTimeShiftFile(position1, bufferFile1, position2, bufferFile2, recordingFile);
-    }
-
-  
 
     /// <summary>
     /// Stops the card.

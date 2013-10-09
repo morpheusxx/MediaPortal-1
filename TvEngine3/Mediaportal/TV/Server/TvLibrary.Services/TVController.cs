@@ -170,6 +170,118 @@ namespace Mediaportal.TV.Server.TVLibrary
       return initConditionalAccess;
     }
 
+    /// <summary>
+    /// Copies the time shift buffer files to the currently started recording 
+    /// </summary>
+    public bool CopyTimeShiftFile(object itemlist)
+    {
+      Thread _GetMediaInfoThread;
+      _GetMediaInfoThread = new Thread(TsCopier);
+      _GetMediaInfoThread.Priority = ThreadPriority.Lowest;
+      _GetMediaInfoThread.IsBackground = true;
+      _GetMediaInfoThread.Start(itemlist);
+      return true;
+    }
+
+    /// <summary>
+    /// TS copy worker
+    /// </summary>
+    /// <param name="itemlist">list of the ts files</param>
+    private void TsCopier(object itemlist)
+    {
+      string[] bufferListObject;
+      bufferListObject = new string[3];
+      List<string[]> _itemlist = (List<string[]>)itemlist;
+
+      try
+      {
+        Log.Debug("TsCopier: _itemlist.Count: {0}", _itemlist.Count);
+        bufferListObject = _itemlist[0];
+
+        string targetTs = Path.GetDirectoryName(bufferListObject[2]) + "\\" + Path.GetFileNameWithoutExtension(bufferListObject[2]) + "_buffer.ts";
+
+        Log.Debug("TsCopier: targetTs {0}", targetTs);
+
+        FileStream writer = new FileStream(targetTs, FileMode.CreateNew, FileAccess.Write);
+
+        for (int i = 0; i < _itemlist.Count; i++)
+        {
+          bufferListObject = _itemlist[i];
+
+          try
+          {
+            FileStream reader = new FileStream(bufferListObject[0], FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+
+            Log.Debug("bufferListObject TSfilename {0}", bufferListObject[0]);
+            Log.Debug("bufferListObject filesize {0}", bufferListObject[1]);
+
+            byte[] buf = new byte[1024];
+            int bytesRead = reader.Read(buf, 0, 1024);
+            while (bytesRead > 0)
+            {
+              if (reader.Position > Convert.ToInt64(bufferListObject[1]))
+                bytesRead -= (int)(reader.Position - Convert.ToInt64(bufferListObject[1]));
+
+              if (bytesRead <= 0)
+                break;
+
+              writer.Write(buf, 0, bytesRead);
+              bytesRead = reader.Read(buf, 0, 1024);
+            }
+            reader.Close();
+            reader.Dispose();
+            reader = null;
+          }
+          catch (Exception ex)
+          {
+            // we don't want to log
+          }
+        }
+        writer.Flush();
+        writer.Close();
+        writer.Dispose();
+        writer = null;
+      }
+      catch (Exception ex)
+      {
+        Log.Debug("{0}", ex);
+      }
+    }
+
+    public bool getTimeshiftParams(ref int maxFiles, ref Int64 maximumFileSize)
+    {
+      maximumFileSize = Int64.Parse(SettingsManagement.GetValue("timeshiftMaxFileSize", "20")) * 1000 * 1000;
+      maxFiles = Convert.ToInt16(SettingsManagement.GetValue("timeshiftMaxFiles", "20"));
+      return true;
+    }
+
+    /// <summary>
+    /// Returns the position in the current timeshift file and the id of the current timeshift file
+    /// </summary>
+    /// <param name="userName"> </param>
+    /// <param name="position">The position in the current timeshift buffer file</param>
+    /// <param name="bufferId">The id of the current timeshift buffer file</param>
+    public bool TimeShiftGetCurrentFilePosition(string userName, ref long position, ref long bufferId)
+    {
+      bool timeShiftGetCurrentFilePosition = false;
+      try
+      {
+        if (ValidateTvControllerParams(userName))
+        {
+          IUser userCopy = GetUserFromContext(userName, TvUsage.Timeshifting);
+          if (userCopy != null)
+          {
+            timeShiftGetCurrentFilePosition = _cards[userCopy.CardId].TimeShifter.GetCurrentFilePosition(userName, ref position, ref bufferId);
+          }
+        }
+      }
+      catch (Exception e)
+      {
+        HandleControllerException(e);
+      }
+      return timeShiftGetCurrentFilePosition;
+    }
+
     private Dictionary<int, ITvCardHandler> _cards = new Dictionary<int, ITvCardHandler>();
 
     /// 
@@ -1345,33 +1457,6 @@ namespace Mediaportal.TV.Server.TVLibrary
       }
             
       return user;
-    }
-
-    /// <summary>
-    /// Returns the position in the current timeshift file and the id of the current timeshift file
-    /// </summary>
-    /// <param name="userName"> </param>
-    /// <param name="position">The position in the current timeshift buffer file</param>
-    /// <param name="bufferId">The id of the current timeshift buffer file</param>
-    public bool TimeShiftGetCurrentFilePosition(string userName, ref long position, ref long bufferId)
-    {
-      bool timeShiftGetCurrentFilePosition = false;
-      try
-      {
-        if (ValidateTvControllerParams(userName))
-        {
-          IUser userCopy = GetUserFromContext(userName, TvUsage.Timeshifting);
-          if (userCopy != null)
-          {
-            timeShiftGetCurrentFilePosition = _cards[userCopy.CardId].TimeShifter.GetCurrentFilePosition(userName, ref position, ref bufferId);  
-          }
-        }
-      }
-      catch (Exception e)
-      {
-        HandleControllerException(e);
-      }
-      return timeShiftGetCurrentFilePosition;
     }
 
     /// <summary>
