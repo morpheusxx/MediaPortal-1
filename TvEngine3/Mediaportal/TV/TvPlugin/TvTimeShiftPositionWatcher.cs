@@ -252,8 +252,11 @@ namespace Mediaportal.TV.TvPlugin
       if (!TVHome.Connected)
         return;
       ChannelBLL chan = new ChannelBLL(ServiceAgents.Instance.ChannelServiceAgent.GetChannel(_idChannelToWatch));
-      if (chan.Entity == null)
+      if (chan.CurrentProgram == null)
+      {
+        Log.Debug("CheckOrUpdateTimeShiftPosition: no EPG data, returning");
         return;
+      }
       try
       {
         DateTime current = DateTime.Now;
