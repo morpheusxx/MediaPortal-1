@@ -562,7 +562,7 @@ namespace Mediaportal.TV.Server.TVControl.Interfaces.Services
     bool getTimeshiftParams(ref int maxFiles, ref Int64 maximumFileSize);
 
     [OperationContract]
-    bool CopyTimeShiftFile(object itemlist);
+    bool CopyTimeShiftFile(List<string[]> itemlist);
 
     /// <summary>
     /// Returns the rotation time for a specific teletext page

@@ -657,7 +657,7 @@ namespace Mediaportal.TV.Server.TVLibrary.Services
       return Service.TimeShiftGetCurrentFilePosition(userName, ref position, ref bufferId);
     }
 
-    public bool CopyTimeShiftFile(object itemlist)
+    public bool CopyTimeShiftFile(List<string[]> itemlist)
     {
       return Service.CopyTimeShiftFile(itemlist);
     }

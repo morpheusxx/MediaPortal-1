@@ -127,16 +127,17 @@ namespace Mediaportal.TV.TvPlugin
     {
       try
       {
-        if (TVHome.Card.IsRecording && needToCheck)
+        int scheduleId = TVHome.Card.RecordingScheduleId;
+        if (scheduleId > 0 && needToCheck)
         {
-          int scheduleId = TVHome.Card.RecordingScheduleId;
-          if (scheduleId > 0)
-          {
-            Recording rec = ServiceAgents.Instance.RecordingServiceAgent.GetActiveRecording(scheduleId);
-            Log.Info("TvTimeShiftPositionWatcher: Detected a started recording. ProgramName: {0}", rec.Title);
-            InitiateBufferFilesCopyProcess(rec.FileName);
-            needToCheck = false; // end of checking
-          }
+          Recording rec = ServiceAgents.Instance.RecordingServiceAgent.GetActiveRecording(scheduleId);
+          Log.Info("TvTimeShiftPositionWatcher: Detected a started recording. ProgramName: {0}", rec.Title);
+          InitiateBufferFilesCopyProcess(rec.FileName);
+
+          needToCheck = false; // end of checking
+          _snapshotBufferPosition = -1;
+          _snapshotBufferFile = "";
+          _snapshotBufferId = 0;
         }
       }
       catch (Exception ex)
@@ -149,7 +150,7 @@ namespace Mediaportal.TV.TvPlugin
     {
       if (_snapshotBufferPosition == -1)
       {
-        Log.Info("TvTimeshiftPositionWatcher: there is no program information, skip the ts buffer copy.");
+        Log.Info("TvTimeshiftPositionWatcher: there is no program information for {0}, skip the ts buffer copy.", recordingFilename);
         return;
       }
 
@@ -205,7 +206,16 @@ namespace Mediaportal.TV.TvPlugin
         }
         itemlist.Add(new[] { currentFile, string.Format("{0}", currentPosition), recordingFilename });
         Log.Debug("TvTimeshiftPositionWatcher: currentFile {0}", currentFile);
-        ServiceAgents.Instance.ControllerServiceAgent.CopyTimeShiftFile(itemlist);
+        
+        try
+        {
+          ServiceAgents.Instance.ControllerServiceAgent.CopyTimeShiftFile(itemlist);
+        }
+        catch (Exception ex)
+        {
+          Log.Error("TvTimeshiftPositionWatcher.InitiateBufferFilesCopyProcess exception : {0}", ex);
+        }
+
       }
       _snapshotBufferPosition = -1;
       _snapshotBufferFile = "";

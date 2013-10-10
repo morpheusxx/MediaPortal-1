@@ -173,7 +173,7 @@ namespace Mediaportal.TV.Server.TVLibrary
     /// <summary>
     /// Copies the time shift buffer files to the currently started recording 
     /// </summary>
-    public bool CopyTimeShiftFile(object itemlist)
+    public bool CopyTimeShiftFile(List<string[]> itemlist)
     {
       Thread _GetMediaInfoThread;
       _GetMediaInfoThread = new Thread(TsCopier);
