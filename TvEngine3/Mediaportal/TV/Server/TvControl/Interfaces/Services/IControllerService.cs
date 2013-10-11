@@ -558,9 +558,20 @@ namespace Mediaportal.TV.Server.TVControl.Interfaces.Services
     [OperationContract]
     bool IsTimeShifting(string userName);
 
+    /// <summary>
+    /// Get number of ts files and file size
+    /// </summary>
+    /// <param name="maxFiles"></param>
+    /// <param name="maximumFileSize"></param>
+    /// <returns></returns>
     [OperationContract]
-    bool getTimeshiftParams(ref int maxFiles, ref Int64 maximumFileSize);
+    bool GetTimeshiftParams(ref int maxFiles, ref Int64 maximumFileSize);
 
+    /// <summary>
+    /// Copy the ts buffer files
+    /// </summary>
+    /// <param name="itemlist"></param>
+    /// <returns></returns>
     [OperationContract]
     bool CopyTimeShiftFile(List<string[]> itemlist);
 

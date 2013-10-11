@@ -657,14 +657,25 @@ namespace Mediaportal.TV.Server.TVLibrary.Services
       return Service.TimeShiftGetCurrentFilePosition(userName, ref position, ref bufferId);
     }
 
+    /// <summary>
+    /// Copy the ts buffer files
+    /// </summary>
+    /// <param name="itemlist"></param>
+    /// <returns></returns>
     public bool CopyTimeShiftFile(List<string[]> itemlist)
     {
       return Service.CopyTimeShiftFile(itemlist);
     }
 
-    public bool getTimeshiftParams(ref int maxFiles, ref Int64 maximumFileSize)
+    /// <summary>
+    /// Get number of ts files and file size
+    /// </summary>
+    /// <param name="maxFiles"></param>
+    /// <param name="maximumFileSize"></param>
+    /// <returns></returns>
+    public bool GetTimeshiftParams(ref int maxFiles, ref Int64 maximumFileSize)
     {
-      return Service.getTimeshiftParams(ref maxFiles, ref maximumFileSize);
+      return Service.GetTimeshiftParams(ref maxFiles, ref maximumFileSize);
     } 
 
     /// <summary>

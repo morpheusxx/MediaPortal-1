@@ -171,15 +171,15 @@ namespace Mediaportal.TV.Server.TVLibrary
     }
 
     /// <summary>
-    /// Copies the time shift buffer files to the currently started recording 
+    /// Copies the time shift buffer files next to the currently started recording 
     /// </summary>
     public bool CopyTimeShiftFile(List<string[]> itemlist)
     {
-      Thread _GetMediaInfoThread;
-      _GetMediaInfoThread = new Thread(TsCopier);
-      _GetMediaInfoThread.Priority = ThreadPriority.Lowest;
-      _GetMediaInfoThread.IsBackground = true;
-      _GetMediaInfoThread.Start(itemlist);
+      Thread getMediaInfoThread;
+      getMediaInfoThread = new Thread(TsCopier);
+      getMediaInfoThread.Priority = ThreadPriority.Lowest;
+      getMediaInfoThread.IsBackground = true;
+      getMediaInfoThread.Start(itemlist);
       return true;
     }
 
@@ -202,45 +202,44 @@ namespace Mediaportal.TV.Server.TVLibrary
 
         Log.Debug("TsCopier: targetTs {0}", targetTs);
 
-        FileStream writer = new FileStream(targetTs, FileMode.CreateNew, FileAccess.Write);
-
-        for (int i = 0; i < _itemlist.Count; i++)
+        using (FileStream writer = new FileStream(targetTs, FileMode.CreateNew, FileAccess.Write))
         {
-          bufferListObject = _itemlist[i];
 
-          try
+          for (int i = 0; i < _itemlist.Count; i++)
           {
-            FileStream reader = new FileStream(bufferListObject[0], FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+            bufferListObject = _itemlist[i];
 
-            Log.Debug("bufferListObject TSfilename {0}", bufferListObject[0]);
-            Log.Debug("bufferListObject filesize {0}", bufferListObject[1]);
-
-            byte[] buf = new byte[1024];
-            int bytesRead = reader.Read(buf, 0, 1024);
-            while (bytesRead > 0)
+            try
             {
-              if (reader.Position > Convert.ToInt64(bufferListObject[1]))
-                bytesRead -= (int)(reader.Position - Convert.ToInt64(bufferListObject[1]));
+              using (FileStream reader = new FileStream(bufferListObject[0], FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+              {
+                Log.Debug("bufferListObject TSfilename {0}", bufferListObject[0]);
+                Log.Debug("bufferListObject filesize {0}", bufferListObject[1]);
 
-              if (bytesRead <= 0)
-                break;
+                byte[] buf = new byte[1024];
+                int bytesRead = reader.Read(buf, 0, 1024);
+                while (bytesRead > 0)
+                {
+                  if (reader.Position > Convert.ToInt64(bufferListObject[1]))
+                    bytesRead -= (int)(reader.Position - Convert.ToInt64(bufferListObject[1]));
 
-              writer.Write(buf, 0, bytesRead);
-              bytesRead = reader.Read(buf, 0, 1024);
+                  if (bytesRead <= 0)
+                    break;
+
+                  writer.Write(buf, 0, bytesRead);
+                  bytesRead = reader.Read(buf, 0, 1024);
+                }
+                reader.Close();
+              }
             }
-            reader.Close();
-            reader.Dispose();
-            reader = null;
+            catch (Exception ex)
+            {
+              // we don't want to log
+            }
           }
-          catch (Exception ex)
-          {
-            // we don't want to log
-          }
+          writer.Flush();
+          writer.Close();
         }
-        writer.Flush();
-        writer.Close();
-        writer.Dispose();
-        writer = null;
       }
       catch (Exception ex)
       {
@@ -248,10 +247,10 @@ namespace Mediaportal.TV.Server.TVLibrary
       }
     }
 
-    public bool getTimeshiftParams(ref int maxFiles, ref Int64 maximumFileSize)
+    public bool GetTimeshiftParams(ref int maxFiles, ref Int64 maximumFileSize)
     {
-      maximumFileSize = Int64.Parse(SettingsManagement.GetValue("timeshiftMaxFileSize", "20")) * 1000 * 1000;
-      maxFiles = Convert.ToInt16(SettingsManagement.GetValue("timeshiftMaxFiles", "20"));
+      maximumFileSize = SettingsManagement.GetValue("timeshiftMaxFileSize", 20) * 1000 * 1000;
+      maxFiles = SettingsManagement.GetValue("timeshiftMaxFiles", 20);
       return true;
     }
 
@@ -1841,29 +1840,6 @@ namespace Mediaportal.TV.Server.TVLibrary
         recordingStarted = _cards[user.CardId].Recorder.RecordingStarted(user.Name); 
       }      
       return recordingStarted;
-    }
-
-    /// <summary>
-    /// Copies the time shift buffer files to the currently started recording 
-    /// </summary>
-    /// <param name="position1">start offset in first ts buffer file </param>
-    /// <param name="bufferFile1">ts buffer file to start with</param>
-    /// <param name="position2">end offset in last ts buffer file</param>
-    /// <param name="bufferFile2">ts buffer file to stop at</param>
-    /// <param name="recordingFile">filename of the recording</param>
-    public void CopyTimeShiftFile(Int64 position1, string bufferFile1, Int64 position2, string bufferFile2,
-                                  string recordingFile)
-    {
-      try
-      {
-        TsCopier copier = new TsCopier(position1, bufferFile1, position2, bufferFile2, recordingFile);
-        Thread worker = new Thread(new ThreadStart(copier.DoCopy));
-        worker.Start();
-      }
-      catch (Exception e)
-      {
-        HandleControllerException(e);
-      }      
     }
 
     /// <summary>
