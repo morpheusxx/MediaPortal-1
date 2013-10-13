@@ -43,7 +43,6 @@ namespace Mediaportal.TV.TvPlugin
     private static long _bufferId = 0;
     private static Timer _timer = null;
     private static int _isEnabled = 0;
-    public static bool needToCheck = false;
     private static Int64 _snapshotBufferPosition = -1;
     private static string _snapshotBufferFile = "";
     private static decimal _preRecordInterval = -1;
@@ -51,14 +50,15 @@ namespace Mediaportal.TV.TvPlugin
 
     #endregion
 
-    /*#region Public properties
+    #region Public properties
 
     public static bool NeedToCheck 
     {
-      set { _needToCheck = value; }
+      get;
+      set;
     }
 
-    #endregion*/
+    #endregion
 
     #region Event handlers
 
@@ -138,13 +138,13 @@ namespace Mediaportal.TV.TvPlugin
       try
       {
         int scheduleId = TVHome.Card.RecordingScheduleId;
-        if (scheduleId > 0 && needToCheck)
+        if (scheduleId > 0 && NeedToCheck)
         {
           Recording rec = ServiceAgents.Instance.RecordingServiceAgent.GetActiveRecording(scheduleId);
           Log.Info("TvTimeShiftPositionWatcher: Detected a started recording. ProgramName: {0}", rec.Title);
           InitiateBufferFilesCopyProcess(rec.FileName);
 
-          needToCheck = false; // end of checking
+          NeedToCheck = false; // end of checking
           _snapshotBufferPosition = -1;
           _snapshotBufferFile = "";
           _snapshotBufferId = 0;
