@@ -38,15 +38,15 @@ namespace Mediaportal.TV.TvPlugin
 
     #region Variables
 
-    private static int _idChannelToWatch = -1;
-    private static long _snapshotBufferId = 0;
-    private static long _bufferId = 0;
-    private static Timer _timer = null;
-    private static int _isEnabled = 0;
-    private static Int64 _snapshotBufferPosition = -1;
-    private static string _snapshotBufferFile = "";
-    private static decimal _preRecordInterval = -1;
-    private static int _secondsElapsed = 0;
+    private int _idChannelToWatch = -1;
+    private long _snapshotBufferId = 0;
+    private long _bufferId = 0;
+    private Timer _timer = null;
+    private int _isEnabled = 0;
+    private Int64 _snapshotBufferPosition = -1;
+    private string _snapshotBufferFile = "";
+    private decimal _preRecordInterval = -1;
+    private int _secondsElapsed = 0;
 
     #endregion
 
@@ -62,7 +62,15 @@ namespace Mediaportal.TV.TvPlugin
 
     #region Event handlers
 
-    static void _timer_Tick(object sender, EventArgs e)
+    private void g_Player_PlayBackStopped(g_Player.MediaType type, int stoptime, string filename)
+    {
+      if (type == g_Player.MediaType.TV)
+      {
+        SetNewChannel(-1);
+      }
+    }
+
+    private void _timer_Tick(object sender, EventArgs e)
     {
       CheckRecordingStatus();
       UpdateTimeShiftReusedStatus();
@@ -79,7 +87,7 @@ namespace Mediaportal.TV.TvPlugin
 
     #region Public methods
 
-    public static void SetNewChannel(int idChannel)
+    public void SetNewChannel(int idChannel)
     {
       if (!IsEnabled())
         return;
@@ -106,7 +114,7 @@ namespace Mediaportal.TV.TvPlugin
 
     #region Private methods
 
-    private static void StartTimer()
+    private void StartTimer()
     {
       if (!IsEnabled())
         return;
@@ -116,12 +124,13 @@ namespace Mediaportal.TV.TvPlugin
         _timer = new Timer();
         _timer.Interval = 500;
         _timer.Tick += new EventHandler(_timer_Tick);
+        g_Player.PlayBackStopped += new g_Player.StoppedHandler(g_Player_PlayBackStopped);
       }
       Log.Debug("TvTimeShiftPositionWatcher: started");
       _timer.Enabled = true;
     }
 
-    private static bool IsEnabled()
+    private bool IsEnabled()
     {
       if (_isEnabled == 0)
       {
@@ -133,7 +142,7 @@ namespace Mediaportal.TV.TvPlugin
       return (_isEnabled == 1);
     }
 
-    private static void CheckRecordingStatus()
+    private void CheckRecordingStatus()
     {
       try
       {
@@ -156,7 +165,7 @@ namespace Mediaportal.TV.TvPlugin
       }
     }
 
-    private static void InitiateBufferFilesCopyProcess(string recordingFilename)
+    private void InitiateBufferFilesCopyProcess(string recordingFilename)
     {
       if (_snapshotBufferPosition == -1)
       {
@@ -232,7 +241,7 @@ namespace Mediaportal.TV.TvPlugin
       _snapshotBufferId = 0;
     }
 
-    private static void SnapshotTimeShiftBuffer()
+    private void SnapshotTimeShiftBuffer()
     {
       Log.Debug("TvTimeShiftPositionWatcher: Snapshotting timeshift buffer");
       IUser u = TVHome.Card.User;
@@ -255,7 +264,7 @@ namespace Mediaportal.TV.TvPlugin
       Log.Info("TvTimeShiftPositionWatcher: Snapshot done - position: {0}, filename: {1}", _snapshotBufferPosition, _snapshotBufferFile);
     }
 
-    private static void CheckOrUpdateTimeShiftPosition()
+    private void CheckOrUpdateTimeShiftPosition()
     {
       if (_idChannelToWatch == -1)
         return;
@@ -290,7 +299,7 @@ namespace Mediaportal.TV.TvPlugin
       }
     }
 
-    private static void UpdateTimeShiftReusedStatus()
+    private void UpdateTimeShiftReusedStatus()
     {
       Int64 currentPosition = -1;
 
@@ -305,7 +314,7 @@ namespace Mediaportal.TV.TvPlugin
 
     }
 
-    private static long GetTimeShiftPosition()
+    private long GetTimeShiftPosition()
     {
       IUser u = TVHome.Card.User;
       long bufferId = 0;
@@ -317,7 +326,7 @@ namespace Mediaportal.TV.TvPlugin
       return 0;
     }
 
-    private static long GetTimeShiftPosition(ref Int64 currentPosition)
+    private long GetTimeShiftPosition(ref Int64 currentPosition)
     {
       IUser u = TVHome.Card.User;
       long bufferId = 0;

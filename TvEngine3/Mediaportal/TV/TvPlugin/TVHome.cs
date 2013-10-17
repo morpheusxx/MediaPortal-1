@@ -203,6 +203,8 @@ namespace Mediaportal.TV.TvPlugin
 
     private static readonly ServerMonitor _serverMonitor = new ServerMonitor();
 
+    private static TvTimeShiftPositionWatcher _TvTimeShiftPositionWatcher = new TvTimeShiftPositionWatcher();
+
     #endregion
 
     #region events & delegates
@@ -644,6 +646,7 @@ namespace Mediaportal.TV.TvPlugin
       UpdateCurrentChannel();
       UpdateRecordingIndicator();
       UpdateStateOfRecButton();
+                 
     }
 
     private void AutoTurnOnTv(Channel channel)
@@ -2486,7 +2489,7 @@ namespace Mediaportal.TV.TvPlugin
 
         try
         {
-          TvTimeShiftPositionWatcher.SetNewChannel(channel.IdChannel);
+          _TvTimeShiftPositionWatcher.SetNewChannel(channel.IdChannel);
         }
         catch
         {
@@ -3424,7 +3427,7 @@ namespace Mediaportal.TV.TvPlugin
         }
         try
         {
-          TvTimeShiftPositionWatcher.SetNewChannel(channel.IdChannel);
+          _TvTimeShiftPositionWatcher.SetNewChannel(channel.IdChannel);
         }
         catch
         {
