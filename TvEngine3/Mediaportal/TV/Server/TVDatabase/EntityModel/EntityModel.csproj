@@ -130,6 +130,7 @@
     <EmbeddedResource Include="Model.MSSQLCE.ssdl">
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <EmbeddedResource Include="Model.SQLite.ssdl" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
