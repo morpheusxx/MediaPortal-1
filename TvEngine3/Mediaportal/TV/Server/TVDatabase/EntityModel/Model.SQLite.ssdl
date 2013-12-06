@@ -1,4 +1,4 @@
-﻿<Schema Namespace="TVDatabaseModel.Store" Alias="Self" Provider="Devart.Data.SQLite" ProviderManifestToken="SQLite, 3.7.17" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/02/edm/ssdl">
+﻿<Schema Namespace="TVDatabaseModel.Store" Alias="Self" Provider="System.Data.SQLite" ProviderManifestToken="ISO8601" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/02/edm/ssdl">
   <EntityContainer Name="TVDatabaseModelStoreContainer">
     <EntitySet Name="CanceledSchedules" EntityType="TVDatabaseModel.Store.CanceledSchedules" store:Type="Tables" />
     <EntitySet Name="Cards" EntityType="TVDatabaseModel.Store.Cards" store:Type="Tables" />

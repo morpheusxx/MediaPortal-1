@@ -1,6 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio 2013
+VisualStudioVersion = 12.0.21005.1
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Service", "Service", "{E1E336FF-E3EF-471F-B2A7-A01607E69DE0}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "TVLibrary", "TVLibrary", "{E5B37E07-6E84-4F14-859D-69A40E871034}"
@@ -740,7 +742,6 @@ Global
 		{1526A789-1DE2-4A8B-AA4B-5382A617C4F8}.Debug|x86.ActiveCfg = Debug|x86
 		{1526A789-1DE2-4A8B-AA4B-5382A617C4F8}.Release|Any CPU.ActiveCfg = Release|x86
 		{1526A789-1DE2-4A8B-AA4B-5382A617C4F8}.Release|Mixed Platforms.ActiveCfg = Release|x86
-		{1526A789-1DE2-4A8B-AA4B-5382A617C4F8}.Release|Mixed Platforms.Build.0 = Release|x86
 		{1526A789-1DE2-4A8B-AA4B-5382A617C4F8}.Release|x86.ActiveCfg = Release|x86
 		{1526A789-1DE2-4A8B-AA4B-5382A617C4F8}.Release|x86.Build.0 = Release|x86
 		{D7EB01B3-396B-4E0C-85EA-EBAC4738F089}.Debug|Any CPU.ActiveCfg = Debug|x86

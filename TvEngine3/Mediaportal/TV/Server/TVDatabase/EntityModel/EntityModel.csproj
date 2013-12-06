@@ -48,6 +48,12 @@
     <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Devart.Data">
+      <HintPath>..\..\packages\dotConnect.Express.for.SQLite.5.1.45\lib\Devart.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="Devart.Data.SQLite">
+      <HintPath>..\..\packages\dotConnect.Express.for.SQLite.5.1.45\lib\Devart.Data.SQLite.dll</HintPath>
+    </Reference>
     <Reference Include="EntityFramework, Version=4.1.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\ExternalBinaries\EntityFramework.dll</HintPath>
@@ -130,7 +136,10 @@
     <EmbeddedResource Include="Model.MSSQLCE.ssdl">
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Model.SQLite.ssdl" />
+    <EmbeddedResource Include="Model.SQLite.ssdl">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
