@@ -6,7 +6,6 @@ using System.Data.Metadata.Edm;
 using System.Data.Objects;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.InteropServices;
 using Mediaportal.TV.Server.TVDatabase.Entities;
 using Mediaportal.TV.Server.TVLibrary.Interfaces.Logging;
 
@@ -197,7 +196,7 @@ namespace Mediaportal.TV.Server.TVDatabase.EntityModel.ObjContext
             "res://Mediaportal.TV.Server.TVDatabase.EntityModel/Model.csdl",
             "res://Mediaportal.TV.Server.TVDatabase.EntityModel/Model.msl",
             // Select matching ssdl based on the detected database type.
-            string.Format("res://Mediaportal.TV.Server.TVDatabase.EntityModel/Mediaportal.TV.Server.TVDatabase.EntityModel.Model.{0}.ssdl", _databaseType)
+            string.Format("res://Mediaportal.TV.Server.TVDatabase.EntityModel/Mediaportal.TV.Server.TVDatabase.EntityModel.Model.{0}.ssdl", database)
           };
           _databaseType = database;
           _metadataWorkspace = new MetadataWorkspace(metadata, new[] { Assembly.GetExecutingAssembly() });
