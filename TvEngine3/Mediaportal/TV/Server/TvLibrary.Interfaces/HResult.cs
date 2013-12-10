@@ -19,7 +19,6 @@
 #endregion
 
 using System;
-using System.Runtime.InteropServices;
 using DirectShowLib;
 
 namespace Mediaportal.TV.Server.TVLibrary.Interfaces
@@ -316,13 +315,18 @@ namespace Mediaportal.TV.Server.TVLibrary.Interfaces
     }
 
     /// <summary>
+    /// Characters that will be replaced from the end of DX error message.
+    /// </summary>
+    static readonly char[] TRIM_CHARS = { '\r', '\n', '.' };
+
+    /// <summary>
     /// Static method which gets the DX error string.
     /// </summary>
     /// <param name="hresult">The hresult.</param>
     /// <returns>the DX error string</returns>
     public static string GetDXErrorString(int hresult)
     {
-      return DsError.GetErrorText(hresult);
+      return DsError.GetErrorText(hresult).TrimEnd(TRIM_CHARS);
     }
 
     /// <summary>
