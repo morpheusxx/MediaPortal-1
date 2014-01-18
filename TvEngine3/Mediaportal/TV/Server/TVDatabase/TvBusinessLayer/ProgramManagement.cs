@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Objects;
-using System.Data.SqlTypes;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
@@ -84,42 +83,20 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
     {
       foreach (Program nextPrg in nextPrograms)
       {
-        NowAndNext nowAndNext;
-        progList.TryGetValue(nextPrg.IdChannel, out nowAndNext);
-
         int idChannel = nextPrg.IdChannel;
-        string titleNext = nextPrg.Title;
-        int idProgramNext = nextPrg.IdProgram;
-        string episodeNameNext = nextPrg.EpisodeName;
-        string seriesNumNext = nextPrg.SeriesNum;
-        string episodeNumNext = nextPrg.EpisodeNum;
-        string episodePartNext = nextPrg.EpisodePart;
+        NowAndNext nowAndNext;
+        if (!progList.TryGetValue(nextPrg.IdChannel, out nowAndNext))
+          nowAndNext = new NowAndNext();
 
-        if (nowAndNext == null)
-        {
-          DateTime nowStart = SqlDateTime.MinValue.Value;
-          DateTime nowEnd = SqlDateTime.MinValue.Value;
-          ;
-          string titleNow = string.Empty;
-          int idProgramNow = -1;
-          string episodeNameNow = string.Empty;
-          string seriesNumNow = string.Empty;
-          string episodeNumNow = string.Empty;
-          string episodePartNow = string.Empty;
-          nowAndNext = new NowAndNext(idChannel, nowStart, nowEnd, titleNow, titleNext, idProgramNow,
-                                      idProgramNext, episodeNameNow, episodeNameNext, seriesNumNow,
-                                      seriesNumNext, episodeNumNow, episodeNumNext, episodePartNow,
-                                      episodePartNext);
-        }
-        else
-        {
-          nowAndNext.TitleNext = titleNext;
-          nowAndNext.IdProgramNext = idProgramNext;
-          nowAndNext.EpisodeNameNext = episodeNameNext;
-          nowAndNext.SeriesNumNext = seriesNumNext;
-          nowAndNext.EpisodeNumNext = episodeNumNext;
-          nowAndNext.EpisodePartNext = episodePartNext;
-        }
+        nowAndNext.StartTimeNext = nextPrg.StartTime;
+        nowAndNext.EndTimeNext = nextPrg.EndTime;
+        nowAndNext.TitleNext = nextPrg.Title;
+        nowAndNext.DescriptionNext = nextPrg.Description;
+        nowAndNext.IdProgramNext = nextPrg.IdProgram;
+        nowAndNext.EpisodeNameNext = nextPrg.EpisodeName;
+        nowAndNext.SeriesNumNext = nextPrg.SeriesNum;
+        nowAndNext.EpisodeNumNext = nextPrg.EpisodeNum;
+        nowAndNext.EpisodePartNext = nextPrg.EpisodePart;
         progList[idChannel] = nowAndNext;
       }
     }
@@ -129,26 +106,19 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
       foreach (Program nowPrg in nowPrograms)
       {
         int idChannel = nowPrg.IdChannel;
-        string titleNext = string.Empty;
-        int idProgramNext = -1;
-        string episodeNameNext = string.Empty;
-        string seriesNumNext = string.Empty;
-        string episodeNumNext = string.Empty;
-        string episodePartNext = string.Empty;
-
-        DateTime nowStart = nowPrg.StartTime;
-        DateTime nowEnd = nowPrg.EndTime;
-        string titleNow = nowPrg.Title;
-        int idProgramNow = nowPrg.IdProgram;
-        string episodeNameNow = nowPrg.EpisodeName;
-        string seriesNumNow = nowPrg.SeriesNum;
-        string episodeNumNow = nowPrg.EpisodeNum;
-        string episodePartNow = nowPrg.EpisodePart;
-
-        var nowAndNext = new NowAndNext(idChannel, nowStart, nowEnd, titleNow, titleNext, idProgramNow,
-                                        idProgramNext, episodeNameNow, episodeNameNext, seriesNumNow,
-                                        seriesNumNext, episodeNumNow, episodeNumNext, episodePartNow,
-                                        episodePartNext);
+        NowAndNext nowAndNext = new NowAndNext
+        {
+          IdChannel = idChannel,
+          StartTimeNext = nowPrg.StartTime,
+          EndTimeNext = nowPrg.EndTime,
+          TitleNext = nowPrg.Title,
+          DescriptionNext = nowPrg.Description,
+          IdProgramNext = nowPrg.IdProgram,
+          EpisodeNameNext = nowPrg.EpisodeName,
+          SeriesNumNext = nowPrg.SeriesNum,
+          EpisodeNumNext = nowPrg.EpisodeNum,
+          EpisodePartNext = nowPrg.EpisodePart
+        };
         progList[idChannel] = nowAndNext;
       }
     }

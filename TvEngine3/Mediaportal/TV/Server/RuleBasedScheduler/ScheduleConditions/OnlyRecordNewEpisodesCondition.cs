@@ -23,7 +23,7 @@ namespace Mediaportal.TV.Server.RuleBasedScheduler.ScheduleConditions
     {      
       
       return baseQuery.Where(program => !(_skipEpisodes.Any(e => e.Equals(program.EpisodeNum))));      
-      //return baseQuery.Where(program => !DB.Recordings.Any(r => r.Title == program.Title && t.SeriesNum == program.SeriesNum && t.EpisodeNum == program.EpisodeNum));
+      //return baseQuery.Where(program => !DB.Recordings.Any(r => r.Title == program.Title && t.SeriesNumNow == program.SeriesNumNow && t.EpisodeNumNow == program.EpisodeNumNow));
     }
    
   }

@@ -565,9 +565,9 @@ namespace Mediaportal.TV.TvPlugin
           {
             if (!string.IsNullOrEmpty(currentNowAndNext.TitleNow))
             {
-              TVUtil.TitleDisplay(sbTmp, currentNowAndNext.TitleNow, currentNowAndNext.EpisodeName,
-                                              currentNowAndNext.SeriesNum,
-                                              currentNowAndNext.EpisodeNum, currentNowAndNext.EpisodePart);
+              TVUtil.TitleDisplay(sbTmp, currentNowAndNext.TitleNow, currentNowAndNext.EpisodeNameNow,
+                                              currentNowAndNext.SeriesNumNow,
+                                              currentNowAndNext.EpisodeNumNow, currentNowAndNext.EpisodePartNow);
             }
             else
             {
@@ -604,10 +604,10 @@ namespace Mediaportal.TV.TvPlugin
           if (hasNowNext)
           {
             // if the "Now" DB entry is in the future we set MinValue intentionally to avoid wrong percentage calculations
-            DateTime startTime = currentNowAndNext.NowStartTime;
+            DateTime startTime = currentNowAndNext.StartTimeNow;
             if (startTime != SqlDateTime.MinValue.Value)
             {
-              DateTime endTime = currentNowAndNext.NowEndTime;
+              DateTime endTime = currentNowAndNext.EndTimeNow;
               sb.Append(" - ");
               sb.Append(
                 CalculateProgress(startTime, endTime).ToString());
