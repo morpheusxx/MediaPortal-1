@@ -31,13 +31,12 @@ namespace Mediaportal.TV.Server.SetupTV.Dialogs
 {
   public partial class GroupSelectionForm : Form
   {
+    private readonly string _preselectedGroupName = string.Empty;
+    private readonly List<object> _groups = new List<object>();
 
+    readonly Dictionary<MediaTypeEnum, ICollection<string>> _knownGroupNames = new Dictionary<MediaTypeEnum, ICollection<string>>();
 
-
-    private string _preselectedGroupName = string.Empty;
-    private List<object> _groups = new List<object>();
-
-    private SelectionType _SelectionType = SelectionType.ForDeleting;
+    private SelectionType _selectionType = SelectionType.ForDeleting;
 
     public enum SelectionType
     {
@@ -47,12 +46,16 @@ namespace Mediaportal.TV.Server.SetupTV.Dialogs
 
     public SelectionType Selection
     {
-      get { return _SelectionType; }
-      set { _SelectionType = value; }
+      get { return _selectionType; }
+      set { _selectionType = value; }
     }
+
+    public MediaTypeEnum MediaType { get; set; }
 
     public GroupSelectionForm()
     {
+      _knownGroupNames[MediaTypeEnum.TV] = new HashSet<string> { TvConstants.TvGroupNames.Analog, TvConstants.TvGroupNames.DVBC, TvConstants.TvGroupNames.DVBS, TvConstants.TvGroupNames.DVBT };
+      _knownGroupNames[MediaTypeEnum.Radio] = new HashSet<string> { TvConstants.RadioGroupNames.Analog, TvConstants.RadioGroupNames.DVBC, TvConstants.RadioGroupNames.DVBS, TvConstants.RadioGroupNames.DVBT };
       InitializeComponent();
     }
 
@@ -75,71 +78,25 @@ namespace Mediaportal.TV.Server.SetupTV.Dialogs
       Close();
     }
 
-    public DialogResult ShowDialog(Type groupType)
+    protected override void OnShown(EventArgs e)
     {
-      LoadGroups(groupType);
-
-      return base.ShowDialog();
+      LoadGroups();
+      base.OnShown(e);
     }
 
-    public DialogResult ShowDialog(Type groupType, IWin32Window owner)
+    private void LoadGroups()
     {
-      LoadGroups(groupType);
-
-      return base.ShowDialog(owner);
-    }
-
-    private void LoadGroups(Type groupType)
-    {
-      if (groupType == typeof (ChannelGroup))
+      IList<ChannelGroup> tmp = ServiceAgents.Instance.ChannelGroupServiceAgent.ListAllChannelGroupsByMediaType(MediaType);
+      foreach (ChannelGroup group in tmp)
       {
-        IList<ChannelGroup> tmp = ServiceAgents.Instance.ChannelGroupServiceAgent.ListAllChannelGroupsByMediaType(MediaTypeEnum.TV);
-        foreach (ChannelGroup group in tmp)
+        bool isFixedGroupName = MediaType == MediaTypeEnum.TV && group.GroupName == TvConstants.TvGroupNames.AllChannels ||
+                                MediaType == MediaTypeEnum.Radio && group.GroupName == TvConstants.RadioGroupNames.AllChannels ||
+                                _selectionType == SelectionType.ForRenaming && _knownGroupNames[MediaType].Contains(group.GroupName);
+
+        if (!isFixedGroupName)
         {
-          bool isFixedGroupName = (
-                                    group.GroupName == TvConstants.TvGroupNames.AllChannels ||
-                                    (
-                                      _SelectionType == SelectionType.ForRenaming &&
-                                      (
-                                        group.GroupName == TvConstants.TvGroupNames.Analog ||
-                                        group.GroupName == TvConstants.TvGroupNames.DVBC ||
-                                        group.GroupName == TvConstants.TvGroupNames.DVBS ||
-                                        group.GroupName == TvConstants.TvGroupNames.DVBT)
-                                    )
-                                  );
-
-          if (!isFixedGroupName)
-          {
-            _groups.Add(group);
-          }
+          _groups.Add(group);
         }
-      }
-      else if (groupType == typeof (ChannelGroup))
-      {
-        IList<ChannelGroup> tmp = ServiceAgents.Instance.ChannelGroupServiceAgent.ListAllChannelGroupsByMediaType(MediaTypeEnum.Radio);
-        foreach (ChannelGroup group in tmp)
-        {
-          bool isFixedGroupName = (
-                                    group.GroupName == TvConstants.RadioGroupNames.AllChannels ||
-                                    (
-                                      _SelectionType == SelectionType.ForRenaming &&
-                                      (
-                                        group.GroupName == TvConstants.RadioGroupNames.Analog ||
-                                        group.GroupName == TvConstants.RadioGroupNames.DVBC ||
-                                        group.GroupName == TvConstants.RadioGroupNames.DVBS ||
-                                        group.GroupName == TvConstants.RadioGroupNames.DVBT)
-                                    )
-                                  );
-
-          if (!isFixedGroupName)
-          {
-            _groups.Add(group);
-          }
-        }
-      }
-      else
-      {
-        return;
       }
 
       try
