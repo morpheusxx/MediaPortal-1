@@ -124,6 +124,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
 
         ChannelIncludeRelationEnum includeRelations = ChannelIncludeRelationEnum.TuningDetails;
         includeRelations |= ChannelIncludeRelationEnum.ChannelMaps;
+        includeRelations |= ChannelIncludeRelationEnum.GroupMaps;
         IList<Channel> channels = ServiceAgents.Instance.ChannelServiceAgent.ListAllChannelsByMediaType(_mediaTypeEnum, includeRelations);
 
         foreach (Channel ch in channels)
@@ -328,7 +329,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
         for (int i = 0; i < mpListView1.Items.Count; ++i)
         {
           Channel ch = (Channel)mpListView1.Items[i].Tag;
-          mpListView1.Items[i].Checked = (ch.GroupMaps.Count > 1);
+          ch.GrabEpg = mpListView1.Items[i].Checked = (ch.GroupMaps.Count > 1);
           channels.Add(ch);
           // if count > 1 we assume that the channel has one or more custom group(s) associated with it.
         }
@@ -354,7 +355,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
         for (int i = 0; i < mpListView1.Items.Count; ++i)
         {
           Channel ch = (Channel)mpListView1.Items[i].Tag;
-          mpListView1.Items[i].Checked = (ch.GroupMaps.Count > 1 && ch.VisibleInGuide);
+          ch.GrabEpg = mpListView1.Items[i].Checked = (ch.GroupMaps.Count > 1 && ch.VisibleInGuide);
           channels.Add(ch);
           // if count > 1 we assume that the channel has one or more custom group(s) associated with it.
         }
@@ -379,8 +380,9 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
         ICollection<Channel> channels = new List<Channel>();
         for (int i = 0; i < mpListView1.Items.Count; ++i)
         {
-          mpListView1.Items[i].Checked = false;
-          channels.Add(mpListView1.Items[i].Tag as Channel);
+          Channel ch = (Channel)mpListView1.Items[i].Tag;
+          ch.GrabEpg = mpListView1.Items[i].Checked = false;
+          channels.Add(ch);
         }
         if (channels.Count > 0)
         {
