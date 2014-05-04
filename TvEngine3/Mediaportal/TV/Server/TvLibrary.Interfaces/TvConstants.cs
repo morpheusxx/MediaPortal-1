@@ -97,5 +97,18 @@ namespace Mediaportal.TV.Server.TVLibrary.Interfaces
     public const int SETTINGS_DEFAULTS_PRE_RECORD_INTERVAL = 7;
     public const string SETTINGS_KEY_POST_RECORD_INTERVAL = "postRecordInterval";
     public const int SETTINGS_DEFAULTS_POST_RECORD_INTERVAL = 10;
+
+    /// <summary>
+    /// {0} contains card number.
+    /// </summary>
+    public const string SETTINGS_KEY_CARD_ANALOG_COUNTRY = "analog{0}Country";
+    /// <summary>
+    /// {0} contains card number.
+    /// </summary>
+    public const string SETTINGS_KEY_CARD_ANALOG_SOURCE = "analog{0}Source";
+    /// <summary>
+    /// {0} contains card number.
+    /// </summary>
+    public const string SETTINGS_KEY_CARD_ANALOG_SIGNAL_GROUP = "analog{0}createsignalgroup";
   }
 }
