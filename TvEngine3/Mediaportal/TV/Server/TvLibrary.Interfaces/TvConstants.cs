@@ -87,4 +87,11 @@ namespace Mediaportal.TV.Server.TVLibrary.Interfaces
       public static string DVBS = "Digital satellite";
     }
   }
+
+  public class Consts
+  {
+    public const string SETTINGS_KEY_HOSTNAME = "hostname";
+    public const string SETTINGS_DEFAULTS_HOSTNAME = "localhost";
+    public const string SETTINGS_KEY_RTSPPORT = "rtspport";
+  }
 }
