@@ -93,5 +93,9 @@ namespace Mediaportal.TV.Server.TVLibrary.Interfaces
     public const string SETTINGS_KEY_HOSTNAME = "hostname";
     public const string SETTINGS_DEFAULTS_HOSTNAME = "localhost";
     public const string SETTINGS_KEY_RTSPPORT = "rtspport";
+    public const string SETTINGS_KEY_PRE_RECORD_INTERVAL = "preRecordInterval";
+    public const int SETTINGS_DEFAULTS_PRE_RECORD_INTERVAL = 7;
+    public const string SETTINGS_KEY_POST_RECORD_INTERVAL = "postRecordInterval";
+    public const int SETTINGS_DEFAULTS_POST_RECORD_INTERVAL = 10;
   }
 }

@@ -22,6 +22,7 @@ using System;
 using System.Collections.Generic;
 using MediaPortal.Dialogs;
 using MediaPortal.GUI.Library;
+using Mediaportal.TV.Server.TVLibrary.Interfaces;
 using MediaPortal.Util;
 using Mediaportal.TV.Server.TVControl.ServiceAgents;
 using Mediaportal.TV.Server.TVDatabase.Entities;
@@ -140,8 +141,8 @@ namespace Mediaportal.TV.TvPlugin
       dlg.Add(GUILocalizeStrings.Get(WeekEndTool.GetText(DayType.Record_WeekendDays)));
 
       Schedule rec = ScheduleFactory.CreateSchedule(selectedChannel.IdChannel, "", ScheduleFactory.MinSchedule, ScheduleFactory.MinSchedule);
-      rec.PreRecordInterval = ServiceAgents.Instance.SettingServiceAgent.GetValue("preRecordInterval", 5);
-      rec.PostRecordInterval = ServiceAgents.Instance.SettingServiceAgent.GetValue("postRecordInterval", 5);
+      rec.PreRecordInterval = ServiceAgents.Instance.SettingServiceAgent.GetValue(Consts.SETTINGS_KEY_PRE_RECORD_INTERVAL, Consts.SETTINGS_DEFAULTS_PRE_RECORD_INTERVAL);
+      rec.PostRecordInterval = ServiceAgents.Instance.SettingServiceAgent.GetValue(Consts.SETTINGS_KEY_POST_RECORD_INTERVAL, Consts.SETTINGS_DEFAULTS_POST_RECORD_INTERVAL);
       rec.ScheduleType = (int)ScheduleRecordingType.Once;
 
       DateTime dtNow = DateTime.Now;
@@ -268,8 +269,8 @@ namespace Mediaportal.TV.TvPlugin
 
       Schedule rec = ScheduleFactory.CreateSchedule(selectedChannel.IdChannel, "", ScheduleFactory.MinSchedule, ScheduleFactory.MinSchedule);
 
-      rec.PreRecordInterval = ServiceAgents.Instance.SettingServiceAgent.GetValue("preRecordInterval", 5);
-      rec.PostRecordInterval = ServiceAgents.Instance.SettingServiceAgent.GetValue("postRecordInterval", 5);
+      rec.PreRecordInterval = ServiceAgents.Instance.SettingServiceAgent.GetValue(Consts.SETTINGS_KEY_PRE_RECORD_INTERVAL, Consts.SETTINGS_DEFAULTS_PRE_RECORD_INTERVAL);
+      rec.PostRecordInterval = ServiceAgents.Instance.SettingServiceAgent.GetValue(Consts.SETTINGS_KEY_POST_RECORD_INTERVAL, Consts.SETTINGS_DEFAULTS_POST_RECORD_INTERVAL);
 
       dlg.DoModal(GetID);
       if (dlg.SelectedLabel == -1)

@@ -33,6 +33,7 @@ using Mediaportal.TV.Server.SetupControls.UserInterfaceControls;
 using Mediaportal.TV.Server.TVControl.ServiceAgents;
 using Mediaportal.TV.Server.TVDatabase.Entities;
 using Mediaportal.TV.Server.TVDatabase.Entities.Enums;
+using Mediaportal.TV.Server.TVLibrary.Interfaces;
 
 namespace Mediaportal.TV.Server.SetupTV.Dialogs
 {
@@ -230,8 +231,8 @@ namespace Mediaportal.TV.Server.SetupTV.Dialogs
 
     private void SetRecordingInterval()
     {
-      mpNumericTextBoxPreRec.Value = ServiceAgents.Instance.SettingServiceAgent.GetValue("preRecordInterval", 7);
-      mpNumericTextBoxPostRec.Value = ServiceAgents.Instance.SettingServiceAgent.GetValue("postRecordInterval", 10);
+      mpNumericTextBoxPreRec.Value = ServiceAgents.Instance.SettingServiceAgent.GetValue(Consts.SETTINGS_KEY_PRE_RECORD_INTERVAL, Consts.SETTINGS_DEFAULTS_PRE_RECORD_INTERVAL);
+      mpNumericTextBoxPostRec.Value = ServiceAgents.Instance.SettingServiceAgent.GetValue(Consts.SETTINGS_KEY_POST_RECORD_INTERVAL, Consts.SETTINGS_DEFAULTS_POST_RECORD_INTERVAL);
     }
 
     private void PopulateProgramFieldsComboBox()

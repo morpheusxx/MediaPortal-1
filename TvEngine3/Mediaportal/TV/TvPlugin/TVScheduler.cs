@@ -27,6 +27,7 @@ using MediaPortal.Dialogs;
 using MediaPortal.GUI.Library;
 using MediaPortal.Player;
 using MediaPortal.Profile;
+using Mediaportal.TV.Server.TVLibrary.Interfaces;
 using MediaPortal.Util;
 using Mediaportal.TV.Server.TVControl.ServiceAgents;
 using Mediaportal.TV.Server.TVDatabase.Entities;
@@ -1189,9 +1190,9 @@ namespace Mediaportal.TV.TvPlugin
 
     private void UpdateDescription()
     {
-      Schedule rec = ScheduleFactory.CreateSchedule(-1, "", ScheduleFactory.MinSchedule, ScheduleFactory.MinSchedule);      
-      rec.PreRecordInterval = ServiceAgents.Instance.SettingServiceAgent.GetValue("preRecordInterval", 5);
-      rec.PostRecordInterval = ServiceAgents.Instance.SettingServiceAgent.GetValue("postRecordInterval", 5);
+      Schedule rec = ScheduleFactory.CreateSchedule(-1, "", ScheduleFactory.MinSchedule, ScheduleFactory.MinSchedule);
+      rec.PreRecordInterval = ServiceAgents.Instance.SettingServiceAgent.GetValue(Consts.SETTINGS_KEY_PRE_RECORD_INTERVAL, Consts.SETTINGS_DEFAULTS_PRE_RECORD_INTERVAL);
+      rec.PostRecordInterval = ServiceAgents.Instance.SettingServiceAgent.GetValue(Consts.SETTINGS_KEY_POST_RECORD_INTERVAL, Consts.SETTINGS_DEFAULTS_POST_RECORD_INTERVAL);
       SetProperties(rec);
       GUIListItem pItem = GetItem(GetSelectedItemNo());
       if (pItem == null)
