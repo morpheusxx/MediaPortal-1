@@ -49,6 +49,9 @@
     <Reference Include="HttpServer">
       <HintPath>..\..\..\..\..\Packages\MediaPortal.HttpServer.1.0.0.0\lib\net40\HttpServer.dll</HintPath>
     </Reference>
+    <Reference Include="MediaPortal.Utilities">
+      <HintPath>..\..\..\..\..\Packages\MediaPortal.Utilities.2.0.0.1402\lib\net40\MediaPortal.Utilities.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Management" />
