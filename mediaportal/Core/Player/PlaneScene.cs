@@ -302,7 +302,10 @@ namespace MediaPortal.Player
         GUIGraphicsContext.InVmr9Render = false;
         if (VMR9Util.g_vmr9 != null)
         {
-          VMR9Util.g_vmr9.RestoreGuiForMadVr();
+          if (GUIGraphicsContext.MadVrRenderTargetVMR9 != null && !GUIGraphicsContext.MadVrRenderTargetVMR9.Disposed)
+          {
+            GUIGraphicsContext.DX9Device.SetRenderTarget(0, GUIGraphicsContext.MadVrRenderTargetVMR9);
+          }
         }
       }
     }
@@ -475,6 +478,17 @@ namespace MediaPortal.Player
             return _shouldRenderTexture;
           }
 
+          // Todo why add this hack for XySubFilter subtitle engine
+          if (GUIGraphicsContext.VideoRenderer == GUIGraphicsContext.VideoRendererType.madVR &&
+              _subEngineType.Equals("XySubFilter") && IsFullScreen() && g_Player.Player is VideoPlayerVMR9)
+          {
+            Size client = GUIGraphicsContext.form.ClientSize;
+            if (client.Width == videoSize.Width || _prevVideoWidth == videoSize.Width)
+            {
+              return false;
+            }
+          }
+
           //settings (position,size,aspect ratio) changed.
           //Store these settings and start calucating the new video window
           _rectPrevious = new Rectangle((int) x, (int) y, (int) nw, (int) nh);
@@ -568,10 +582,11 @@ namespace MediaPortal.Player
             _destinationRect.X, _destinationRect.Y, _destinationRect.X + _destinationRect.Width,
             _destinationRect.Y + _destinationRect.Height);
 
-          if (GUIGraphicsContext.VideoRenderer != GUIGraphicsContext.VideoRendererType.madVR)
-          {
-            Util.Utils.SwitchFocus();
-          }
+          // Comment that part because it steal focus of other window
+          //if (GUIGraphicsContext.VideoRenderer != GUIGraphicsContext.VideoRendererType.madVR)
+          //{
+          //  Util.Utils.SwitchFocus();
+          //}
 
           return true;
         }
@@ -668,9 +683,9 @@ namespace MediaPortal.Player
       return 0;
     }
 
-    public void RenderFrame(Int16 width, Int16 height, Int16 arWidth, Int16 arHeight, uint pSurface)
+    public void RenderFrame(Int16 width, Int16 height, Int16 arWidth, Int16 arHeight, IntPtr pSurface)
     {
-      IntPtr ptrMadVr = (IntPtr)pSurface;
+      IntPtr ptrMadVr = pSurface;
       Surface surfaceMadVr = new Surface(ptrMadVr);
       try
       {
@@ -929,20 +944,28 @@ namespace MediaPortal.Player
       }
     }
 
-    public void RestoreDeviceSurface(uint pSurfaceDevice)
+    public void RestoreDeviceSurface(IntPtr pSurfaceDevice)
     {
       if (GUIGraphicsContext.DX9Device != null)
       {
-        Surface surface = new Surface((IntPtr)pSurfaceDevice);
-        VMR9Util.g_vmr9.MadVrRenderTargetVMR9 = surface;
+        Surface surface = new Surface(pSurfaceDevice);
+        GUIGraphicsContext.MadVrRenderTargetVMR9 = surface;
       }
     }
 
-    public void SetRenderTarget(uint target)
+    public void DestroyHWnd(uint phWnd)
+    {
+      if (GUIGraphicsContext.DX9Device != null)
+      {
+        GUIGraphicsContext.HWnd = (IntPtr) phWnd;
+      }
+    }
+
+    public void SetRenderTarget(IntPtr target)
     {
       lock (_lockobj)
       {
-        Surface surface = new Surface((IntPtr) target);
+        Surface surface = new Surface(target);
         if (GUIGraphicsContext.DX9Device != null)
         {
           GUIGraphicsContext.DX9Device.SetRenderTarget(0, surface);

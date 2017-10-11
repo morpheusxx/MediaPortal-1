@@ -1569,6 +1569,7 @@ namespace MediaPortal.Player
       MovieEnded();
     }
 
+
     public override int Volume
     {
       get { return _volume; }

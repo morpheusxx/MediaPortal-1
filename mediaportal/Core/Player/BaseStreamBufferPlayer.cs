@@ -884,8 +884,8 @@ namespace MediaPortal.Player
       {
         CloseInterfaces();
       }
-      //CloseInterfaces();
     }
+
 
     /*
         public override int Speed
@@ -1616,6 +1616,7 @@ namespace MediaPortal.Player
     public override void Dispose()
     {
       CloseInterfaces();
+      _state = PlayState.Init;
     }
 
     #endregion

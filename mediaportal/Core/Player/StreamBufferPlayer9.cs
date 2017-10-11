@@ -461,5 +461,6 @@ namespace MediaPortal.Player
       }
       //CloseInterfaces();
     }
+
   }
 }
