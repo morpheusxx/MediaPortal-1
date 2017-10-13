@@ -442,7 +442,9 @@ namespace TvLibrary.Implementations.DVB
         }
 
         // An exception is thrown here if tuning fails for whatever reason.
-        _tuner.Tune(0, channel);
+        //_tuner.Tune(0, channel);
+        _tuner.Scan(0, channel);
+        _tuner.ResetSignalUpdate();
 
         // Enforce minimum scan time.
         DateTime start = DateTime.Now;
@@ -459,6 +461,7 @@ namespace TvLibrary.Implementations.DVB
           }
           remainingTime = _timeMinimum - (DateTime.Now - start);
         }
+        _tuner.ResetSignalUpdate();
 
         if (_seenTables == TableType.None)
         {
@@ -496,7 +499,7 @@ namespace TvLibrary.Implementations.DVB
             (_completeTables.HasFlag(TableType.Pat | TableType.Pmt) || isOutOfBandChannelScan) &&
             (_seenTables & tableMask) == (_completeTables & tableMask) &&
             // Any one of the L-VCT tables must be complete, or the S-VCT, NIT
-            // and NTT must be complete.
+            // and NTT must all be complete.
             (
               _completeTables.HasFlag(TableType.AtscLvctCable) ||
               _completeTables.HasFlag(TableType.AtscLvctTerrestrial) ||
@@ -507,7 +510,7 @@ namespace TvLibrary.Implementations.DVB
             )
           )
           {
-            Log.Log.Info("scan ATSC: scan completed, tables complete = [{0}]", _completeTables);
+            Log.Log.Info("scan ATSC: scan completed, tables seen = [{0}], tables complete = [{1}]", _seenTables, _completeTables);
             break;
           }
 
