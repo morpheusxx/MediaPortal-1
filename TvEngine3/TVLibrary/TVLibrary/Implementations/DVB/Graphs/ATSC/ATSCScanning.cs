@@ -234,10 +234,6 @@ namespace TvLibrary.Implementations.DVB
       // Constructed/derived groups.
       if (broadcastStandard != BroadcastStandard.Unknown)
       {
-        if (!groupNames[ChannelGroupType.BroadcastStandard].ContainsKey((ulong)broadcastStandard))
-        {
-          groupNames[ChannelGroupType.BroadcastStandard][(ulong)broadcastStandard] = broadcastStandard./*GetDescription()*/ToString();
-        }
         scannedChannel.Groups.Add(ChannelGroupType.BroadcastStandard, new List<ulong> { (ulong)broadcastStandard });
       }
       ATSCChannel atscChannel = channel as ATSCChannel;
@@ -533,13 +529,13 @@ namespace TvLibrary.Implementations.DVB
           }
 
           remainingTime = timeLimit - (DateTime.Now - start);
-          if (!_event.WaitOne(remainingTime))
+          if (remainingTime <= TimeSpan.Zero || !_event.WaitOne(remainingTime))
           {
             Log.Log.Error("scan ATSC: scan time limit reached, tables seen = [{0}], tables complete = [{1}]", _seenTables, _completeTables);
             break;
           }
         }
-        while (remainingTime > TimeSpan.Zero);
+        while (true);
 
         // Should we pull channel details from S-VCT or L-VCT?
         ushort transportStreamId = 0;
@@ -805,6 +801,26 @@ namespace TvLibrary.Implementations.DVB
     }
 
     /// <summary>
+    /// Initialise the set of group names for a scan.
+    /// </summary>
+    /// <returns>a dictionary of channel group names</returns>
+    private static IDictionary<ChannelGroupType, IDictionary<ulong, string>> InitialiseGroupNames()
+    {
+      Array broadcastStandards = System.Enum.GetValues(typeof(BroadcastStandard));
+      Dictionary<ulong, string> broadcastStandardGroupNames = new Dictionary<ulong, string>(broadcastStandards.Length);
+      foreach (System.Enum broadcastStandard in broadcastStandards)
+      {
+        // Careful! MaskDigital can cause problems because the top bit is set.
+        broadcastStandardGroupNames[(ulong)Convert.ToInt64(broadcastStandard)] = broadcastStandard./*GetDescription()*/ToString();
+      }
+      return new Dictionary<ChannelGroupType, IDictionary<ulong, string>>
+      {
+        { ChannelGroupType.BroadcastStandard, broadcastStandardGroupNames },
+        { ChannelGroupType.ChannelProvider, new Dictionary<ulong, string>(20) }
+      };
+    }
+
+    /// <summary>
     /// Collect the program information from an MPEG 2 transport stream.
     /// </summary>
     /// <param name="transportStreamId">The transport stream's identifier.</param>
@@ -894,7 +910,7 @@ namespace TvLibrary.Implementations.DVB
       Log.Log.Info("scan ATSC: S-VCT virtual channel count = {0}", channelCount);
 
       channels = new Dictionary<uint, ScannedChannel>(channelCount);
-      groupNames = new Dictionary<ChannelGroupType, IDictionary<ulong, string>>(5);
+      groupNames = InitialiseGroupNames();
       ignoredChannelNumbers = new HashSet<string>();
 
       int j = 1;
@@ -1408,7 +1424,7 @@ namespace TvLibrary.Implementations.DVB
       Log.Log.Info("scan ATSC: L-VCT channel count = {0}", channelCount);
 
       channels = new Dictionary<uint, ScannedChannel>(channelCount);
-      groupNames = new Dictionary<ChannelGroupType, IDictionary<ulong, string>>(5);
+      groupNames = InitialiseGroupNames();
       if (channelCount == 0)
       {
         return;
@@ -1511,7 +1527,7 @@ namespace TvLibrary.Implementations.DVB
             continue;
           }
 
-          Log.Log.Info("  {0, -3}: table ID = {1, -2}, section TSID = {2, -5}, map ID = {3, -5, carrier frequency = {4} Hz, modulation mode = {5}",
+          Log.Log.Info("  {0, -3}: table ID = {1, -2}, section TSID = {2, -5}, map ID = {3, -5}, carrier frequency = {4} Hz, modulation mode = {5}",
                         j++, tableId, sectionTransportStreamId, mapId, carrierFrequency, modulationMode);
 
           string shortName = DvbTextConverter.Convert(shortNameBuffer, shortNameBufferSize);

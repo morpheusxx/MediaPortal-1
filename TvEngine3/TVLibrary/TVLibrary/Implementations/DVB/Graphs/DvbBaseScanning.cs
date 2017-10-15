@@ -507,6 +507,7 @@ namespace TvLibrary.Implementations.DVB
         }
 
         // Wait for scanning to complete.
+        TableType standardScanTableMask = TableType.NitActual | TableType.Bat;
         do
         {
           if (_cancelScan)
@@ -527,13 +528,12 @@ namespace TvLibrary.Implementations.DVB
               _completeTables.HasFlag(TableType.SdtActual) ||
               (!_seenTables.HasFlag(TableType.SdtActual) && _completeTables.HasFlag(TableType.SdtOther))
             ) &&
-            // For a network scan all seen tables must be complete. Otherwise
-            // SDT and NIT other may be incomplete as long as SDT actual is
-            // complete. We assume that this condition will ensure NIT actual
-            // and/or BAT are complete if available.
+            // For a standard scan NIT actual and BAT must also be complete if
+            // they've been seen. Otherwise, for a network scan all seen tables
+            // must be complete.
             (
-              (isFastNetworkScan && _seenTables == _completeTables) ||
-              (!isFastNetworkScan && _seenTables == (_completeTables | TableType.SdtOther | TableType.NitOther))
+              (!isFastNetworkScan && (_seenTables & standardScanTableMask) == (_completeTables & standardScanTableMask)) ||
+              (isFastNetworkScan && _seenTables == _completeTables)
             ) &&
             // Freesat tables must all be complete... or not seen at all.
             (
@@ -547,13 +547,13 @@ namespace TvLibrary.Implementations.DVB
           }
 
           remainingTime = _timeLimitSingleTransmitter - (DateTime.Now - start);
-          if (!_event.WaitOne(remainingTime))
+          if (remainingTime <= TimeSpan.Zero || !_event.WaitOne(remainingTime))
           {
             Log.Log.Error("scan DVB: scan time limit reached, tables seen = [{0}], tables complete = [{1}]", _seenTables, _completeTables);
             break;
           }
         }
-        while (remainingTime > TimeSpan.Zero);
+        while (true);
 
         // Read MPEG 2 TS program information.
         ushort transportStreamId;
@@ -780,13 +780,13 @@ namespace TvLibrary.Implementations.DVB
           }
 
           remainingTime = _timeLimitNetworkInformation - (DateTime.Now - start);
-          if (!_event.WaitOne(remainingTime))
+          if (remainingTime <= TimeSpan.Zero || !_event.WaitOne(remainingTime))
           {
             Log.Log.Error("scan DVB: NIT scan time limit reached, tables seen = [{0}], tables complete = [{1}]", _seenTables, _completeTables);
             break;
           }
         }
-        while (remainingTime > TimeSpan.Zero);
+        while (true);
 
         /*transmitters = CollectTransmitters(channel, _grabberDvb);
         if (_grabberFreesat != null)
@@ -1640,10 +1640,10 @@ namespace TvLibrary.Implementations.DVB
           List<ulong> freeviewBouquetIds = new List<ulong>(bouquetIdCount);
           for (byte b = 0; b < bouquetIdCount; b++)
           {
-            ushort bouquetId = bouquetIds[b];
+            BouquetFreeviewSatellite bouquetId = (BouquetFreeviewSatellite)bouquetIds[b];
             if (System.Enum.IsDefined(typeof(BouquetFreeviewSatellite), bouquetId))
             {
-              freeviewBouquetIds.Add(bouquetId);
+              freeviewBouquetIds.Add((ulong)bouquetId);
             }
           }
           if (freeviewBouquetIds.Count > 0)
@@ -2896,13 +2896,13 @@ namespace TvLibrary.Implementations.DVB
         }
 
         remainingTime = _timeLimitSingleTransmitter - (DateTime.Now - start);
-        if (!_event.WaitOne(remainingTime))
+        if (remainingTime <= TimeSpan.Zero || !_event.WaitOne(remainingTime))
         {
           Log.Log.Error("scan DVB: scan time limit reached, tables seen = [{0}], tables complete = [{1}]", _seenTables, _completeTables);
           break;
         }
       }
-      while (remainingTime > TimeSpan.Zero);
+      while (true);
 
       ushort networkPid;
       ushort programCount;
