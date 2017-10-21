@@ -213,6 +213,7 @@ namespace TvLibrary.Implementations.DVB
       public bool IsEncrypted;
       public bool IsEncryptionDetectionAccurate;
       public bool IsThreeDimensional;
+      public bool IsThreeDimensionalDetectionAccurate;
     }
 
     #region variables
@@ -1019,6 +1020,7 @@ namespace TvLibrary.Implementations.DVB
       bool isEncrypted;
       bool isEncryptionDetectionAccurate;
       bool isThreeDimensional;
+      bool isThreeDimensionalDetectionAccurate;
       byte audioLanguageCount = COUNT_AUDIO_LANGUAGES;
       Iso639Code[] audioLanguages = new Iso639Code[audioLanguageCount];
       byte subtitlesLanguageCount = COUNT_SUBTITLES_LANGUAGES;
@@ -1035,16 +1037,17 @@ namespace TvLibrary.Implementations.DVB
         if (!_grabberMpeg.GetProgramByIndex(i, out programNumber, out pmtPid, out isPmtReceived,
                                             out streamCountVideo, out streamCountAudio,
                                             out isEncrypted, out isEncryptionDetectionAccurate,
-                                            out isThreeDimensional,
+                                            out isThreeDimensional, out isThreeDimensionalDetectionAccurate,
                                             audioLanguages, ref audioLanguageCount,
                                             subtitlesLanguages, ref subtitlesLanguageCount))
         {
           Log.Log.Error("scan DVB: failed to get MPEG 2 program, index = {0}", i);
           break;
         }
-        Log.Log.Info("  {0, -2}: program number = {1, -5}, PMT PID = {2, -5}, is PMT received = {3, -5}, video stream count = {4}, audio stream count = {5}, is encrypted = {6, -5} (accurate = {7, -5}), is 3D = {8, -5}",
+        Log.Log.Info("  {0, -2}: program number = {1, -5}, PMT PID = {2, -5}, is PMT received = {3, -5}, video stream count = {4}, audio stream count = {5}, is encrypted = {6, -5} (accurate = {7, -5}), is 3D = {8, -5} (accurate = {9, -5})",
                       i + 1, programNumber, pmtPid, isPmtReceived, streamCountVideo, streamCountAudio,
-                      isEncrypted, isEncryptionDetectionAccurate, isThreeDimensional);
+                      isEncrypted, isEncryptionDetectionAccurate,
+                      isThreeDimensional, isThreeDimensionalDetectionAccurate);
         Log.Log.Debug("    audio language count = {0}, languages = {1}", audioLanguageCount, string.Join(", ", audioLanguages.Take(audioLanguageCount)));
         Log.Log.Debug("    subtitles language count = {0}, languages = {1}", subtitlesLanguageCount, string.Join(", ", subtitlesLanguages.Take(subtitlesLanguageCount)));
 
@@ -1067,6 +1070,7 @@ namespace TvLibrary.Implementations.DVB
           program.IsEncrypted = isEncrypted;
           program.IsEncryptionDetectionAccurate = isEncryptionDetectionAccurate;
           program.IsThreeDimensional = isThreeDimensional;
+          program.IsThreeDimensionalDetectionAccurate = isThreeDimensionalDetectionAccurate;
         }
         programs[((uint)transportStreamId << 16) | programNumber] = program;
       }
@@ -1135,6 +1139,12 @@ namespace TvLibrary.Implementations.DVB
       }
 
       bool isSingleProgramTransportStream = tuningChannel is /*ChannelStream*/DVBIPChannel && programs.Count == 1;
+      int? longitude = null;
+      /*IChannelSatellite satelliteChannel = tuningChannel as IChannelSatellite;
+      if (satelliteChannel != null)
+      {
+        longitude = satelliteChannel.Longitude;
+      }*/
 
       int j = 1;
       byte tableId;
@@ -1274,17 +1284,25 @@ namespace TvLibrary.Implementations.DVB
         Log.Log.Info("    name count = {0, -2}, service names = [{1}], provider names = [{2}], languages = [{3}]", serviceNameCount, string.Join(", ", serviceNames), string.Join(", ", providerNames), string.Join(", ", nameLanguages));
 
         HashSet<ushort> distinctLcns = new HashSet<ushort>();
-        ushort lcn = 0;
+        ushort preferredLcn = 0;
         for (ushort n = 0; n < logicalChannelNumberCount; n++)
         {
           ushort tempLcn = logicalChannelNumbers[n].ChannelNumber;
           if (tempLcn != 0 && tempLcn != 0xffff)
           {
-            lcn = tempLcn;
+            preferredLcn = tempLcn;
             distinctLcns.Add(tempLcn);
           }
         }
         Log.Log.Info("    LCN count = {0, -3}, distinct values = [{1}], Dish sub-channel number = {2}", logicalChannelNumberCount, string.Join(", ", distinctLcns), dishSubChannelNumber);
+        if (distinctLcns.Count > 1)
+        {
+          for (ushort n = 0; n < logicalChannelNumberCount; n++)
+          {
+            LogicalChannelNumber lcn = logicalChannelNumbers[n];
+            Log.Log.Info("      {0, -2}: LCN = {1, -3}, table ID = {2, -2}, table ID ext. = {3, -5}, descriptor tag = {4, -2}, region ID = {5, -5}", n + 1, lcn.ChannelNumber, lcn.TableId, lcn.TableIdExtension, lcn.DescriptorTag, lcn.RegionId);
+          }
+        }
 
         Log.Log.Info("    EIT schedule = {0, -5}, EIT P/F = {1, -5}, free CA mode = {2, -5}, visible in guide = {3, -5}, running status = {4}, service type = {5}",
                       eitScheduleFlag, eitPresentFollowingFlag, freeCaMode, visibleInGuide, runningStatus, serviceType);
@@ -1324,46 +1342,50 @@ namespace TvLibrary.Implementations.DVB
           Log.Log.Debug("    unavailable in cell count      = {0}, cells      = [{1}]", unavailableInCellCount, string.Join(", ", unavailableInCells.Take(unavailableInCellCount)));
         }
 
+        if (originalNetworkId == 64511) // Sky Italia
+        {
+          longitude = 130;
+        }
         IDictionary<ChannelGroupType, ICollection<ulong>> groups = new Dictionary<ChannelGroupType, ICollection<ulong>>(20);
         if (networkIdCount > 0)
         {
-          groups.Add(ChannelGroupType.DvbNetwork, BuildGroup(grabber, groupNames, ChannelGroupType.DvbNetwork, networkIds, networkIdCount));
+          groups.Add(ChannelGroupType.DvbNetwork, BuildGroup(grabber, groupNames, ChannelGroupType.DvbNetwork, networkIds, networkIdCount, longitude));
         }
         if (bouquetIdCount > 0)
         {
-          groups.Add(ChannelGroupType.DvbBouquet, BuildGroup(grabber, groupNames, ChannelGroupType.DvbBouquet, bouquetIds, bouquetIdCount));
+          groups.Add(ChannelGroupType.DvbBouquet, BuildGroup(grabber, groupNames, ChannelGroupType.DvbBouquet, bouquetIds, bouquetIdCount, longitude));
         }
         if (targetRegionIdCount > 0)
         {
-          groups.Add(ChannelGroupType.DvbTargetRegion, BuildGroup(grabber, groupNames, ChannelGroupType.DvbTargetRegion, targetRegionIds, targetRegionIdCount));
+          groups.Add(ChannelGroupType.DvbTargetRegion, BuildGroup(grabber, groupNames, ChannelGroupType.DvbTargetRegion, targetRegionIds, targetRegionIdCount, longitude));
         }
         if (freesatRegionIdCount > 0)
         {
-          groups.Add(ChannelGroupType.FreesatRegion, BuildGroup(grabber, groupNames, ChannelGroupType.FreesatRegion, freesatRegionIds, freesatRegionIdCount));
+          groups.Add(ChannelGroupType.FreesatRegion, BuildGroup(grabber, groupNames, ChannelGroupType.FreesatRegion, freesatRegionIds, freesatRegionIdCount, longitude));
         }
         if (openTvRegionIdCount > 0)
         {
-          groups.Add(ChannelGroupType.OpenTvRegion, BuildGroup(grabber, groupNames, ChannelGroupType.OpenTvRegion, openTvRegionIds, openTvRegionIdCount));
+          groups.Add(ChannelGroupType.OpenTvRegion, BuildGroup(grabber, groupNames, ChannelGroupType.OpenTvRegion, openTvRegionIds, openTvRegionIdCount, longitude));
         }
         if (freesatChannelCategoryIdCount > 0)
         {
-          groups.Add(ChannelGroupType.FreesatChannelCategory, BuildGroup(grabber, groupNames, ChannelGroupType.FreesatChannelCategory, freesatChannelCategoryIds, freesatChannelCategoryIdCount));
+          groups.Add(ChannelGroupType.FreesatChannelCategory, BuildGroup(grabber, groupNames, ChannelGroupType.FreesatChannelCategory, freesatChannelCategoryIds, freesatChannelCategoryIdCount, longitude));
         }
         if (mediaHighwayChannelCategoryIdCount > 0)
         {
-          groups.Add(ChannelGroupType.MediaHighwayChannelCategory, BuildGroup(grabber, groupNames, ChannelGroupType.MediaHighwayChannelCategory, mediaHighwayChannelCategoryIds, mediaHighwayChannelCategoryIdCount));
+          groups.Add(ChannelGroupType.MediaHighwayChannelCategory, BuildGroup(grabber, groupNames, ChannelGroupType.MediaHighwayChannelCategory, mediaHighwayChannelCategoryIds, mediaHighwayChannelCategoryIdCount, longitude));
         }
         if (norDigChannelListIdCount > 0)
         {
-          groups.Add(ChannelGroupType.NorDigChannelList, BuildGroup(grabber, groupNames, ChannelGroupType.NorDigChannelList, norDigChannelListIds, norDigChannelListIdCount));
+          groups.Add(ChannelGroupType.NorDigChannelList, BuildGroup(grabber, groupNames, ChannelGroupType.NorDigChannelList, norDigChannelListIds, norDigChannelListIdCount, longitude));
         }
         if (openTvChannelCategoryIdCount > 0)
         {
-          groups.Add(ChannelGroupType.OpenTvChannelCategory, BuildGroup(grabber, groupNames, ChannelGroupType.OpenTvChannelCategory, openTvChannelCategoryIds, openTvChannelCategoryIdCount));
+          groups.Add(ChannelGroupType.OpenTvChannelCategory, BuildGroup(grabber, groupNames, ChannelGroupType.OpenTvChannelCategory, openTvChannelCategoryIds, openTvChannelCategoryIdCount, longitude));
         }
         if (virginMediaChannelCategoryId > 0)
         {
-          groups.Add(ChannelGroupType.VirginMediaChannelCategory, BuildGroup(grabber, groupNames, ChannelGroupType.VirginMediaChannelCategory, new byte[1] { virginMediaChannelCategoryId }, 1));
+          groups.Add(ChannelGroupType.VirginMediaChannelCategory, BuildGroup(grabber, groupNames, ChannelGroupType.VirginMediaChannelCategory, new byte[1] { virginMediaChannelCategoryId }, 1, longitude));
         }
 
         if (dishNetworkMarketId > 0)
@@ -1491,14 +1513,14 @@ namespace TvLibrary.Implementations.DVB
         string lcnString;
         if (distinctLcns.Count > 1)
         {
-          lcn = SelectPreferredChannelNumber(logicalChannelNumbers, logicalChannelNumberCount);
+          preferredLcn = SelectPreferredChannelNumber(logicalChannelNumbers, logicalChannelNumberCount);
           dishSubChannelNumber = 0;
         }
         if (
           distinctLcns.Count > 0 &&
           (
-            (dishSubChannelNumber != 0 && LcnSyntax.Create(lcn, out lcnString, dishSubChannelNumber)) ||
-            LcnSyntax.Create(lcn, out lcnString)
+            (dishSubChannelNumber != 0 && LcnSyntax.Create(preferredLcn, out lcnString, dishSubChannelNumber)) ||
+            LcnSyntax.Create(preferredLcn, out lcnString)
           )
         )
         {
@@ -1506,11 +1528,11 @@ namespace TvLibrary.Implementations.DVB
           {
             if (dishSubChannelNumber == 0)
             {
-              newDvbChannel.LogicalChannelNumber = lcn;
+              newDvbChannel.LogicalChannelNumber = preferredLcn;
             }
             else
             {
-              newDvbChannel.LogicalChannelNumber = (lcn * 1000) + dishSubChannelNumber;
+              newDvbChannel.LogicalChannelNumber = (preferredLcn * 1000) + dishSubChannelNumber;
             }
           }
           //newChannel.LogicalChannelNumber = lcnString;
@@ -1544,9 +1566,9 @@ namespace TvLibrary.Implementations.DVB
         }
         //newChannel.IsHighDefinition = isHighDefinition && !isStandardDefinition;
         //newChannel.IsThreeDimensional = isThreeDimensional;
-        if (program != null)
+        if (program != null && program.IsThreeDimensionalDetectionAccurate)
         {
-          //newChannel.IsThreeDimensional |= program.IsThreeDimensional;
+          //newChannel.IsThreeDimensional = program.IsThreeDimensional;
         }
 
         if (newDvbChannel != null)
@@ -1730,7 +1752,7 @@ namespace TvLibrary.Implementations.DVB
     /// <param name="groupIds">The channel group identifiers. This array is usually larger than <paramref name="groupCount"/>.</param>
     /// <param name="groupCount">The number of valid <paramref name="groupIds">channel group identifiers</paramref>.</param>
     /// <returns>a list of the valid channel group identifiers from <paramref name="groupIds"/></returns>
-    private static List<ulong> BuildGroup(IGrabberSiDvb grabber, IDictionary<ChannelGroupType, IDictionary<ulong, string>> groupNames, ChannelGroupType groupType, Array groupIds, byte groupCount)
+    private static List<ulong> BuildGroup(IGrabberSiDvb grabber, IDictionary<ChannelGroupType, IDictionary<ulong, string>> groupNames, ChannelGroupType groupType, Array groupIds, byte groupCount, int? satelliteLongitude)
     {
       List<ulong> groupIdList = new List<ulong>(groupCount);
       List<string> logNames = new List<string>(groupCount);
@@ -1820,22 +1842,39 @@ namespace TvLibrary.Implementations.DVB
               ushort bouquetId = (ushort)(groupId >> 16);
               ushort regionId = (ushort)groupId;
               groupIdString = string.Format("{0}/{1}", bouquetId, regionId);
-              if (string.Equals(countryName, "New Zealand"))
+              if (
+                (satelliteLongitude.HasValue && satelliteLongitude.Value == 1600) ||
+                (!satelliteLongitude.HasValue && string.Equals(countryName, "New Zealand"))
+              )
               {
                 nameString = ((RegionOpenTvSkyNz)regionId)./*GetDescription()*/ToString();
               }
-              else if (string.Equals(countryName, "Australia"))
+              else if (
+                (satelliteLongitude.HasValue && satelliteLongitude.Value == 1560) ||
+                (!satelliteLongitude.HasValue && string.Equals(countryName, "Australia"))
+              )
               {
-                nameString = RegionOpenTvFoxtel.GetValue(regionId, (BouquetOpenTvFoxtel)bouquetId).Region;
+                RegionOpenTvFoxtel region = RegionOpenTvFoxtel.GetValue(regionId, (BouquetOpenTvFoxtel)bouquetId);
+                if (region != null)
+                {
+                  nameString = region.Region;
+                }
               }
-              else if (string.Equals(countryName, "Italy"))
+              else if (
+                (satelliteLongitude.HasValue && satelliteLongitude.Value == 130) ||
+                (!satelliteLongitude.HasValue && string.Equals(countryName, "Italy"))
+              )
               {
                 // not known
               }
               else
               {
-                // assume Sky UK
-                nameString = ((RegionOpenTvSkyUk)regionId).ToString();
+                // assume Sky UK (28.2E)
+                RegionOpenTvSkyUk region = (RegionOpenTvSkyUk)regionId;
+                if (region != null)
+                {
+                  nameString = region.ToString();
+                }
               }
             }
             else if (groupType == ChannelGroupType.VirginMediaChannelCategory)
@@ -1925,21 +1964,30 @@ namespace TvLibrary.Implementations.DVB
         groupIdList.Add(categoryId);
         string categoryName;
         bool gotName;
-        if (string.Equals(countryName, "Australia"))
+        if (
+          (satelliteLongitude.HasValue && satelliteLongitude.Value == 1560) ||
+          (!satelliteLongitude.HasValue && string.Equals(countryName, "Australia"))
+        )
         {
           gotName = CHANNEL_CATEGORY_NAMES_OPENTV_FOXTEL.TryGetValue(categoryId, out categoryName);
         }
-        else if (string.Equals(countryName, "Italy"))
+        else if (
+          (satelliteLongitude.HasValue && satelliteLongitude.Value == 130) ||
+          (!satelliteLongitude.HasValue && string.Equals(countryName, "Italy"))
+        )
         {
           gotName = CHANNEL_CATEGORY_NAMES_OPENTV_SKY_IT.TryGetValue(categoryId, out categoryName);
         }
-        else if (string.Equals(countryName, "New Zealand"))
+        else if (
+          (satelliteLongitude.HasValue && satelliteLongitude.Value == 1600) ||
+          (!satelliteLongitude.HasValue && string.Equals(countryName, "New Zealand"))
+        )
         {
           gotName = CHANNEL_CATEGORY_NAMES_OPENTV_SKY_NZ.TryGetValue(categoryId, out categoryName);
         }
         else
         {
-          // assume Sky UK
+          // assume Sky UK (28.2E)
           gotName = CHANNEL_CATEGORY_NAMES_OPENTV_SKY_UK.TryGetValue(categoryId, out categoryName);
         }
         if (!gotName)
@@ -2045,6 +2093,17 @@ namespace TvLibrary.Implementations.DVB
         byte lcnPriority = 1;
         if (lcn.TableId == 0x4a)
         {
+          if (
+            lcn.DescriptorTag == 0x82 &&
+            (lcn.TableIdExtension >= 0x20 && lcn.TableIdExtension <= 0x22) &&
+            logicalChannelNumberCount > 1
+          )
+          {
+            // Sogecable/Movistar+ (Astra 19.2E): descriptor 0x82 contains the
+            // LCN of the HD simulcast of the channel. Ignore it.
+            continue;
+          }
+
           if (lcn.TableIdExtension == provider1BouquetId)
           {
             if (lcn.RegionId == provider1RegionId)
@@ -2068,8 +2127,11 @@ namespace TvLibrary.Implementations.DVB
             }
           }
         }
-        if (_preferHighDefinitionChannelNumbers && lcn.IsHighDefinition)
+        if (_preferHighDefinitionChannelNumbers && lcn.DescriptorTag == 0x88)
         {
+          // HD simulcast LCN descriptor: regular NorDig LCN descriptors assign
+          // the LCNs for an SD-capable receiver. The HD simulcast LCN
+          // descriptor provides an alternative LCN for an HD-capable receiver.
           lcnPriority++;
         }
 
