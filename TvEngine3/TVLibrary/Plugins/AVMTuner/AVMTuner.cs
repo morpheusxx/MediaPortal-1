@@ -344,7 +344,7 @@ namespace AVMTuner
         {
           if (_stopScanning) return;
           index++;
-          float percent = ((float)(index)) / _playlist.Count;
+          float percent = (float)(index) / _playlist.Count;
           percent *= 100f;
           if (percent > 100f) percent = 100f;
           progressBar1.Value = (int)percent;
@@ -356,7 +356,7 @@ namespace AVMTuner
           string line = string.Format("{0}- {1} - {2}", 1 + index, tuneChannel.Name, tuneChannel.Url);
           ListViewItem item = listViewStatus.Items.Add(new ListViewItem(line));
           item.EnsureVisible();
-          RemoteControl.Instance.Tune(ref user, tuneChannel, -1);
+          //RemoteControl.Instance.Tune(ref user, tuneChannel, -1);
           var channels = RemoteControl.Instance.Scan(_cardNumber, tuneChannel);
           UpdateStatus();
           if (channels == null || channels.Length == 0)
@@ -395,6 +395,24 @@ namespace AVMTuner
             {
               channel.Name = name;
             }
+
+            // AVM tuners don't have support for descrambling, so ignore any non-FTA channels here
+            if (!channel.FreeToAir)
+              continue;
+
+            // Replace the url by the correct channel url (tuning used full transponder with all channel pids)
+            var pmtPid = channel.PmtPid;
+            var freq = GetFrequency(url);
+            string streamUrl;
+            string urlKey = string.Format("{0}.{1}", freq, pmtPid);
+            if (!_tuningUrls.TryGetValue(urlKey, out streamUrl))
+            {
+              item.Text = "Skipping channel that was not part of the playlist.";
+              continue;
+            }
+
+            channel.Url = streamUrl;
+
             bool exists;
             //Check if we already have this tuningdetail. According to DVB-IP specifications there are two ways to identify DVB-IP
             //services: one ONID + SID based, the other domain/URL based. At this time we don't fully and properly implement the DVB-IP
@@ -440,21 +458,6 @@ namespace AVMTuner
             if (checkBoxCreateGroups.Checked)
             {
               AddToGroup(layer, dbChannel, channel.Provider);
-            }
-
-            // Replace the url by the correct channel url (tuning used full transponder with all channel pids)
-            var pmtPid = channel.PmtPid;
-            var freq = GetFrequency(url);
-            string streamUrl;
-            string urlKey = string.Format("{0}.{1}", freq, pmtPid);
-            if (_tuningUrls.TryGetValue(urlKey, out streamUrl))
-            {
-              channel.Url = streamUrl;
-            }
-            else
-            {
-              item.Text = "Skipping channel that was not part of the playlist.";
-              continue;
             }
 
             if (currentDetail == null)
