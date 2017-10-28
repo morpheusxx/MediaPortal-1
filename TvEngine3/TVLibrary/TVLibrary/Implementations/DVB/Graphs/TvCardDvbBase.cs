@@ -4591,6 +4591,7 @@ namespace TvLibrary.Implementations.DVB
       byte targetRegionIdCount = 0;
       byte freesatRegionIdCount = 0;
       byte openTvRegionIdCount = 0;
+      byte cyfrowyPolsatChannelCategoryId;
       byte freesatChannelCategoryIdCount = 0;
       byte mediaHighwayChannelCategoryIdCount = 0;
       byte openTvChannelCategoryIdCount = 0;
@@ -4622,6 +4623,7 @@ namespace TvLibrary.Implementations.DVB
                                 null, ref targetRegionIdCount,
                                 null, ref freesatRegionIdCount,
                                 null, ref openTvRegionIdCount,
+                                out cyfrowyPolsatChannelCategoryId,
                                 null, ref freesatChannelCategoryIdCount,
                                 null, ref mediaHighwayChannelCategoryIdCount,
                                 null, ref openTvChannelCategoryIdCount,
@@ -5305,7 +5307,10 @@ namespace TvLibrary.Implementations.DVB
         return;
       }
 
-      if (string.Equals(itemName, "episodeid", StringComparison.InvariantCultureIgnoreCase))
+      if (
+        string.Equals(itemName, "episodeid", StringComparison.InvariantCultureIgnoreCase) ||
+        string.Equals(itemName, "Contentid_ref", StringComparison.InvariantCultureIgnoreCase)
+      )
       {
         // EPG Collector: episodeid (case unknown)
         // StarHub TV (Singapore DVB-C): Contentid_ref; examples "T0019319077", "TA0018483678"
