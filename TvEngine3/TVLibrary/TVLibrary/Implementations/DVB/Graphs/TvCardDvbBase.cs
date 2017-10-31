@@ -6254,6 +6254,12 @@ namespace TvLibrary.Implementations.DVB
         }
       }
 
+      channelCount = grabber.GetSvctVirtualChannelCount();
+      if (channelCount == 0)
+      {
+        return ids;
+      }
+
       TransmissionMedium transmissionMedium;
       ushort vctId;
       Iso639Code mapNameLanguage;
