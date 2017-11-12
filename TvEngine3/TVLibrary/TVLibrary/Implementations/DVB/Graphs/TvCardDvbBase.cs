@@ -20,7 +20,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -28,6 +27,7 @@ using DirectShowLib;
 using DirectShowLib.BDA;
 using Mediaportal.TV.Server.Common.Types.Enum;
 using Mediaportal.TV.Server.TVLibrary.Implementations.Atsc.Enum;
+using Mediaportal.TV.Server.TVLibrary.Implementations.Dvb;
 using Mediaportal.TV.Server.TVLibrary.Implementations.Scte;
 using Mediaportal.TV.Server.TVLibrary.Interfaces.Analyzer;
 using TvDatabase;
@@ -4811,7 +4811,7 @@ namespace TvLibrary.Implementations.DVB
               }
 
               // Dish Network
-              if (originalNetworkId >= 4097 && originalNetworkId <= 4107)
+              if (OriginalNetwork.IsDishNetwork(originalNetworkId))
               {
                 description = ParseDishDescription(description, program);
               }
@@ -5384,11 +5384,8 @@ namespace TvLibrary.Implementations.DVB
       byte level1Id = (byte)(contentTypeId >> 12);
       if (level1Id == 0xf)  // user defined
       {
-        // Echostar Communications (Dish, Bell TV) - refer to http://www.dvbservices.com/identifiers/original_network_id&tab=table
-        if (
-          (originalNetworkId >= 0x1001 && originalNetworkId <= 0x100b) ||
-          (originalNetworkId >= 0x1700 && originalNetworkId <= 0x1713)
-        )
+        // Echostar Communications (Dish, Bell TV)
+        if (OriginalNetwork.IsDishNetwork(originalNetworkId) || OriginalNetwork.IsEchostar(originalNetworkId))
         {
           return GetDishBevContentTypeDescription(contentTypeId);
         }
@@ -5396,7 +5393,7 @@ namespace TvLibrary.Implementations.DVB
       else if (contentTypeId >> 8 == 0)
       {
         // Virgin Media, UK DVB-C
-        if (originalNetworkId == 0xf020)
+        if (OriginalNetwork.IsVirginMediaUk(originalNetworkId))
         {
           return GetVirginMediaContentTypeDescription(contentTypeId);
         }
