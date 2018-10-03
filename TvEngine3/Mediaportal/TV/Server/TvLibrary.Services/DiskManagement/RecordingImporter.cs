@@ -47,7 +47,7 @@ namespace Mediaportal.TV.Server.TVLibrary.DiskManagement
         return;
       }
 
-      IList<Channel> dbChannels = ChannelManagement.ListAllChannels(ChannelIncludeRelationEnum.None);
+      IList<Channel> dbChannels = ChannelManagement.ListAllChannels(ChannelRelation.None);
       Dictionary<string, IList<Channel>> channelsByName = new Dictionary<string, IList<Channel>>(dbChannels.Count);
       IList<Channel> channels;
       foreach (Channel c in dbChannels)

@@ -21,12 +21,14 @@
 using System.Collections.Generic;
 using System.ServiceModel;
 using Mediaportal.TV.Server.Common.Types.Enum;
+using Mediaportal.TV.Server.TVDatabase.Entities;
 using Mediaportal.TV.Server.TVDatabase.Presentation;
 using Mediaportal.TV.Server.TVLibrary.Interfaces;
 using Mediaportal.TV.Server.TVLibrary.Interfaces.Channel;
 using Mediaportal.TV.Server.TVLibrary.Interfaces.Implementations;
 using Mediaportal.TV.Server.TVLibrary.Interfaces.Implementations.Channel;
 using Mediaportal.TV.Server.TVLibrary.Interfaces.Tuner.Diseqc.Enum;
+using Mediaportal.TV.Server.TVLibrary.Interfaces.TunerExtension;
 using Mediaportal.TV.Server.TVService.Interfaces;
 using Mediaportal.TV.Server.TVService.Interfaces.Enums;
 using Mediaportal.TV.Server.TVService.Interfaces.Services;
@@ -727,9 +729,10 @@ namespace Mediaportal.TV.Server.TVControl.Interfaces.Services
     /// Registers a ci menu callback handler for user interaction
     /// </summary>
     /// <param name="cardId"></param>
+    /// <param name="callbackHandler"></param>
     /// <returns></returns>
     [OperationContract]
-    bool SetCiMenuHandler(int cardId);
+    bool SetCiMenuHandler(int cardId, IConditionalAccessMenuCallBack callbackHandler);
 
     #endregion
 

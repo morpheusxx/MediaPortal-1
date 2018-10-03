@@ -1,7 +1,6 @@
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
 using Mediaportal.TV.Server.Common.Types.Enum;
-using Mediaportal.TV.Server.TVLibrary.Interfaces.Tuner.Enum;
 using Mediaportal.TV.Server.TVLibrary.Interfaces.TunerExtension;
 using Mediaportal.TV.Server.TVService.Interfaces.Enums;
 using Mediaportal.TV.Server.TVService.Interfaces.Services;
@@ -117,7 +116,7 @@ namespace Mediaportal.TV.Server.TVService.Interfaces
     /// <summary>
     /// Gets/Sts the bitrate mode
     /// </summary>
-    EncoderBitRateMode BitRateMode { get; set; }
+    EncodeMode BitRateMode { get; set; }
 
     /// <summary>
     /// 

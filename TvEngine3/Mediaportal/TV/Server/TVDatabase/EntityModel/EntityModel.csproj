@@ -167,7 +167,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>
+    <PostBuildEvent>exit 0
 if not exist "$(TargetDir)x86" md "$(TargetDir)x86"
 xcopy /s /y "D:\sdev\Code\MediaPortal\MediaPortal-1_TVE35\Packages\SqlServerCompact.4.0.8482.1\NativeBinaries\x86\*.*" "$(TargetDir)x86"
 if not exist "$(TargetDir)amd64" md "$(TargetDir)amd64"

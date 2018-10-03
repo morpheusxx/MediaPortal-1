@@ -27,7 +27,6 @@ using Mediaportal.TV.Server.TVControl.Interfaces.Services;
 using Mediaportal.TV.Server.TVLibrary.Interfaces;
 using Mediaportal.TV.Server.TVLibrary.Interfaces.Channel;
 using Mediaportal.TV.Server.TVLibrary.Interfaces.Logging;
-using Mediaportal.TV.Server.TVLibrary.Interfaces.Tuner.Enum;
 using Mediaportal.TV.Server.TVLibrary.Interfaces.TunerExtension;
 using Mediaportal.TV.Server.TVService.Interfaces;
 using Mediaportal.TV.Server.TVService.Interfaces.Enums;
@@ -120,11 +119,12 @@ namespace Mediaportal.TV.Server.TVControl
 
         if (_idChannel > 0)
         {
-          IChannel channel = controllerService.CurrentChannel(userName, _idChannel);
-          if (channel != null)
-          {
-            _mediaType = channel.MediaType;
-          }
+          //TODO
+          //IChannel channel = controllerService.CurrentChannel(userName, _idChannel);
+          //if (channel != null)
+          //{
+          //  _mediaType = channel.MediaType;
+          //}
         }
         if (cardId > 0 && _user.UserType == UserType.Normal)
         {
@@ -142,7 +142,7 @@ namespace Mediaportal.TV.Server.TVControl
         _isScanning = controllerService.IsScanning(cardId);
         _isGrabbingEpg = controllerService.IsGrabbingEpg(cardId);
         _name = controllerService.CardName(cardId);
-        _supportedBroadcastStandards = controllerService.SupportedBroadcastStandards(cardId);
+        _supportedBroadcastStandards = controllerService.PossibleBroadcastStandards(cardId);
       }
     }
 
@@ -675,7 +675,10 @@ namespace Mediaportal.TV.Server.TVControl
         {
           return false;
         }
-        return GlobalServiceProvider.Get<IControllerService>().SupportsQualityControl(User.CardId);
+
+        if (GlobalServiceProvider.Get<IControllerService>().GetSupportedQualityControlFeatures(User.CardId,
+          out EncodeMode supportedEncodeModes, out bool canSetBitRate))
+          return supportedEncodeModes != EncodeMode.Default;
       }
       catch (Exception)
       {
@@ -696,7 +699,9 @@ namespace Mediaportal.TV.Server.TVControl
         {
           return false;
         }
-        return GlobalServiceProvider.Get<IControllerService>().SupportsBitRate(User.CardId);
+        if (GlobalServiceProvider.Get<IControllerService>().GetSupportedQualityControlFeatures(User.CardId,
+          out EncodeMode supportedEncodeModes, out bool canSetBitRate))
+          return canSetBitRate;
       }
       catch (Exception)
       {
@@ -717,7 +722,9 @@ namespace Mediaportal.TV.Server.TVControl
         {
           return false;
         }
-        return GlobalServiceProvider.Get<IControllerService>().SupportsBitRateModes(User.CardId);
+        if (GlobalServiceProvider.Get<IControllerService>().GetSupportedQualityControlFeatures(User.CardId,
+          out EncodeMode supportedEncodeModes, out bool canSetBitRate))
+          return supportedEncodeModes != EncodeMode.Default;
       }
       catch (Exception)
       {
@@ -738,7 +745,9 @@ namespace Mediaportal.TV.Server.TVControl
         {
           return false;
         }
-        return GlobalServiceProvider.Get<IControllerService>().SupportsPeakBitRateMode(User.CardId);
+        if (GlobalServiceProvider.Get<IControllerService>().GetSupportedQualityControlFeatures(User.CardId,
+          out EncodeMode supportedEncodeModes, out bool canSetBitRate))
+          return supportedEncodeModes.HasFlag(EncodeMode.VariablePeakBitRate);
       }
       catch (Exception)
       {
@@ -760,7 +769,8 @@ namespace Mediaportal.TV.Server.TVControl
           {
             return QualityType.Default;
           }
-          return GlobalServiceProvider.Get<IControllerService>().GetQualityType(User.CardId);
+          // TODO
+          //return GlobalServiceProvider.Get<IControllerService>().GetQualityType(User.CardId);
         }
         catch (Exception)
         {
@@ -776,7 +786,8 @@ namespace Mediaportal.TV.Server.TVControl
           {
             return;
           }
-          GlobalServiceProvider.Get<IControllerService>().SetQualityType(User.CardId, value);
+          // TODO
+          // GlobalServiceProvider.Get<IControllerService>().SetQualityType(User.CardId, value);
         }
         catch (Exception)
         {
@@ -788,7 +799,7 @@ namespace Mediaportal.TV.Server.TVControl
     /// <summary>
     /// Gets/Sts the bitrate mode
     /// </summary>
-    public EncoderBitRateMode BitRateMode
+    public EncodeMode BitRateMode
     {
       get
       {
@@ -796,15 +807,15 @@ namespace Mediaportal.TV.Server.TVControl
         {
           if (User.CardId < 0)
           {
-            return EncoderBitRateMode.Undefined;
+            return EncodeMode.Default;
           }
-          return GlobalServiceProvider.Get<IControllerService>().GetBitRateMode(User.CardId);
+          return GlobalServiceProvider.Get<IControllerService>().GetEncodeMode(User.CardId);
         }
         catch (Exception)
         {
           //HandleFailure();
         }
-        return EncoderBitRateMode.Undefined;
+        return EncodeMode.Default;
       }
       set
       {
@@ -814,7 +825,7 @@ namespace Mediaportal.TV.Server.TVControl
           {
             return;
           }
-          GlobalServiceProvider.Get<IControllerService>().SetBitRateMode(User.CardId, value);
+          GlobalServiceProvider.Get<IControllerService>().SetEncodeMode(User.CardId, value);
         }
         catch (Exception)
         {

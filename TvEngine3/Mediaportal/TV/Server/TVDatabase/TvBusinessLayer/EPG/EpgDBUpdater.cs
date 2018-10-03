@@ -180,8 +180,8 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer.EPG
       IList<TuningDetail> tuningDetails = TuningDetailManagement.GetDvbTuningDetails(
         broadcastStandard,
         dvbChannel.OriginalNetworkId,
-        dvbChannel.ServiceId,
         TuningDetailRelation.Channel,
+        dvbChannel.ServiceId,
         dvbChannel.TransportStreamId,
         null,
         satelliteId
