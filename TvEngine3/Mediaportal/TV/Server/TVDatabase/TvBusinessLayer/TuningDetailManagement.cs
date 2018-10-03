@@ -146,6 +146,67 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
       }
     }
 
+    public static BroadcastStandard GetBroadcastStandardFromChannelInstance(IChannel channel)
+    {
+      if (channel is ChannelAnalogTv)
+      {
+        return BroadcastStandard.AnalogTelevision;
+      }
+      if (channel is ChannelAtsc)
+      {
+        return BroadcastStandard.Atsc;
+      }
+      if (channel is ChannelCapture)
+      {
+        return BroadcastStandard.ExternalInput;
+      }
+      if (channel is ChannelDigiCipher2)
+      {
+        return BroadcastStandard.DigiCipher2;
+      }
+      if (channel is ChannelDvbC)
+      {
+        return BroadcastStandard.DvbC;
+      }
+      if (channel is ChannelDvbC2)
+      {
+        return BroadcastStandard.DvbC2;
+      }
+      if (channel is ChannelDvbS)
+      {
+        return BroadcastStandard.DvbS;
+      }
+      if (channel is ChannelDvbS2)
+      {
+        return BroadcastStandard.DvbS2;
+      }
+      if (channel is ChannelDvbT)
+      {
+        return BroadcastStandard.DvbT;
+      }
+      if (channel is ChannelDvbT2)
+      {
+        return BroadcastStandard.DvbT2;
+      }
+      if (channel is ChannelFmRadio)
+      {
+        return BroadcastStandard.FmRadio;
+      }
+      if (channel is ChannelSatelliteTurboFec)
+      {
+        return BroadcastStandard.SatelliteTurboFec;
+      }
+      if (channel is ChannelScte)
+      {
+        return BroadcastStandard.Scte;
+      }
+      if (channel is ChannelStream)
+      {
+        return BroadcastStandard.DvbIp;
+      }
+      return BroadcastStandard.Unknown;
+    }
+
     public static TuningDetail GetTuningDetail(int idTuningDetail, TuningDetailRelation includeRelations)
     {
       using (ITuningDetailRepository tuningDetailRepository = new TuningDetailRepository())

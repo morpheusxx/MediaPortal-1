@@ -251,7 +251,8 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
       notViewableSchedules = new List<Schedule>();
       Log.Info("GetConflictingSchedules: schedule = {0}", sched);
 
-      IList<Tuner> tuners = TunerManagement.ListAllTuners(TunerRelation.ChannelMaps);
+      //IList<Tuner> tuners = TunerManagement.ListAllTuners(TunerRelation.ChannelMaps);
+      IList<Tuner> tuners = TunerManagement.ListAllTuners(TunerRelation.TuningDetailMappings);
       Log.Info("GetConflictingSchedules: tuner count = {0}", tuners.Count);
       if (tuners.Count == 0)
       {
@@ -374,7 +375,7 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
       foreach (Tuner tuner in tuners)
       {
         ScheduleBLL scheduleBll = new ScheduleBLL(schedule);
-        if (!tuner.ChannelMaps.Any(map => schedule.IdChannel == map.IdChannel))   // If there are no mappings, the tuner CAN be used.
+        if (!tuner.TuningDetailMappings.Any(map => schedule.IdChannel == map.TuningDetail.IdChannel))   // If there are no mappings, the tuner CAN be used.
         {
           isTunable = true;
 

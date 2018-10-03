@@ -156,6 +156,8 @@ namespace Mediaportal.TV.Server.TVDatabase.EntityModel.Interfaces
     /// <value>The unit of work.</value>
     IUnitOfWork UnitOfWork { get; }
 
+    Expression<Func<TElement, bool>> BuildContainsExpression<TElement, TValue>(Expression<Func<TElement, TValue>> valueSelector, IEnumerable<TValue> values);
+
     T ObjectContext { get; }
 
     void AddList<TEntity>(IEnumerable<TEntity> entities) where TEntity : class;

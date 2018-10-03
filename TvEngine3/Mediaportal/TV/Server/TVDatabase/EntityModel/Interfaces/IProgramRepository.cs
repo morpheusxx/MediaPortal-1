@@ -6,11 +6,11 @@ using Mediaportal.TV.Server.TVDatabase.Entities.Enums;
 namespace Mediaportal.TV.Server.TVDatabase.EntityModel.Interfaces
 {
   public interface IProgramRepository : IRepository<Model>
-  {    
+  {
     void DeleteAllProgramsWithChannelId(int idChannel);
     IQueryable<Program> FindAllProgramsByChannelId(int idChannel);
     IQueryable<Program> GetProgramsByStartEndTimes(DateTime startTime, DateTime endTime);
-    
+
 
     Program GetProgramAt(DateTime date, int idChannel);
     Program GetProgramAt(DateTime date, string title);
