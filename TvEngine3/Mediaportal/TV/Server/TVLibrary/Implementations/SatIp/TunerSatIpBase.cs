@@ -27,6 +27,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using Mediaportal.TV.Server.TVLibrary.Implementations.Dvb;
 using Mediaportal.TV.Server.TVLibrary.Implementations.Helper;
+using Mediaportal.TV.Server.TVLibrary.Implementations.Rtcp;
 using Mediaportal.TV.Server.TVLibrary.Implementations.Rtsp;
 using Mediaportal.TV.Server.TVLibrary.Interfaces;
 using Mediaportal.TV.Server.TVLibrary.Interfaces.Implementations.Channels;
@@ -147,6 +148,8 @@ namespace Mediaportal.TV.Server.TVLibrary.Implementations.SatIp
     /// </summary>
     private IChannelScannerInternal _channelScanner = null;
 
+    private int _rtpClientPort;
+
     #endregion
 
     #region constructor
@@ -210,7 +213,6 @@ namespace Mediaportal.TV.Server.TVLibrary.Implementations.SatIp
 
       // First tune = RTSP SETUP.
       // Find free ports for receiving the RTP and RTCP streams.
-      int rtpClientPort = 0;
       HashSet<int> usedPorts = new HashSet<int>();
       IPEndPoint[] activeUdpListeners = IPGlobalProperties.GetIPGlobalProperties().GetActiveUdpListeners();
       foreach (IPEndPoint listener in activeUdpListeners)
@@ -226,17 +228,17 @@ namespace Mediaportal.TV.Server.TVLibrary.Implementations.SatIp
         // convention, the RTP port is even.
         if (!usedPorts.Contains(port) && !usedPorts.Contains(port + 1))
         {
-          rtpClientPort = port;
+          _rtpClientPort = port;
           _rtcpClientPort = port + 1;
           break;
         }
       }
-      this.LogDebug("SAT>IP base: send RTSP SETUP, RTP client port = {0}", rtpClientPort);
+      this.LogDebug("SAT>IP base: send RTSP SETUP, RTP client port = {0}", _rtpClientPort);
 
       // SETUP a session.
       _rtspClient = new RtspClient(_serverIpAddress);
-      request = new RtspRequest(RtspMethod.Setup, string.Format("rtsp://{0}/?{1}", _serverIpAddress, parameters));
-      request.Headers.Add("Transport", string.Format("RTP/AVP;unicast;client_port={0}-{1}", rtpClientPort, rtpClientPort + 1));
+      request = new RtspRequest(RtspMethod.Setup, string.Format("rtsp://{0}/?{1}&pids=0", _serverIpAddress, parameters));
+      request.Headers.Add("Transport", string.Format("RTP/AVP;unicast;client_port={0}-{1}", _rtpClientPort, _rtcpClientPort));
       if (_rtspClient.SendRequest(request, out response) != RtspStatusCode.Ok)
       {
         throw new TvException("Failed to tune, non-OK RTSP SETUP status code {0} {1}", response.StatusCode, response.ReasonPhrase);
@@ -298,15 +300,15 @@ namespace Mediaportal.TV.Server.TVLibrary.Implementations.SatIp
             else if (parts[0].Equals("client_port"))
             {
               string[] ports = parts[1].Split('-');
-              if (!ports[0].Equals(rtpClientPort.ToString()))
+              if (!ports[0].Equals(_rtpClientPort.ToString()))
               {
-                this.LogWarn("SAT>IP base: server specified RTP client port {0} instead of {1}", ports[0], rtpClientPort);
+                this.LogWarn("SAT>IP base: server specified RTP client port {0} instead of {1}", ports[0], _rtpClientPort);
               }
               if (!ports[1].Equals(_rtcpClientPort.ToString()))
               {
                 this.LogWarn("SAT>IP base: server specified RTCP client port {0} instead of {1}", ports[1], _rtcpClientPort);
               }
-              rtpClientPort = int.Parse(ports[0]);
+              _rtpClientPort = int.Parse(ports[0]);
               _rtcpClientPort = int.Parse(ports[1]);
             }
           }
@@ -320,11 +322,11 @@ namespace Mediaportal.TV.Server.TVLibrary.Implementations.SatIp
       // Construct the RTP URL.
       if (string.IsNullOrEmpty(rtpServerPort) || rtpServerPort.Equals("0"))
       {
-        rtpUrl = string.Format("rtp://{0}@{1}:{2}", _serverIpAddress, _localIpAddress, rtpClientPort);
+        rtpUrl = string.Format("rtp://{0}@{1}:{2}", _serverIpAddress, _localIpAddress, _rtpClientPort);
       }
       else
       {
-        rtpUrl = string.Format("rtp://{0}:{1}@{2}:{3}", _serverIpAddress, rtpServerPort, _localIpAddress, rtpClientPort);
+        rtpUrl = string.Format("rtp://{0}:{1}@{2}:{3}", _serverIpAddress, rtpServerPort, _localIpAddress, _rtpClientPort);
       }
       this.LogDebug("SAT>IP base: RTSP SETUP response okay");
       this.LogDebug("  session ID = {0}", _rtspSessionId);
@@ -490,79 +492,78 @@ namespace Mediaportal.TV.Server.TVLibrary.Implementations.SatIp
         try
         {
           udpClient.Client.ReceiveTimeout = RTCP_REPORT_WAIT_TIMEOUT;
-          IPEndPoint serverEndPoint = new IPEndPoint(IPAddress.Parse(_serverIpAddress), _rtcpServerPort);
+          var hasServerPort = _rtcpServerPort > 0;
+          IPEndPoint serverEndPoint = hasServerPort
+              ? new IPEndPoint(IPAddress.Parse(_serverIpAddress), _rtcpServerPort)
+              : new IPEndPoint(IPAddress.Any, 0);
+
+          IPEndPoint receiverEndPoint = new IPEndPoint(IPAddress.Any, 0);
           while (!receivedGoodBye && !_rtcpListenerThreadStopEvent.WaitOne(1))
           {
-            byte[] packets = udpClient.Receive(ref serverEndPoint);
-            if (packets == null)
-            {
+            byte[] packets = udpClient.Receive(ref receiverEndPoint);
+            // Only handle packets from the source we are expecting
+            if (hasServerPort && !Equals(receiverEndPoint, serverEndPoint) /* Remote port is known, compare full IPEndPoints */ ||
+                !hasServerPort && !Equals(receiverEndPoint.Address.ToString(), _serverIpAddress) /* Remote was not known in advance, only compare IPAddress */)
               continue;
-            }
 
             int offset = 0;
-            while (offset + 8 <= packets.Length)
+            while (offset < packets.Length)
             {
               // Refer to RFC 3550.
               // https://www.ietf.org/rfc/rfc3550.txt
-              byte packetType = packets[offset + 1];
-              int packetByteCount = ((packets[offset + 2] << 8) + packets[offset + 3] + 1) * 4;
-              if (offset + packetByteCount > packets.Length)
+              switch (packets[offset + 1])
               {
-                this.LogWarn("SAT>IP base: received incomplete RTCP packet, offset = {0}", offset);
-                Dump.DumpBinary(packets);
-                break;
-              }
-
-              if (packetType == 203)  // goodbye
-              {
-                receivedGoodBye = true;
-                break;
-              }
-              else if (packetType == 204) // application-defined
-              {
-                int offsetStartOfPacket = offset;
-                offset += 8;  // skip to the start of the name SSRC/CSRC
-                if (offset + 4 > packets.Length)
-                {
-                  this.LogWarn("SAT>IP base: received RTCP application-defined packet too short to contain name, offset = {0}", offsetStartOfPacket);
-                  Dump.DumpBinary(packets);
+                case 200: //sr
+                  var sr = new RtcpSenderReportPacket();
+                  sr.Parse(packets, offset);
+                  offset += sr.Length;
+#if DEBUG_RTCP
+                  this.LogDebug(sr.ToString());
+#endif
                   break;
-                }
-                string name = System.Text.Encoding.ASCII.GetString(packets, offset, 4);
-                offset += 4;
-                if (!name.Equals("SES1"))
-                {
-                  // Not SAT>IP data. Odd but okay.
-                  offset = offsetStartOfPacket + packetByteCount;
-                  continue;
-                }
-                if (offset + 4 > packets.Length)
-                {
-                  this.LogWarn("SAT>IP base: received SAT>IP RTCP packet too short to contain string length, offset = {0}", offsetStartOfPacket);
-                  Dump.DumpBinary(packets);
+                case 201: //rr
+                  var rr = new RtcpReceiverReportPacket();
+                  rr.Parse(packets, offset);
+                  offset += rr.Length;
+#if DEBUG_RTCP
+                  this.LogDebug(rr.ToString());
+#endif
                   break;
-                }
-                int stringByteCount = (packets[offset + 2] << 8) + packets[offset + 3];
-                offset += 4;
-                if (offset + stringByteCount > packets.Length)
-                {
-                  this.LogWarn("SAT>IP base: received SAT>IP RTCP packet too short to contain string, offset = {0}", offsetStartOfPacket);
-                  Dump.DumpBinary(packets);
+                case 202: //sd
+                  var sd = new RtcpSourceDescriptionPacket();
+                  sd.Parse(packets, offset);
+                  offset += sd.Length;
+#if DEBUG_RTCP
+                  this.LogDebug(sd.ToString());
+#endif
                   break;
-                }
-                string description = System.Text.Encoding.UTF8.GetString(packets, offset, stringByteCount);
-                Match m = REGEX_DESCRIBE_RESPONSE_SIGNAL_INFO.Match(description);
-                if (m.Success)
-                {
-                  _isSignalLocked = m.Groups[2].Captures[0].Value.Equals("1");
-                  _signalStrength = int.Parse(m.Groups[1].Captures[0].Value) * 100 / 255;   // strength: 0..255 => 0..100
-                  _signalQuality = int.Parse(m.Groups[3].Captures[0].Value) * 100 / 15;     // quality: 0..15 => 0..100
-                }
-                offset = offsetStartOfPacket + packetByteCount;
-              }
-              else
-              {
-                offset += packetByteCount;
+                case 203: // bye
+                  var bye = new RtcpByePacket();
+                  bye.Parse(packets, offset);
+                  receivedGoodBye = true;
+                  offset += bye.Length;
+#if DEBUG_RTCP
+                  this.LogDebug(bye.ToString());
+#endif
+                  break;
+                case 204: // app
+                  var app = new RtcpAppPacket();
+                  app.Parse(packets, offset);
+                  if (app.Name.Equals("SES1"))
+                  {
+                    Match m = REGEX_DESCRIBE_RESPONSE_SIGNAL_INFO.Match(app.Data);
+                    if (m.Success)
+                    {
+                      _isSignalLocked = m.Groups[2].Captures[0].Value.Equals("1");
+                      _signalStrength = int.Parse(m.Groups[1].Captures[0].Value) * 100 / 255;   // strength: 0..255 => 0..100
+                      _signalQuality = int.Parse(m.Groups[3].Captures[0].Value) * 100 / 15;     // quality: 0..15 => 0..100
+                    }
+                  }
+                  offset += app.Length;
+#if DEBUG_RTCP
+                  this.LogDebug(app.ToString());
+#endif
+                  break;
               }
             }
           }
@@ -650,15 +651,17 @@ namespace Mediaportal.TV.Server.TVLibrary.Implementations.SatIp
           {
             pidFilterPhrase = "all";
           }
-          string uri = string.Format("rtsp://{0}/stream={1}?pids={2}", _serverIpAddress, _satIpStreamId, pidFilterPhrase);
+
+          StartStreamingKeepAliveThread();
+          StartRtcpListenerThread();
+
+          string uri = string.Format("rtsp://{0}:554/stream={1}?pids={2}", _serverIpAddress, _satIpStreamId, pidFilterPhrase);
           request = new RtspRequest(RtspMethod.Play, uri);
           request.Headers.Add("Session", _rtspSessionId);
           if (_rtspClient.SendRequest(request, out response) != RtspStatusCode.Ok)
           {
             throw new TvException("Failed to start tuner, non-OK RTSP PLAY status code {0} {1}", response.StatusCode, response.ReasonPhrase);
           }
-          StartStreamingKeepAliveThread();
-          StartRtcpListenerThread();
         }
         else if (state == TunerState.Stopped)
         {
@@ -959,7 +962,7 @@ namespace Mediaportal.TV.Server.TVLibrary.Implementations.SatIp
     {
       try
       {
-        RtspRequest request = new RtspRequest(RtspMethod.Play, string.Format("rtsp://{0}/stream={1}?{2}", _serverIpAddress, _satIpStreamId, parameters));
+        RtspRequest request = new RtspRequest(RtspMethod.Play, string.Format("rtsp://{0}:554/stream={1}?{2}", _serverIpAddress, _satIpStreamId, parameters));
         request.Headers.Add("Accept", "application/sdp");
         request.Headers.Add("Session", _rtspSessionId);
         RtspResponse response = null;
@@ -988,11 +991,10 @@ namespace Mediaportal.TV.Server.TVLibrary.Implementations.SatIp
     public override void Dispose()
     {
       base.Dispose();
-      if (_streamTuner != null)
-      {
-        _streamTuner.Dispose();
-        _streamTuner = null;
-      }
+      _rtspClient?.Dispose();
+      _rtspClient = null;
+      _streamTuner?.Dispose();
+      _streamTuner = null;
     }
 
     #endregion

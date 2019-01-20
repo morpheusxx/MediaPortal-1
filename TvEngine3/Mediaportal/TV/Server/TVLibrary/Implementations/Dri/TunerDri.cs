@@ -1237,11 +1237,10 @@ namespace Mediaportal.TV.Server.TVLibrary.Implementations.Dri
     public override void Dispose()
     {
       base.Dispose();
-      if (_streamTuner != null)
-      {
-        _streamTuner.Dispose();
-        _streamTuner = null;
-      }
+      _rtspClient?.Dispose();
+      _rtspClient = null;
+      _streamTuner?.Dispose();
+      _streamTuner = null;
     }
 
     #endregion

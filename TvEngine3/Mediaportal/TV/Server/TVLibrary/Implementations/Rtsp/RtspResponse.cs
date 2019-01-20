@@ -21,6 +21,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using Mediaportal.TV.Server.TVLibrary.Interfaces.Logging;
 
 namespace Mediaportal.TV.Server.TVLibrary.Implementations.Rtsp
 {
@@ -125,6 +126,9 @@ namespace Mediaportal.TV.Server.TVLibrary.Implementations.Rtsp
     {
       RtspResponse response = new RtspResponse();
       string responseString = System.Text.Encoding.UTF8.GetString(responseBytes, 0, responseByteCount);
+#if DEBUG_RTSP
+      Log.Debug(responseString);
+#endif
       Match m = REGEX_STATUS_LINE.Match(responseString);
       if (m.Success)
       {
@@ -138,9 +142,11 @@ namespace Mediaportal.TV.Server.TVLibrary.Implementations.Rtsp
       string[] sections = responseString.Split(new string[] { "\r\n\r\n" }, StringSplitOptions.None);
       // Section[0] is the headers; section[1] is the body (which might be empty).
 
+      response._headers = new Dictionary<string, string>();
+      if (sections.Length != 2)
+        return response;
       response._body = sections[1];
       string[] headers = sections[0].Split(new string[] { "\r\n" }, StringSplitOptions.None);
-      response._headers = new Dictionary<string, string>();
       foreach (string header in headers)
       {
         string[] headerInfo = header.Split(':');

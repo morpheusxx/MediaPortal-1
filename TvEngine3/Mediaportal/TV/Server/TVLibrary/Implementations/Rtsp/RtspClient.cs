@@ -27,7 +27,7 @@ namespace Mediaportal.TV.Server.TVLibrary.Implementations.Rtsp
   /// <summary>
   /// A simple implementation of an RTSP client.
   /// </summary>
-  internal class RtspClient
+  internal class RtspClient : IDisposable
   {
     #region variables
 
@@ -51,6 +51,11 @@ namespace Mediaportal.TV.Server.TVLibrary.Implementations.Rtsp
     }
 
     ~RtspClient()
+    {
+      Dispose();
+    }
+
+    public void Dispose()
     {
       lock (_lockObject)
       {
@@ -145,7 +150,7 @@ namespace Mediaportal.TV.Server.TVLibrary.Implementations.Rtsp
         }
         finally
         {
-          stream.Close();
+          //stream.Close();
         }
       }
     }

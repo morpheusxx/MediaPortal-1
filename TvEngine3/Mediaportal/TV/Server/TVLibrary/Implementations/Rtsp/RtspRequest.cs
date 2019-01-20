@@ -20,6 +20,7 @@
 
 using System.Collections.Generic;
 using System.Text;
+using Mediaportal.TV.Server.TVLibrary.Interfaces.Logging;
 
 namespace Mediaportal.TV.Server.TVLibrary.Implementations.Rtsp
 {
@@ -137,6 +138,9 @@ namespace Mediaportal.TV.Server.TVLibrary.Implementations.Rtsp
         request.AppendFormat("{0}: {1}\r\n", header.Key, header.Value);
       }
       request.AppendFormat("\r\n{0}", _body);
+#if DEBUG_RTSP
+      this.LogDebug(request.ToString());
+#endif
       return System.Text.Encoding.UTF8.GetBytes(request.ToString());
     }
   }

@@ -131,8 +131,8 @@ namespace Mediaportal.TV.Server.TVLibrary.Implementations.SatIp
           RtspRequest request = new RtspRequest(RtspMethod.Describe, string.Format("rtsp://{0}/", remoteHost));
           request.Headers.Add("Accept", "application/sdp");
           request.Headers.Add("Connection", "close");
-          RtspClient client = new RtspClient(remoteHost, 554);
-          client.SendRequest(request, out response);
+          using (RtspClient client = new RtspClient(remoteHost, 554))
+            client.SendRequest(request, out response);
         }
         catch (Exception ex)
         {
