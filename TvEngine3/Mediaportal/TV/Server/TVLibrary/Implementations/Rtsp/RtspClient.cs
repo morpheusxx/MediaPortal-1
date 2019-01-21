@@ -31,11 +31,11 @@ namespace Mediaportal.TV.Server.TVLibrary.Implementations.Rtsp
   {
     #region variables
 
-    private string _serverHost = null;
-    private int _serverPort = -1;
+    private readonly string _serverHost = null;
+    private readonly int _serverPort = -1;
     private TcpClient _client = null;
     private int _cseq = 1;
-    private object _lockObject = new object();
+    private readonly object _lockObject = new object();
 
     #endregion
 

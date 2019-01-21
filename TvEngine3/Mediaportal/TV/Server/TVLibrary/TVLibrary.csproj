@@ -126,6 +126,7 @@
     <Compile Include="Implementations\Dri\TunerDri.cs" />
     <Compile Include="Implementations\DirectShow\Pbda\TunerPbdaCableCard.cs" />
     <Compile Include="Implementations\Dvb\ChannelScannerHelperDvb.cs" />
+    <Compile Include="Implementations\Helper\PortReservation.cs" />
     <Compile Include="Implementations\Rtcp\Rtcp.cs" />
     <Compile Include="Implementations\Rtcp\Utils.cs" />
     <Compile Include="Implementations\SatIp\TunerDetectorSatIp.cs" />

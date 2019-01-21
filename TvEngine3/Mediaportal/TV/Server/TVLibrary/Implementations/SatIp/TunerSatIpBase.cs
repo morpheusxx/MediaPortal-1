@@ -213,26 +213,14 @@ namespace Mediaportal.TV.Server.TVLibrary.Implementations.SatIp
 
       // First tune = RTSP SETUP.
       // Find free ports for receiving the RTP and RTCP streams.
-      HashSet<int> usedPorts = new HashSet<int>();
-      IPEndPoint[] activeUdpListeners = IPGlobalProperties.GetIPGlobalProperties().GetActiveUdpListeners();
-      foreach (IPEndPoint listener in activeUdpListeners)
-      {
-        if (listener.Address.Equals(_localIpAddress))   // Careful! The == operator is not overloaded.
-        {
-          usedPorts.Add(listener.Port);
-        }
-      }
-      for (int port = 40000; port <= 65534; port += 2)
-      {
-        // We need two adjacent UDP ports. One for RTP; one for RTCP. By
-        // convention, the RTP port is even.
-        if (!usedPorts.Contains(port) && !usedPorts.Contains(port + 1))
-        {
-          _rtpClientPort = port;
-          _rtcpClientPort = port + 1;
-          break;
-        }
-      }
+      // We need two adjacent UDP ports. One for RTP; one for RTCP. By convention, the RTP port is even.
+      int[] freePorts;
+      if (!PortReservation.GetFreePorts(2, out freePorts))
+        throw new TvException("SAT>IP base: Failed to get free ports for RTP/RTCP");
+
+      _rtpClientPort = freePorts[0];
+      _rtcpClientPort = freePorts[1];
+
       this.LogDebug("SAT>IP base: send RTSP SETUP, RTP client port = {0}", _rtpClientPort);
 
       // SETUP a session.
@@ -488,7 +476,9 @@ namespace Mediaportal.TV.Server.TVLibrary.Implementations.SatIp
       try
       {
         bool receivedGoodBye = false;
-        UdpClient udpClient = new UdpClient(new IPEndPoint(_localIpAddress, _rtcpClientPort));
+        UdpClient udpClient = null;
+        void InitUdpClient() => udpClient = new UdpClient(new IPEndPoint(_localIpAddress, _rtcpClientPort));
+        InitUdpClient();
         try
         {
           udpClient.Client.ReceiveTimeout = RTCP_REPORT_WAIT_TIMEOUT;
@@ -500,7 +490,17 @@ namespace Mediaportal.TV.Server.TVLibrary.Implementations.SatIp
           IPEndPoint receiverEndPoint = new IPEndPoint(IPAddress.Any, 0);
           while (!receivedGoodBye && !_rtcpListenerThreadStopEvent.WaitOne(1))
           {
-            byte[] packets = udpClient.Receive(ref receiverEndPoint);
+            byte[] packets = new byte[0];
+            try
+            {
+              packets = udpClient.Receive(ref receiverEndPoint);
+            }
+            catch (SocketException se)
+            {
+              udpClient.Close();
+              InitUdpClient();
+            }
+
             // Only handle packets from the source we are expecting
             if (hasServerPort && !Equals(receiverEndPoint, serverEndPoint) /* Remote port is known, compare full IPEndPoints */ ||
                 !hasServerPort && !Equals(receiverEndPoint.Address.ToString(), _serverIpAddress) /* Remote was not known in advance, only compare IPAddress */)
@@ -675,6 +675,10 @@ namespace Mediaportal.TV.Server.TVLibrary.Implementations.SatIp
             throw new TvException("Failed to stop tuner, non-OK RTSP TEARDOWN status code {0} {1}.", response.StatusCode, response.ReasonPhrase);
           }
 
+          PortReservation.ReleasePort(_rtpClientPort);
+          PortReservation.ReleasePort(_rtcpClientPort);
+
+          _rtspClient?.Dispose();
           _rtspClient = null;
           _satIpStreamId = string.Empty;
           _rtspSessionId = string.Empty;
