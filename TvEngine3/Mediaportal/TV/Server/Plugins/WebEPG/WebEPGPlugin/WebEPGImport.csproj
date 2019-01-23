@@ -87,9 +87,7 @@
     <Compile Include="Config\MergedChannelDetails.designer.cs">
       <DependentUpon>MergedChannelDetails.cs</DependentUpon>
     </Compile>
-    <Compile Include="Config\Selection.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="Config\Selection.cs" />
     <Compile Include="Config\WebEPGConfigControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
