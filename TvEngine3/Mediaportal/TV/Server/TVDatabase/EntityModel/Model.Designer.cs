@@ -1,4 +1,10 @@
-﻿// Default code generation is disabled for model 'C:\Development\mediaportal-1-cardres_patch\MediaPortal-1\TvEngine3\Mediaportal\TV\Server\TVDatabase\EntityModel\Model.edmx'. 
-// To enable default code generation, change the value of the 'Code Generation Strategy' designer
-// property to an alternate value. This property is available in the Properties Window when the model is
-// open in the designer.
+﻿// Die T4-Codegenerierung ist für Modell 'D:\Coding\MP\MP2\MP2_git\TVE35\MediaPortal-1\TvEngine3\Mediaportal\TV\Server\TVDatabase\EntityModel\Model.edmx' aktiviert. 
+// Um die Generierung von Legacycode zu aktivieren, ändern Sie den Wert der Designer-Eigenschaft 'Code Generation Strategy'
+// in 'Legacy ObjectContext'. Diese Eigenschaft wird im Eigenschaftenfenster angezeigt, wenn das Modell
+// im Designer geöffnet ist.
+
+// Wenn keine Kontextklasse und keine Entitätsklassen generiert wurden, kann dies daran liegen, dass Sie ein leeres Modell erstellt, aber
+// noch nicht die gewünschte Entity Framework-Version ausgewählt haben. Um eine Kontextklasse und
+// Entitätsklassen für das Modell zu generieren, öffnen Sie das Modell im Designer, klicken mit der rechten Maustaste auf die Designeroberfläche, und
+// wählen 'Modell aus der Datenbank aktualisieren', 'Datenbank aus Modell generieren' oder 'Codegenerierungselement
+// hinzufügen' aus.
