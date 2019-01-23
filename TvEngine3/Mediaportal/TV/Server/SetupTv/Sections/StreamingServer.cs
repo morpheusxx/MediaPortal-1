@@ -29,6 +29,7 @@ using Mediaportal.TV.Server.TVDatabase.Entities;
 using Mediaportal.TV.Server.TVDatabase.Entities.Enums;
 using Mediaportal.TV.Server.TVLibrary.Interfaces;
 using Mediaportal.TV.Server.TVLibrary.Interfaces.Logging;
+using Mediaportal.TV.Server.TVLibrary.Streaming;
 using Mediaportal.TV.Server.TVService.Interfaces.Enums;
 using Mediaportal.TV.Server.TVService.Interfaces.Services;
 
@@ -36,8 +37,10 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
 {
   public partial class StreamingServer : SectionSettings
   {
-    private int _rtspPort = ServiceAgents.Instance.SettingServiceAgent.GetValue("rtspport", 554);
-    private string _hostname = ServiceAgents.Instance.SettingServiceAgent.GetValue("hostname", "localhost");
+
+
+    private int _rtspPort = ServiceAgents.Instance.SettingServiceAgent.GetValue(Consts.SETTINGS_KEY_RTSPPORT, RtspStreaming.DefaultPort);
+    private string _hostname = ServiceAgents.Instance.SettingServiceAgent.GetSetting(Consts.SETTINGS_KEY_HOSTNAME).Value;
 
     private class IpAddressOption
     {
@@ -129,8 +132,8 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
       if (needRestart)
       {
 
-        ServiceAgents.Instance.SettingServiceAgent.SaveValue("rtspport", _rtspPort);
-        ServiceAgents.Instance.SettingServiceAgent.SaveValue("hostname", _hostname);
+        ServiceAgents.Instance.SettingServiceAgent.SaveValue(Consts.SETTINGS_KEY_RTSPPORT, _rtspPort);
+        ServiceAgents.Instance.SettingServiceAgent.SaveValue(Consts.SETTINGS_KEY_HOSTNAME, _hostname);
 
         ServiceNeedsToRestart();
       }

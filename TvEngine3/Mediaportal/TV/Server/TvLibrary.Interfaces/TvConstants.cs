@@ -87,4 +87,28 @@ namespace Mediaportal.TV.Server.TVLibrary.Interfaces
       public static string DVBS = "Digital satellite";
     }
   }
+
+  public class Consts
+  {
+    public const string SETTINGS_KEY_HOSTNAME = "hostname";
+    public const string SETTINGS_DEFAULTS_HOSTNAME = "localhost";
+    public const string SETTINGS_KEY_RTSPPORT = "rtspport";
+    public const string SETTINGS_KEY_PRE_RECORD_INTERVAL = "preRecordInterval";
+    public const int SETTINGS_DEFAULTS_PRE_RECORD_INTERVAL = 7;
+    public const string SETTINGS_KEY_POST_RECORD_INTERVAL = "postRecordInterval";
+    public const int SETTINGS_DEFAULTS_POST_RECORD_INTERVAL = 10;
+
+    /// <summary>
+    /// {0} contains card number.
+    /// </summary>
+    public const string SETTINGS_KEY_CARD_ANALOG_COUNTRY = "analog{0}Country";
+    /// <summary>
+    /// {0} contains card number.
+    /// </summary>
+    public const string SETTINGS_KEY_CARD_ANALOG_SOURCE = "analog{0}Source";
+    /// <summary>
+    /// {0} contains card number.
+    /// </summary>
+    public const string SETTINGS_KEY_CARD_ANALOG_SIGNAL_GROUP = "analog{0}createsignalgroup";
+  }
 }

@@ -103,7 +103,7 @@ namespace Mediaportal.TV.Server.SetupTV
       bool connected = false;
       while (!connected)
       {
-        RemoteControl.HostName = ServiceAgents.Instance.SettingServiceAgent.GetValue("hostname", "localhost");
+        RemoteControl.HostName = ServiceAgents.Instance.SettingServiceAgent.GetValue(Consts.SETTINGS_KEY_HOSTNAME, Consts.SETTINGS_DEFAULTS_HOSTNAME);
 
         if (cards.Count > 0)
         {
@@ -126,7 +126,7 @@ namespace Mediaportal.TV.Server.SetupTV
               if (dlg == DialogResult.Yes)
               {
                 this.LogInfo("Controller: server {0} changed to {1}", RemoteControl.HostName, localHostname);                      
-                ServiceAgents.Instance.SettingServiceAgent.SaveValue("hostname", localHostname);
+                ServiceAgents.Instance.SettingServiceAgent.SaveValue(Consts.SETTINGS_KEY_HOSTNAME, localHostname);
                 if (!ServiceHelper.IsRestrictedMode)
                 {
                   ServiceHelper.Restart();
@@ -306,7 +306,7 @@ namespace Mediaportal.TV.Server.SetupTV
           RemoveAllChildSections((SectionTreeNode)settingSections[servers.Text]);
 
           // re-add tvservers and cards to tree          
-          AddServerTvCards(ServiceAgents.Instance.SettingServiceAgent.GetValue("hostname", "localhost"), true);
+          AddServerTvCards(ServiceAgents.Instance.SettingServiceAgent.GetValue(Consts.SETTINGS_KEY_HOSTNAME, Consts.SETTINGS_DEFAULTS_HOSTNAME), true);
         }
         finally
         {

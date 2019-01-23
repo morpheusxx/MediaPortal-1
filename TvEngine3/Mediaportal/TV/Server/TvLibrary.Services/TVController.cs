@@ -454,7 +454,7 @@ namespace Mediaportal.TV.Server.TVLibrary
           }
         }
 
-        _rtspStreamingPort = SettingsManagement.GetValue("rtspPort", RtspStreaming.DefaultPort);
+        _rtspStreamingPort = SettingsManagement.GetValue(Consts.SETTINGS_KEY_RTSPPORT, RtspStreaming.DefaultPort);
 
         //enumerate all tv cards in this pc...
         _maxFreeCardsToTry = SettingsManagement.GetValue("timeshiftMaxFreeCardsToTry", 0);
@@ -473,7 +473,7 @@ namespace Mediaportal.TV.Server.TVLibrary
 
         this.LogInfo("Controller: setup streaming");
         _hostName = Dns.GetHostName();
-        _hostName = SettingsManagement.GetValue("hostname", _hostName);
+        _hostName = SettingsManagement.GetValue(Consts.SETTINGS_KEY_HOSTNAME, _hostName);
         _streamer = new RtspStreaming(_hostName, _rtspStreamingPort);
 
 

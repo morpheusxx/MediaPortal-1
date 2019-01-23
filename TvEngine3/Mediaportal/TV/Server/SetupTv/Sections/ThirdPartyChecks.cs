@@ -25,6 +25,8 @@ using System.IO;
 using System.ServiceProcess;
 using Mediaportal.TV.Server.SetupControls;
 using Mediaportal.TV.Server.TVControl.ServiceAgents;
+using Mediaportal.TV.Server.TVLibrary.Interfaces;
+using Mediaportal.TV.Server.TVLibrary.Streaming;
 using Microsoft.Win32;
 
 namespace Mediaportal.TV.Server.SetupTV.Sections
@@ -263,8 +265,8 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
     {
       STREAMING_PORT = ServiceAgents.Instance.ControllerServiceAgent.StreamingPort;
       if (STREAMING_PORT == 0)
-      {        
-        STREAMING_PORT = ServiceAgents.Instance.SettingServiceAgent.GetValue("rtspport", 554);
+      {
+        STREAMING_PORT = ServiceAgents.Instance.SettingServiceAgent.GetValue(Consts.SETTINGS_KEY_RTSPPORT, RtspStreaming.DefaultPort);
         return false;
       }
 

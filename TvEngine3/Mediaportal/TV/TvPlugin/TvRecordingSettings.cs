@@ -21,6 +21,7 @@
 using System;
 using MediaPortal.GUI.Library;
 using Mediaportal.TV.Server.TVControl.ServiceAgents;
+using Mediaportal.TV.Server.TVLibrary.Interfaces;
 using Action = MediaPortal.GUI.Library.Action;
 
 //using MediaPortal.Utils.Services;
@@ -52,8 +53,8 @@ namespace Mediaportal.TV.TvPlugin
       spinPreRecord.SetRange(0, 30);
       spinPostRecord.SetRange(0, 30);
 
-      spinPreRecord.Value = ServiceAgents.Instance.SettingServiceAgent.GetValue("preRecordInterval", 5);
-      spinPostRecord.Value = ServiceAgents.Instance.SettingServiceAgent.GetValue("postRecordInterval", 5);
+      spinPreRecord.Value = ServiceAgents.Instance.SettingServiceAgent.GetValue(Consts.SETTINGS_KEY_PRE_RECORD_INTERVAL, Consts.SETTINGS_DEFAULTS_PRE_RECORD_INTERVAL);
+      spinPostRecord.Value = ServiceAgents.Instance.SettingServiceAgent.GetValue(Consts.SETTINGS_KEY_POST_RECORD_INTERVAL, Consts.SETTINGS_DEFAULTS_POST_RECORD_INTERVAL);
 
       cbAutoDeleteRecordings.Selected = ServiceAgents.Instance.SettingServiceAgent.GetValue("autodeletewatchedrecordings", false);
     }
@@ -82,12 +83,12 @@ namespace Mediaportal.TV.TvPlugin
 
     private void OnPreRecord()
     {
-      ServiceAgents.Instance.SettingServiceAgent.SaveValue("preRecordInterval", spinPreRecord.Value);
+      ServiceAgents.Instance.SettingServiceAgent.SaveSetting(Consts.SETTINGS_KEY_PRE_RECORD_INTERVAL, spinPreRecord.Value);
     }
 
     private void OnPostRecord()
     {
-      ServiceAgents.Instance.SettingServiceAgent.SaveValue("postRecordInterval", spinPostRecord.Value);
+      ServiceAgents.Instance.SettingServiceAgent.GetSettingWithDefaultValue(Consts.SETTINGS_KEY_POST_RECORD_INTERVAL, spinPostRecord.Value);
     }
 
     public override void Process()

@@ -108,9 +108,9 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
       mpComboBoxSensitivity.SelectedIndex = 1;
       UpdateStatus();
       
-      mpComboBoxCountry.SelectedIndex = ServiceAgents.Instance.SettingServiceAgent.GetValue("analog" + _cardId + "Country", 0);
-      mpComboBoxSource.SelectedIndex = ServiceAgents.Instance.SettingServiceAgent.GetValue("analog" + _cardId + "Source", 0);
-      checkBoxCreateSignalGroup.Checked = ServiceAgents.Instance.SettingServiceAgent.GetValue("analog" + _cardId + "createsignalgroup", false);
+      mpComboBoxCountry.SelectedIndex = ServiceAgents.Instance.SettingServiceAgent.GetValue(string.Format(Consts.SETTINGS_KEY_CARD_ANALOG_COUNTRY, _cardId), 0);
+      mpComboBoxSource.SelectedIndex = ServiceAgents.Instance.SettingServiceAgent.GetValue(string.Format(Consts.SETTINGS_KEY_CARD_ANALOG_SOURCE, _cardId), 0);
+      checkBoxCreateSignalGroup.Checked = ServiceAgents.Instance.SettingServiceAgent.GetValue(string.Format(Consts.SETTINGS_KEY_CARD_ANALOG_SIGNAL_GROUP, _cardId), false);
       checkBoxCreateSignalGroup.Text = "Create \"" + TvConstants.TvGroupNames.Analog + "\" group";
 
       SetBitRateMode();
@@ -273,11 +273,10 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
     public override void OnSectionDeActivated()
     {
       base.OnSectionDeActivated();
-      
-      ServiceAgents.Instance.SettingServiceAgent.SaveValue("analog" + _cardId + "Country", mpComboBoxCountry.SelectedIndex);
-      ServiceAgents.Instance.SettingServiceAgent.SaveValue("analog" + _cardId + "Source", mpComboBoxSource.SelectedIndex);
-      ServiceAgents.Instance.SettingServiceAgent.SaveValue("analog" + _cardId + "createsignalgroup", checkBoxCreateSignalGroup.Checked);
-      
+
+      ServiceAgents.Instance.SettingServiceAgent.SaveValue(string.Format(Consts.SETTINGS_KEY_CARD_ANALOG_COUNTRY, _cardId), mpComboBoxCountry.SelectedIndex);
+      ServiceAgents.Instance.SettingServiceAgent.SaveValue(string.Format(Consts.SETTINGS_KEY_CARD_ANALOG_SOURCE, _cardId), mpComboBoxSource.SelectedIndex);
+      ServiceAgents.Instance.SettingServiceAgent.SaveValue(string.Format(Consts.SETTINGS_KEY_CARD_ANALOG_SIGNAL_GROUP, _cardId), checkBoxCreateSignalGroup.Checked);
       SaveConfiguration();
       Card card = ServiceAgents.Instance.CardServiceAgent.GetCard(_cardId);
       if (card.Enabled)
@@ -290,7 +289,6 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
         {
           this.LogDebug("Could not reload card configuration");
         }
-        return;
       }
     }
 

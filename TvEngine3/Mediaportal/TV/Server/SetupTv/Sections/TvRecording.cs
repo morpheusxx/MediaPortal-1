@@ -36,6 +36,7 @@ using Mediaportal.TV.Server.TVDatabase.Entities;
 using Mediaportal.TV.Server.TVDatabase.Entities.Enums;
 using Mediaportal.TV.Server.TVDatabase.Entities.Factories;
 using Mediaportal.TV.Server.TVDatabase.TVBusinessLayer;
+using Mediaportal.TV.Server.TVLibrary.Interfaces;
 using Mediaportal.TV.Server.TVLibrary.Interfaces.Logging;
 
 #endregion
@@ -213,8 +214,8 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
       // default EpisodeName
       //checkBoxCreateTagInfoXML.Checked = true; // (ServiceAgents.Instance.SettingServiceAgent.GetValue("createtaginfoxml", "yes").value == "yes");
 
-      numericUpDownPreRec.Value = ServiceAgents.Instance.SettingServiceAgent.GetValue("preRecordInterval", 7);
-      numericUpDownPostRec.Value = ServiceAgents.Instance.SettingServiceAgent.GetValue("postRecordInterval", 10);
+      numericUpDownPreRec.Value = ServiceAgents.Instance.SettingServiceAgent.GetValue(Consts.SETTINGS_KEY_PRE_RECORD_INTERVAL, Consts.SETTINGS_DEFAULTS_PRE_RECORD_INTERVAL);
+      numericUpDownPostRec.Value = ServiceAgents.Instance.SettingServiceAgent.GetValue(Consts.SETTINGS_KEY_POST_RECORD_INTERVAL, Consts.SETTINGS_DEFAULTS_POST_RECORD_INTERVAL);
 
       // Movies formats
       _formatString[0] = new string[4];
@@ -271,8 +272,8 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
     public override void SaveSettings()
     {
       ISettingService s = ServiceAgents.Instance.SettingServiceAgent;
-      s.SaveValue("preRecordInterval", (int) numericUpDownPreRec.Value);
-      s.SaveValue("postRecordInterval", (int) numericUpDownPostRec.Value);
+      s.SaveValue(Consts.SETTINGS_KEY_PRE_RECORD_INTERVAL, (int)numericUpDownPreRec.Value);
+      s.SaveValue(Consts.SETTINGS_KEY_POST_RECORD_INTERVAL, (int)numericUpDownPostRec.Value);
 
 
       s.SaveValue("moviesformat", _formatIndex[0] == (_formatString[0].Length - 1)

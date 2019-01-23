@@ -24,6 +24,8 @@ using System.Windows.Forms;
 using Mediaportal.TV.Server.SetupControls;
 using Mediaportal.TV.Server.SetupTV.Dialogs;
 using Mediaportal.TV.Server.TVControl.ServiceAgents;
+using Mediaportal.TV.Server.TVLibrary.Interfaces;
+using Mediaportal.TV.Server.TVLibrary.Streaming;
 
 namespace Mediaportal.TV.Server.SetupTV.Sections
 {
@@ -46,13 +48,13 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
 
     public override void OnSectionActivated()
     {
-      var hostname = ServiceAgents.Instance.SettingServiceAgent.GetValue("hostname", Dns.GetHostName());
-      var rtspPort = ServiceAgents.Instance.SettingServiceAgent.GetValue("rtspport", "554");
+      string hostname = ServiceAgents.Instance.SettingServiceAgent.GetValue(Consts.SETTINGS_KEY_HOSTNAME, Dns.GetHostName());
+      int rtspPort = ServiceAgents.Instance.SettingServiceAgent.GetValue(Consts.SETTINGS_KEY_RTSPPORT, RtspStreaming.DefaultPort);
       mpListView1.Items.Clear();
-      var server = new Server {Hostname = hostname, RtspPort = Convert.ToInt32(rtspPort)};
+      var server = new Server {Hostname = hostname, RtspPort = rtspPort};
 
       ListViewItem item = mpListView1.Items.Add(hostname, 0);      
-      item.SubItems.Add(rtspPort);
+      item.SubItems.Add(rtspPort.ToString());
       
       item.Tag = server;
 
@@ -78,8 +80,8 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
         {
           item.Text = dlg.HostName;
           item.SubItems[2].Text = dlg.PortNo.ToString();
-          ServiceAgents.Instance.SettingServiceAgent.SaveValue("hostname", dlg.HostName);
-          ServiceAgents.Instance.SettingServiceAgent.SaveValue("rtspport", dlg.PortNo);                    
+          ServiceAgents.Instance.SettingServiceAgent.SaveValue(Consts.SETTINGS_KEY_HOSTNAME, dlg.HostName);
+          ServiceAgents.Instance.SettingServiceAgent.SaveValue(Consts.SETTINGS_KEY_RTSPPORT, dlg.PortNo);                    
           ServiceNeedsToRestart();
         }
       }
