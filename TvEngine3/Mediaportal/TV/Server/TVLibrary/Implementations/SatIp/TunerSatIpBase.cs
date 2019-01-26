@@ -196,6 +196,7 @@ namespace Mediaportal.TV.Server.TVLibrary.Implementations.SatIp
       RtspResponse response = null;
       string rtpUrl = null;
 
+      bool continueTuning = false;
       if (!string.IsNullOrEmpty(_satIpStreamId))
       {
         // Change channel = RTSP PLAY.
@@ -203,12 +204,23 @@ namespace Mediaportal.TV.Server.TVLibrary.Implementations.SatIp
         string uri = string.Format("rtsp://{0}/stream={1}?{2}", _serverIpAddress, _satIpStreamId, parameters);
         request = new RtspRequest(RtspMethod.Play, uri);
         request.Headers.Add("Session", _rtspSessionId);
-        if (_rtspClient.SendRequest(request, out response) != RtspStatusCode.Ok)
+        var rtspStatusCode = _rtspClient.SendRequest(request, out response);
+        if (rtspStatusCode != RtspStatusCode.Ok)
         {
-          throw new TvException("Failed to tune, non-OK RTSP PLAY status code {0} {1}", response.StatusCode, response.ReasonPhrase);
+          if (rtspStatusCode == RtspStatusCode.SessionNotFound)
+          {
+            this.LogDebug("SAT>IP base: RTSP PLAY unknwon session {0}, start new session", _rtspSessionId);
+            EndSession();
+            continueTuning = true;
+          }
+          else
+           throw new TvException("Failed to tune, non-OK RTSP PLAY status code {0} {1}", response.StatusCode, response.ReasonPhrase);
         }
-        this.LogDebug("SAT>IP base: RTSP PLAY response okay");
-        return;
+        else
+          this.LogDebug("SAT>IP base: RTSP PLAY response okay");
+
+        if (!continueTuning)
+          return;
       }
 
       // First tune = RTSP SETUP.
@@ -675,13 +687,7 @@ namespace Mediaportal.TV.Server.TVLibrary.Implementations.SatIp
             throw new TvException("Failed to stop tuner, non-OK RTSP TEARDOWN status code {0} {1}.", response.StatusCode, response.ReasonPhrase);
           }
 
-          PortReservation.ReleasePort(_rtpClientPort);
-          PortReservation.ReleasePort(_rtcpClientPort);
-
-          _rtspClient?.Dispose();
-          _rtspClient = null;
-          _satIpStreamId = string.Empty;
-          _rtspSessionId = string.Empty;
+          EndSession();
         }
       }
 
@@ -698,6 +704,17 @@ namespace Mediaportal.TV.Server.TVLibrary.Implementations.SatIp
           throw;
         }
       }
+    }
+
+    private void EndSession()
+    {
+      PortReservation.ReleasePort(_rtpClientPort);
+      PortReservation.ReleasePort(_rtcpClientPort);
+
+      _rtspClient?.Dispose();
+      _rtspClient = null;
+      _satIpStreamId = string.Empty;
+      _rtspSessionId = string.Empty;
     }
 
     /// <summary>

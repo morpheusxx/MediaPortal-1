@@ -36,6 +36,7 @@ namespace Mediaportal.TV.Server.TVLibrary.Implementations.Rtsp
     private TcpClient _client = null;
     private int _cseq = 1;
     private readonly object _lockObject = new object();
+    private NetworkStream _stream;
 
     #endregion
 
@@ -78,54 +79,44 @@ namespace Mediaportal.TV.Server.TVLibrary.Implementations.Rtsp
       response = null;
       lock (_lockObject)
       {
-        NetworkStream stream = null;
         int retryCount = 0;
         while (true)
         {
+          int byteCount = 0;
+          byte[] responseBytes = null;
           try
           {
-            if (_client == null)
+            if (_client == null || _stream == null)
             {
               _client = new TcpClient(_serverHost, _serverPort);
+              _stream = _client.GetStream();
             }
+
+            // Send the request and get the response.
+            request.Headers["CSeq"] = _cseq.ToString();
+            byte[] requestBytes = request.Serialise();
+            _stream.Write(requestBytes, 0, requestBytes.Length);
+            _cseq++;
+
+            responseBytes = new byte[_client.ReceiveBufferSize];
+            byteCount = _stream.Read(responseBytes, 0, responseBytes.Length);
+            response = RtspResponse.Deserialise(responseBytes, byteCount);
           }
           catch (Exception ex)
           {
-            this.LogError(ex, "RTSP: failed to connect to server");
-            return RtspStatusCode.RequestTimeOut;
-          }
-          try
-          {
-            stream = _client.GetStream();
-            if (stream == null)
-            {
-              throw new Exception();
-            }
-            break;
-          }
-          catch (Exception ex)
-          {
-            _client.Close();
+            _stream?.Close();
+            _client?.Close();
             _client = null;
+            _stream = null;
             if (retryCount == 1)
             {
               this.LogError(ex, "RTSP: failed to open stream to server");
               return RtspStatusCode.RequestTimeOut;
             }
-            retryCount++;
-          }
-        }
 
-        try
-        {
-          // Send the request and get the response.
-          request.Headers.Add("CSeq", _cseq.ToString());
-          _cseq++;
-          byte[] requestBytes = request.Serialise();
-          stream.Write(requestBytes, 0, requestBytes.Length);
-          byte[] responseBytes = new byte[_client.ReceiveBufferSize];
-          int byteCount = stream.Read(responseBytes, 0, responseBytes.Length);
-          response = RtspResponse.Deserialise(responseBytes, byteCount);
+            retryCount++;
+            continue;
+          }
 
           // Did we get the whole response?
           string contentLengthString;
@@ -139,18 +130,16 @@ namespace Mediaportal.TV.Server.TVLibrary.Implementations.Rtsp
               {
                 response.Body = string.Empty;
               }
+
               while (byteCount > 0 && response.Body.Length < contentLength)
               {
-                byteCount = stream.Read(responseBytes, 0, responseBytes.Length);
+                byteCount = _stream.Read(responseBytes, 0, responseBytes.Length);
                 response.Body += System.Text.Encoding.UTF8.GetString(responseBytes, 0, byteCount);
               }
             }
           }
+
           return response.StatusCode;
-        }
-        finally
-        {
-          //stream.Close();
         }
       }
     }
