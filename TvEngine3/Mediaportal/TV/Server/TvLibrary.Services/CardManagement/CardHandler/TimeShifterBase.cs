@@ -57,7 +57,7 @@ namespace Mediaportal.TV.Server.TVLibrary.CardManagement.CardHandler
         _cancelled = true;
 
         ITvSubChannel subchannel = GetSubChannel(subchannelId);
-        this.LogDebug("card {2}: Cancel Timeshifting sub:{1}", subchannel, _cardHandler.Card.Name);
+        this.LogDebug("card {1}: Cancel Timeshifting sub:{0}", subchannel, _cardHandler.Card.Name);
         subchannel.AudioVideoEvent -= AudioVideoEventHandler;
         _eventAudio.Set();
         _eventVideo.Set();
