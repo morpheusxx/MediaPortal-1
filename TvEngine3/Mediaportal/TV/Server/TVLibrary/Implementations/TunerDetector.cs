@@ -399,6 +399,8 @@ namespace Mediaportal.TV.Server.TVLibrary.Implementations
         if (!_knownUpnpRootDevices.Remove(rootDescriptor.SSDPRootEntry.RootDeviceUUID))
         {
           this.LogWarn("detector: detecting removal of unknown root device {0}", rootDescriptor.SSDPRootEntry.RootDeviceUUID);
+          // Morpheus_xx, 2019-01-24: If we do not know the root device, we don't know the tuner devices. Exit here to avoid NRE later
+          return;
         }
 
         DeviceDescriptor rootDeviceDescriptor = DeviceDescriptor.CreateRootDeviceDescriptor(rootDescriptor);
