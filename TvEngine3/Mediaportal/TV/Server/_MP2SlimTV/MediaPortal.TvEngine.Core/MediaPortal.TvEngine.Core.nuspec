@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+    <metadata>
+        <id>MediaPortal.TvEngine.Core</id>
+        <version>1.0.6</version>
+        <authors>Morpheus_xx</authors>
+        <owners>Morpheus_xx</owners>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>Binary package that contains TVE35 dependencies for MP2.</description>
+        <dependencies>
+            <dependency id="MediaPortal.TvEngine.Interfaces" version="1.0.4" />
+        </dependencies>
+    </metadata>
+</package>
