@@ -162,12 +162,11 @@ namespace Mediaportal.TV.Server.TVService
       // Make sure the real TvService is disabled before debugging with /DEBUG
       else if (opt != null && opt.ToUpperInvariant() == "/DEBUG")
       {
+        Console.WriteLine("Exit debug mode by 'q' key.");
         Service1 s = new Service1();
         s.DoStart(new string[] { "/DEBUG" });
-        do
-        {
-          Thread.Sleep(100);
-        } while (true);
+        while (Console.ReadKey().KeyChar != 'q') Thread.Sleep(100);
+        s.DoStop();
       }
       // Start TVService
       else if (opt != null && opt.ToUpperInvariant() == "/START")
