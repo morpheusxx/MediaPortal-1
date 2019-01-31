@@ -4782,6 +4782,8 @@ namespace Mediaportal.TV.Server.TVLibrary
         this.LogInfo("TvController.OnResume()");
         StartHeartbeatManager();
         StartTvServerEventDispatcher();
+        // Reset UPnP based detection on resume. This helps to fix lost devices.
+        _tunerDetector?.Reset();
 
         if (_scheduler != null)
         {
