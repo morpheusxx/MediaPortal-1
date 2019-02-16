@@ -664,9 +664,6 @@ namespace Mediaportal.TV.Server.TVLibrary.Implementations.SatIp
             pidFilterPhrase = "all";
           }
 
-          StartStreamingKeepAliveThread();
-          StartRtcpListenerThread();
-
           string uri = string.Format("rtsp://{0}:554/stream={1}?pids={2}", _serverIpAddress, _satIpStreamId, pidFilterPhrase);
           request = new RtspRequest(RtspMethod.Play, uri);
           request.Headers.Add("Session", _rtspSessionId);
@@ -674,6 +671,9 @@ namespace Mediaportal.TV.Server.TVLibrary.Implementations.SatIp
           {
             throw new TvException("Failed to start tuner, non-OK RTSP PLAY status code {0} {1}", response.StatusCode, response.ReasonPhrase);
           }
+
+          StartStreamingKeepAliveThread();
+          StartRtcpListenerThread();
         }
         else if (state == TunerState.Stopped)
         {
