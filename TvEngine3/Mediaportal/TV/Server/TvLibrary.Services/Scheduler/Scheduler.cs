@@ -1218,9 +1218,11 @@ namespace Mediaportal.TV.Server.TVLibrary.Scheduler
             recDetail.User.CardId = user.CardId;
             SetRecordingProgramState(recDetail);
             _recordingsInProgressList.Add(recDetail);
+            // Write file before sending notification, so listeners can already find this file (MP2 importer)
+            WriteMatroskaFile(recDetail);
             RecordingStartedNotification(recDetail);
             SetupQualityControl(recDetail);
-            WriteMatroskaFile(recDetail);
+            //WriteMatroskaFile(recDetail);
           }
           catch (Exception ex)
           {
