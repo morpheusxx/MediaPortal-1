@@ -220,9 +220,9 @@ void CLvctParser::OnNewSection(CSection& sections)
           {
             shortNameLength = strlen(name);
           }
-          for (size_t i = 0; i < extendedNames.size(); i++)
+          for (size_t n = 0; n < extendedNames.size(); n++)
           {
-            int extendedNameLength = strlen(extendedNames[i]);
+            int extendedNameLength = strlen(extendedNames[n]);
             if (extendedNameLength == shortNameLength && strcmp(name, extendedNames[0]) == 0)
             {
               continue;
@@ -240,7 +240,7 @@ void CLvctParser::OnNewSection(CSection& sections)
             }
             else
             {
-              strcpy(newName, extendedNames[i]);
+              strcpy(newName, extendedNames[n]);
               if (name != NULL)
               {
                 strcat(newName, " (");
@@ -422,7 +422,13 @@ void CLvctParser::DecodeMultipleStrings(byte* b, int length, vector<char*>* stri
 void CLvctParser::DecodeString(byte* b, int compressionType, int mode, int numberBytes, char** string)
 {
   //LogDebug("LvctParser: decode string, compression type = 0x%x, mode = 0x%x, number of bytes = %d", compressionType, mode, numberBytes);
-  if (compressionType == 0 && mode == 0)
+  // Modes
+  // 0x00 - 0x3E:  8 - bit Unicode™
+  // 0x3F : 16 - bit Unicode™
+  // 0x40 - 0xDF : Reserved for future ATSC use
+  // 0xE0 - 0xFE : User private
+  // 0xFF : Text mode is not applicable
+  if (compressionType == 0 && (mode >= 0 && mode <= 0x3E))
   {
     *string = new char[numberBytes + 1];
     if (*string == NULL)
