@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -18,6 +18,7 @@
     <ProjectName>MP_DVB_Subtitle_3</ProjectName>
     <ProjectGuid>{FEA1D3DB-F7BC-46F4-B1AE-F582548939CA}</ProjectGuid>
     <RootNamespace>MPStreamAnalyzer</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -25,17 +26,17 @@
     <UseOfMfc>false</UseOfMfc>
     <UseOfAtl>Static</UseOfAtl>
     <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseOfMfc>false</UseOfMfc>
     <UseOfAtl>false</UseOfAtl>
     <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Template|Win32'">
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -212,6 +213,10 @@
     <ClCompile Include="Source\PesDecoder\PacketSync.cpp" />
     <ClCompile Include="Source\PesDecoder\PesDecoder.cpp" />
     <ClCompile Include="Source\PesDecoder\TsHeader.cpp" />
+    <ClCompile Include="Source\Hdmv\GolombBuffer.cpp" />
+    <ClCompile Include="Source\Hdmv\HdmvSub.cpp" />
+    <ClCompile Include="Source\Hdmv\Rasterizer.cpp" />
+    <ClCompile Include="Source\Hdmv\Utility.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Source\DVBSub3.def" />
@@ -225,9 +230,14 @@
     <ClInclude Include="Source\SubStructs.h" />
     <ClInclude Include="source\dvbsubs\subtitle.h" />
     <ClInclude Include="source\SubtitleInputPin.h" />
+    <ClInclude Include="source\dvbsubs\tables.h" />
     <ClInclude Include="Source\PesDecoder\PacketSync.h" />
     <ClInclude Include="Source\PesDecoder\PesDecoder.h" />
     <ClInclude Include="Source\PesDecoder\TsHeader.h" />
+    <ClInclude Include="Source\Hdmv\GolombBuffer.h" />
+    <ClInclude Include="Source\Hdmv\HdmvSub.h" />
+    <ClInclude Include="Source\Hdmv\Rasterizer.h" />
+    <ClInclude Include="Source\Hdmv\SeparableFilter.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

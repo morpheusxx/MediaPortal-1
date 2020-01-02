@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -15,6 +15,7 @@
     <ProjectGuid>{7C2419B3-501B-4B10-B3D4-E81BEB16843F}</ProjectGuid>
     <RootNamespace>dshowhelper</RootNamespace>
     <Keyword>Win32Proj</Keyword>
+    <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
@@ -22,13 +23,13 @@
     <UseOfMfc>Dynamic</UseOfMfc>
     <UseOfAtl>false</UseOfAtl>
     <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseOfMfc>Dynamic</UseOfMfc>
     <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -77,12 +78,11 @@
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <PrecompiledHeaderFile>Stdafx.h</PrecompiledHeaderFile>
-      <ExceptionHandling>Async</ExceptionHandling>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>gdiplus.lib;strmbasd.lib;winmm.lib;comsupp.lib;dxguid.lib;d3d9.lib;d3dx9.lib;mfuuid.lib;dxva2.lib;evr.lib;mf.lib;strmiids.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>strmbasd.lib;winmm.lib;comsupp.lib;dxguid.lib;d3d9.lib;d3dx9.lib;mfuuid.lib;dxva2.lib;evr.lib;mf.lib;strmiids.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>bin\Debug/dshowhelper.dll</OutputFile>
-      <AdditionalLibraryDirectories>$(SolutionDir)baseclasses\debug;$(DXSDK_DIR)lib\x86;$(WINDOWS_SDK)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)baseclasses\debug; $(DXSDK_DIR)lib\x86;$(WINDOWS_SDK)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <ModuleDefinitionFile>./source/dshowhelper.def</ModuleDefinitionFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -95,18 +95,11 @@
       <ImportLibrary>bin\Debug/dshowhelper.lib</ImportLibrary>
       <TargetMachine>MachineX86</TargetMachine>
       <ImageHasSafeExceptionHandlers>true</ImageHasSafeExceptionHandlers>
-      <AdditionalOptions>/SAFESEH:NO %(AdditionalOptions)</AdditionalOptions>
     </Link>
-    <PostBuildEvent>
-      <Command>xcopy $(TargetDir)dshowhelper.dll $(SolutionDir)..\mediaportal\MediaPortal.Application\bin\$(ConfigurationName)\ /Y /T
-xcopy $(TargetDir)dshowhelper.pdb $(SolutionDir)..\mediaportal\MediaPortal.Application\bin\$(ConfigurationName)\ /Y /T
-xcopy $(TargetDir)dshowhelper.dll $(SolutionDir)..\mediaportal\MediaPortal.Application\bin\$(ConfigurationName)\ /Y
-xcopy $(TargetDir)dshowhelper.pdb $(SolutionDir)..\mediaportal\MediaPortal.Application\bin\$(ConfigurationName)\ /Y</Command>
-    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <Optimization>Disabled</Optimization>
+      <Optimization>MaxSpeed</Optimization>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <AdditionalIncludeDirectories>$(SolutionDir)baseclasses;$(WINDOWS_SDK)Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -117,20 +110,19 @@ xcopy $(TargetDir)dshowhelper.pdb $(SolutionDir)..\mediaportal\MediaPortal.Appli
       <ObjectFileName>.\obj\Release/</ObjectFileName>
       <ProgramDataBaseFileName>.\bin\Release/</ProgramDataBaseFileName>
       <WarningLevel>Level3</WarningLevel>
-      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <DebugInformationFormat>OldStyle</DebugInformationFormat>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <PrecompiledHeaderFile>Stdafx.h</PrecompiledHeaderFile>
-      <ExceptionHandling>Async</ExceptionHandling>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>gdiplus.lib;strmbase.lib;winmm.lib;comsupp.lib;dxguid.lib;d3d9.lib;d3dx9.lib;mfuuid.lib;dxva2.lib;evr.lib;mf.lib;strmiids.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>strmbase.lib;winmm.lib;comsupp.lib;dxguid.lib;d3d9.lib;d3dx9.lib;mfuuid.lib;dxva2.lib;evr.lib;mf.lib;strmiids.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>bin\Release/dshowhelper.dll</OutputFile>
       <AdditionalLibraryDirectories>$(SolutionDir)baseclasses\release; $(DXSDK_DIR)lib\x86;$(WINDOWS_SDK)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <ModuleDefinitionFile>./source/dshowhelper.def</ModuleDefinitionFile>
       <AddModuleNamesToAssembly>%(AddModuleNamesToAssembly)</AddModuleNamesToAssembly>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
       <ProgramDatabaseFile>bin\Release/dshowhelper.pdb</ProgramDatabaseFile>
       <SubSystem>Windows</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>
@@ -141,56 +133,33 @@ xcopy $(TargetDir)dshowhelper.pdb $(SolutionDir)..\mediaportal\MediaPortal.Appli
       <ImportLibrary>bin\Release/dshowhelper.lib</ImportLibrary>
       <TargetMachine>MachineX86</TargetMachine>
       <ImageHasSafeExceptionHandlers>true</ImageHasSafeExceptionHandlers>
-      <AdditionalOptions>/FORCE:MULTIPLE %(AdditionalOptions)</AdditionalOptions>
-      <ExceptionHandling>Async</ExceptionHandling>
     </Link>
-    <PostBuildEvent>
-      <Command>xcopy $(TargetDir)dshowhelper.dll $(SolutionDir)..\mediaportal\MediaPortal.Application\bin\$(ConfigurationName)\ /Y /T
-xcopy $(TargetDir)dshowhelper.pdb $(SolutionDir)..\mediaportal\MediaPortal.Application\bin\$(ConfigurationName)\ /Y /T
-xcopy $(TargetDir)dshowhelper.dll $(SolutionDir)..\mediaportal\MediaPortal.Application\bin\$(ConfigurationName)\ /Y
-xcopy $(TargetDir)dshowhelper.pdb $(SolutionDir)..\mediaportal\MediaPortal.Application\bin\$(ConfigurationName)\ /Y</Command>
-    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="source\DeviceState.cpp" />
     <ClCompile Include="source\dllmodul.cpp" />
     <ClCompile Include="source\dshowhelper.cpp" />
     <ClCompile Include="source\DX9AllocatorPresenter.cpp" />
     <ClCompile Include="source\EVRCustomPresenter.cpp" />
     <ClCompile Include="source\GrabBitmaps.cpp" />
-    <ClCompile Include="source\MadPresenter.cpp" />
     <ClCompile Include="source\OuterEVR.cpp" />
     <ClCompile Include="source\Scheduler.cpp" />
     <ClCompile Include="source\StatsRenderer.cpp" />
-    <ClCompile Include="source\threads\SystemClock.cpp" />
     <ClCompile Include="source\TimeSource.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\alloctracing.h" />
     <ClInclude Include="source\autoint.h" />
     <ClInclude Include="source\callback.h" />
-    <ClInclude Include="source\DeviceState.h" />
     <ClInclude Include="source\dshowhelper.h" />
     <ClInclude Include="source\DX9AllocatorPresenter.h" />
     <ClInclude Include="source\EVRCustomPresenter.h" />
-    <ClInclude Include="source\helpers\Geometry.h" />
-    <ClInclude Include="source\helpers\smartptr.h" />
     <ClInclude Include="source\IAVSyncClock.h" />
     <ClInclude Include="source\IMF.h" />
-    <ClInclude Include="source\MadPresenter.h" />
-    <ClInclude Include="source\mvrInterfaces.h" />
     <ClInclude Include="source\MyQueue.h" />
     <ClInclude Include="source\OuterEVR.h" />
     <ClInclude Include="source\Scheduler.h" />
     <ClInclude Include="source\StatsRenderer.h" />
     <ClInclude Include="source\StdAfx.h" />
-    <ClInclude Include="source\StdString.h" />
-    <ClInclude Include="source\threads\CriticalSection.h" />
-    <ClInclude Include="source\threads\Helpers.h" />
-    <ClInclude Include="source\threads\Lockables.h" />
-    <ClInclude Include="source\threads\SingleLock.h" />
-    <ClInclude Include="source\threads\SystemClock.h" />
-    <ClInclude Include="source\threads\Condition.h" />
     <ClInclude Include="source\TimeSource.h" />
     <ClInclude Include="source\version.h" />
   </ItemGroup>

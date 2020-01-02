@@ -14,21 +14,21 @@
     <ProjectGuid>{11F8DE41-A160-4C2A-A38C-F79329152FE3}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>MPUrlSourceSplitter_libsocket</RootNamespace>
-    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -82,10 +82,6 @@
     <ClInclude Include="Dns.h" />
     <ClInclude Include="IpAddress.h" />
     <ClInclude Include="IpAddressCollection.h" />
-    <ClInclude Include="Ipv4Header.h" />
-    <ClInclude Include="Ipv4Header_Constants.h" />
-    <ClInclude Include="MulticastUdpRawServer.h" />
-    <ClInclude Include="MulticastUdpRawSocketContext.h" />
     <ClInclude Include="MulticastUdpSocketContext.h" />
     <ClInclude Include="MulticastUdpServer.h" />
     <ClInclude Include="NetworkInterface.h" />
@@ -104,9 +100,6 @@
     <ClCompile Include="Dns.cpp" />
     <ClCompile Include="IpAddress.cpp" />
     <ClCompile Include="IpAddressCollection.cpp" />
-    <ClCompile Include="Ipv4Header.cpp" />
-    <ClCompile Include="MulticastUdpRawServer.cpp" />
-    <ClCompile Include="MulticastUdpRawSocketContext.cpp" />
     <ClCompile Include="MulticastUdpSocketContext.cpp" />
     <ClCompile Include="MulticastUdpServer.cpp" />
     <ClCompile Include="NetworkInterface.cpp" />
