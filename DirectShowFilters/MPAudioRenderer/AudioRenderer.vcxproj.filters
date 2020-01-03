@@ -65,15 +65,6 @@
     <ClCompile Include="SoundTouch\source\cpu_detect_x86.cpp">
       <Filter>SoundTouch</Filter>
     </ClCompile>
-    <ClCompile Include="SoundTouch\source\InterpolateLinear.cpp">
-      <Filter>SoundTouch</Filter>
-    </ClCompile>
-    <ClCompile Include="SoundTouch\source\InterpolateShannon.cpp">
-      <Filter>SoundTouch</Filter>
-    </ClCompile>
-    <ClCompile Include="SoundTouch\source\InterpolateCubic.cpp">
-      <Filter>SoundTouch</Filter>
-    </ClCompile>
     <ClCompile Include="source\BaseAudioSink.cpp">
       <Filter>Filters</Filter>
     </ClCompile>
@@ -81,9 +72,6 @@
       <Filter>Filters</Filter>
     </ClCompile>
     <ClCompile Include="source\ChannelMixer.cpp">
-      <Filter>Filters</Filter>
-    </ClCompile>
-    <ClCompile Include="source\SampleCopier.cpp">
       <Filter>Filters</Filter>
     </ClCompile>
     <ClCompile Include="source\SampleRateConverterFilter.cpp">
@@ -119,7 +107,11 @@
     <ClCompile Include="source\SettingsProp.cpp">
       <Filter>Settings</Filter>
     </ClCompile>
-    <ClCompile Include="source\Logger.cpp" />
+    <ClCompile Include="source\DirectSoundRenderer.cpp" />
+    <ClCompile Include="source\MultiSoundTouch.cpp" />
+    <ClCompile Include="source\ThreadDecouplingFilter.cpp" />
+    <ClCompile Include="source\WaitableState.cpp" />
+    <ClCompile Include="source\WASAPIRenderer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\dllsetup.h" />
@@ -184,15 +176,6 @@
     <ClInclude Include="AC3_encoder\bits.h">
       <Filter>AC3_encoder</Filter>
     </ClInclude>
-    <ClInclude Include="SoundTouch\source\InterpolateCubic.h">
-      <Filter>SoundTouch</Filter>
-    </ClInclude>
-    <ClInclude Include="SoundTouch\source\InterpolateLinear.h">
-      <Filter>SoundTouch</Filter>
-    </ClInclude>
-    <ClInclude Include="SoundTouch\source\InterpolateShannon.h">
-      <Filter>SoundTouch</Filter>
-    </ClInclude>
     <ClInclude Include="source\BaseAudioSink.h">
       <Filter>Filters</Filter>
     </ClInclude>
@@ -200,9 +183,6 @@
       <Filter>Filters</Filter>
     </ClInclude>
     <ClInclude Include="source\ChannelMixer.h">
-      <Filter>Filters</Filter>
-    </ClInclude>
-    <ClInclude Include="source\SampleCopier.h">
       <Filter>Filters</Filter>
     </ClInclude>
     <ClInclude Include="source\SampleRateConverterFilter.h">
@@ -247,13 +227,15 @@
     <ClInclude Include="source\IRenderFilter.h">
       <Filter>Interfaces</Filter>
     </ClInclude>
-    <ClInclude Include="source\IMPAudioSettings.h">
-      <Filter>Interfaces</Filter>
-    </ClInclude>
     <ClInclude Include="source\IAVSyncClock.h">
       <Filter>Interfaces</Filter>
     </ClInclude>
-    <ClInclude Include="source\Logger.h" />
+    <ClInclude Include="source\DirectSoundRenderer.h" />
+    <ClInclude Include="source\IRenderDevice.h" />
+    <ClInclude Include="source\MultiSoundTouch.h" />
+    <ClInclude Include="source\ThreadDecouplingFilter.h" />
+    <ClInclude Include="source\WaitableState.h" />
+    <ClInclude Include="source\WASAPIRenderer.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="source\MpAudioRenderer.rc" />
