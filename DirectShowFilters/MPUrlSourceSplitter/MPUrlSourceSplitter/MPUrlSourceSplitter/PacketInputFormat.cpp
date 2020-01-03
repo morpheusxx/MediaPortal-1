@@ -180,7 +180,7 @@ int CPacketInputFormat::ReadPacket(AVFormatContext *formatContext, AVPacket *pac
 
   if (ret == 0)
   {
-    ret = av_new_packet(packet, mediaPacket->GetBuffer()->GetBufferOccupiedSpace());
+    ret = av_new_packet(packet, (unsigned int)mediaPacket->GetBuffer()->GetBufferOccupiedSpace());
 
     if (ret == 0)
     {

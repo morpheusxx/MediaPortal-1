@@ -202,7 +202,7 @@ HRESULT CMPUrlSourceSplitterOutputSplitterPin::Parse(GUID subType, COutputPinPac
 
       if (SUCCEEDED(result) && (this->h264Buffer->GetBuffer()->GetBufferOccupiedSpace() > 0))
       {
-        unsigned int bufferSize = this->h264Buffer->GetBuffer()->GetBufferOccupiedSpace();
+        size_t bufferSize = this->h264Buffer->GetBuffer()->GetBufferOccupiedSpace();
         ALLOC_MEM_DEFINE_SET(buffer, unsigned char, bufferSize, 0);
         CHECK_POINTER_HRESULT(result, buffer, result, E_OUTOFMEMORY);
 
@@ -227,7 +227,7 @@ HRESULT CMPUrlSourceSplitterOutputSplitterPin::Parse(GUID subType, COutputPinPac
               break;
             }
 
-            unsigned int size = next - start;
+            size_t size = next - start;
             CH264Nalu nalu;
             nalu.SetBuffer(start, size, 0);
 
@@ -237,14 +237,14 @@ HRESULT CMPUrlSourceSplitterOutputSplitterPin::Parse(GUID subType, COutputPinPac
 
             while (SUCCEEDED(result) && nalu.ReadNext())
             {
-              unsigned int tempSize = nalu.GetDataLength() + 4;
+              size_t tempSize = nalu.GetDataLength() + 4;
               ALLOC_MEM_DEFINE_SET(temp, unsigned char, tempSize, 0);
               CHECK_POINTER_HRESULT(result, temp, result, E_OUTOFMEMORY);
 
               if (SUCCEEDED(result))
               {
                 // write size of the NALU in big endian
-                AV_WB32(temp, nalu.GetDataLength());
+                AV_WB32(temp, (int)nalu.GetDataLength());
                 memcpy(temp + 4, nalu.GetDataBuffer(), nalu.GetDataLength());
 
                 result = (packetToCollection->GetBuffer()->AddToBufferWithResize(temp, tempSize) == tempSize) ? result : E_OUTOFMEMORY;
@@ -404,7 +404,7 @@ HRESULT CMPUrlSourceSplitterOutputSplitterPin::Parse(GUID subType, COutputPinPac
             if (SUCCEEDED(result))
             {
               // count needed memory for output packet
-              unsigned int neededSpace = 0;
+              size_t neededSpace = 0;
               for (unsigned int i = 0; (SUCCEEDED(result) && (i < nextPacketIndex)); i++)
               {
                 COutputPinPacket *temp = this->h264PacketCollection->GetItem(i);
@@ -459,11 +459,11 @@ HRESULT CMPUrlSourceSplitterOutputSplitterPin::Parse(GUID subType, COutputPinPac
     }
     else if (this->mediaTypeSubType == MEDIASUBTYPE_HDMVSUB)
     {
-      unsigned int bufferSize = packet->GetBuffer()->GetBufferOccupiedSpace();
+      size_t bufferSize = packet->GetBuffer()->GetBufferOccupiedSpace();
       ALLOC_MEM_DEFINE_SET(buffer, unsigned char, bufferSize, 0);
       CHECK_POINTER_HRESULT(result, buffer, result, E_OUTOFMEMORY);
 
-      unsigned int pgsBufferOccupied = 0;
+      size_t pgsBufferOccupied = 0;
       ALLOC_MEM_DEFINE_SET(pgsBuffer, unsigned char, bufferSize, 0);
       CHECK_POINTER_HRESULT(result, pgsBuffer, result, E_OUTOFMEMORY);
 
@@ -474,7 +474,7 @@ HRESULT CMPUrlSourceSplitterOutputSplitterPin::Parse(GUID subType, COutputPinPac
         unsigned char *bufferStart = buffer;
         unsigned char *bufferEnd = buffer + bufferSize;
         unsigned char segmentType;
-        unsigned int segmentLength;
+        size_t segmentLength;
 
         if (bufferSize < 3)
         {
@@ -492,7 +492,7 @@ HRESULT CMPUrlSourceSplitterOutputSplitterPin::Parse(GUID subType, COutputPinPac
           while ((bufferStart + 3) < bufferEnd)
           {
             const unsigned char *segmentStart = bufferStart;
-            const unsigned int segmentBufferLength = bufferEnd - bufferStart;
+            const size_t segmentBufferLength = bufferEnd - bufferStart;
 
             segmentType = AV_RB8(bufferStart);
             segmentLength = AV_RB16(bufferStart + 1);
@@ -569,7 +569,7 @@ HRESULT CMPUrlSourceSplitterOutputSplitterPin::Parse(GUID subType, COutputPinPac
     }
     else if (packet->IsPacketMovText())
     {
-      unsigned int bufferSize = packet->GetBuffer()->GetBufferOccupiedSpace();
+      size_t bufferSize = packet->GetBuffer()->GetBufferOccupiedSpace();
 
       if (bufferSize > 2)
       {
@@ -609,7 +609,7 @@ HRESULT CMPUrlSourceSplitterOutputSplitterPin::Parse(GUID subType, COutputPinPac
     }
     else if (this->mediaTypeSubType == MEDIASUBTYPE_AAC && ((!this->IsContainerMatroska()) && (!this->IsContainerMp4())))
     {
-      unsigned int bufferSize = packet->GetBuffer()->GetBufferOccupiedSpace();
+      size_t bufferSize = packet->GetBuffer()->GetBufferOccupiedSpace();
       ALLOC_MEM_DEFINE_SET(buffer, unsigned char, bufferSize, 0);
       CHECK_POINTER_HRESULT(result, buffer, result, E_OUTOFMEMORY);
 

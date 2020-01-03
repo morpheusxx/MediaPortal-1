@@ -2132,13 +2132,13 @@ HRESULT CMPUrlSourceSplitter::GetNextPacket(COutputPinPacket *packet, unsigned i
 // @param restOfParameters : reference to rest of parameter string without first token and separator, if NULL then there is no rest of parameters and whole parameters string was processed
 // @param separatorMustBeFound : specifies if separator must be found
 // @return : true if successful, false otherwise
-bool SplitBySeparator(const wchar_t *parameters, const wchar_t *separator, unsigned int *length, wchar_t **restOfParameters, bool separatorMustBeFound)
+bool SplitBySeparator(const wchar_t *parameters, const wchar_t *separator, size_t *length, wchar_t **restOfParameters, bool separatorMustBeFound)
 {
   bool result = false;
 
   if ((parameters != NULL) && (separator != NULL) && (length != NULL) && (restOfParameters))
   {
-    unsigned int parameterLength = wcslen(parameters);
+    size_t parameterLength = wcslen(parameters);
 
     wchar_t *tempSeparator = NULL;
     wchar_t *tempParameters = (wchar_t *)parameters;
@@ -2197,7 +2197,7 @@ CParameterCollection *CMPUrlSourceSplitter::ParseParameters(const wchar_t *param
     if (SUCCEEDED(result))
     {
       bool splitted = false;
-      unsigned int tokenLength = 0;
+      size_t tokenLength = 0;
       wchar_t *rest = NULL;
 
       splitted = SplitBySeparator(parameters, PARAMETER_SEPARATOR_STOCK_FILTER, &tokenLength, &rest, true);
@@ -2224,7 +2224,7 @@ CParameterCollection *CMPUrlSourceSplitter::ParseParameters(const wchar_t *param
               wcsncpy_s(token, tokenLength, parameters, tokenLength - 1);
               parameters = rest;
 
-              unsigned int nameLength = 0;
+              size_t nameLength = 0;
               wchar_t *value = NULL;
               bool splittedNameAndValue = SplitBySeparator(token, PARAMETER_ASSIGN, &nameLength, &value, true);
 
@@ -2268,7 +2268,7 @@ CParameterCollection *CMPUrlSourceSplitter::ParseParameters(const wchar_t *param
     if (SUCCEEDED(result) && (parsedParameters->Count() == 0))
     {
       bool splitted = false;
-      unsigned int tokenLength = 0;
+      size_t tokenLength = 0;
       wchar_t *rest = NULL;
 
       splitted = SplitBySeparator(parameters, PARAMETER_IDENTIFIER, &tokenLength, &rest, false);
@@ -2294,7 +2294,7 @@ CParameterCollection *CMPUrlSourceSplitter::ParseParameters(const wchar_t *param
               wcsncpy_s(token, tokenLength, parameters, tokenLength - 1);
               parameters = rest;
 
-              unsigned int nameLength = 0;
+              size_t nameLength = 0;
               wchar_t *value = NULL;
               bool splittedNameAndValue = SplitBySeparator(token, PARAMETER_ASSIGN, &nameLength, &value, true);
 

@@ -48,52 +48,52 @@ public:
 
   // get free space in buffer
   // @return : free space in buffer
-  unsigned int GetBufferFreeSpace(void);
+  size_t GetBufferFreeSpace(void);
 
   // get occupied space in buffer
   // @return : occupied space in buffer
-  unsigned int GetBufferOccupiedSpace(void);
+  size_t GetBufferOccupiedSpace(void);
 
   // get total size of buffer
   // @return : buffer size
-  unsigned int GetBufferSize(void);
+  size_t GetBufferSize(void);
 
   // add data from source to buffer
   // @param source : the reference to source to copy data
   // @param length : the length of data to copy
   // @return : count of added data
-  unsigned int AddToBuffer(const unsigned char *source, unsigned int length);
+  size_t AddToBuffer(const unsigned char *source, size_t length);
 
   // add data from source to buffer and resize buffer if necessary to fit added data
   // @param source : the reference to source to copy data
   // @param length : the length of data to copy
   // @return : count of added data
-  unsigned int AddToBufferWithResize(const unsigned char *source, unsigned int length);
+  size_t AddToBufferWithResize(const unsigned char *source, size_t length);
 
   // add data from source to buffer and resize buffer if necessary to fit added data
   // @param source : the reference to source to copy data
   // @param length : the length of data to copy
   // @param minBufferSize : the minimum buffer size after resizing (if necessary)
   // @return : count of added data
-  unsigned int AddToBufferWithResize(const unsigned char *source, unsigned int length, unsigned int minBufferSize);
+  size_t AddToBufferWithResize(const unsigned char *source, size_t length, size_t minBufferSize);
 
   // add content of linear buffer to current buffer
   // @param buffer : the linear buffer to add content
   // @return : count of added data
-  unsigned int AddToBufferWithResize(CLinearBuffer *buffer);
+  size_t AddToBufferWithResize(CLinearBuffer *buffer);
 
   // add content of linear buffer to current buffer
   // @param buffer : the linear buffer to add content
   // @param minBufferSize : the minimum buffer size after resizing (if necessary)
   // @return : count of added data
-  unsigned int AddToBufferWithResize(CLinearBuffer *buffer, unsigned int minBufferSize);
+  size_t AddToBufferWithResize(CLinearBuffer *buffer, size_t minBufferSize);
 
   // add content of linear buffer to current buffer
   // @param buffer : the linear buffer to add content
   // @param start : the start position in buffer parameter to add data
   // @param length : the count of data to add
   // @return : count of added data
-  unsigned int AddToBufferWithResize(CLinearBuffer *buffer, unsigned int start, unsigned int length);
+  size_t AddToBufferWithResize(CLinearBuffer *buffer, size_t start, size_t length);
 
   // add content of linear buffer to current buffer
   // @param buffer : the linear buffer to add content
@@ -101,43 +101,43 @@ public:
   // @param length : the count of data to add
   // @param minBufferSize : the minimum buffer size after resizing (if necessary)
   // @return : count of added data
-  unsigned int AddToBufferWithResize(CLinearBuffer *buffer, unsigned int start, unsigned int length, unsigned int minBufferSize);
+  size_t AddToBufferWithResize(CLinearBuffer *buffer, size_t start, size_t length, size_t minBufferSize);
 
   // remove from buffer
   // @param length : the length of data to remove from buffer
-  void RemoveFromBuffer(unsigned int length);
+  void RemoveFromBuffer(size_t length);
 
   // remove from buffer and moves remaining data to start of buffer
   // @param length : the length of data to remove from buffer
-  void RemoveFromBufferAndMove(unsigned int length);
+  void RemoveFromBufferAndMove(size_t length);
 
   // remove from buffer counted from end
   // @param length : the length of data to remove from buffer
-  void RemoveFromBufferEnd(unsigned int length);
+  void RemoveFromBufferEnd(size_t length);
 
   // copy data from internal buffer to destination, data are copied by packets if specified packetSize
   // @param destination : the reference to destination buffer to copy data
   // @param length : the length of data to copy
   // @return : length of copied data
-  unsigned int CopyFromBuffer(unsigned char *destination, unsigned int length);
+  size_t CopyFromBuffer(unsigned char *destination, size_t length);
 
   // copy data from internal buffer to destination, data are copied by packets if specified packetSize
   // @param destination : the reference to destination buffer to copy data
   // @param length : the length of data to copy
   // @param start : the position from where copying start
   // @return : length of copied data
-  unsigned int CopyFromBuffer(unsigned char *destination, unsigned int length, unsigned int start);
+  size_t CopyFromBuffer(unsigned char *destination, size_t length, size_t start);
 
   // initialize buffer to specified size
   // @param size : required size of buffer
   // @return : true if successful, false otherwise
-  bool InitializeBuffer(unsigned int size);
+  bool InitializeBuffer(size_t size);
 
   // initialize buffer to specified size and set whole buffer with specified value
   // @param size : required size of buffer
   // @param value : value to set in buffer
   // @return : true if successful, false otherwise
-  bool InitializeBuffer(unsigned int size, char value);
+  bool InitializeBuffer(size_t size, char value);
 
   // clear buffer content
   void ClearBuffer(void);
@@ -149,25 +149,25 @@ public:
   // @param start : the position from where searching start
   // @param c : the character to find
   // @return : the first position of character or UINT_MAX if not found
-  unsigned int GetFirstPosition(unsigned int start, char c);
+  size_t GetFirstPosition(size_t start, char c);
 
   // resize buffer to new size
   // @param size : new size of buffer
   // @return : true if successful, false otherwise
-  bool ResizeBuffer(unsigned int size);
+  bool ResizeBuffer(size_t size);
 
   // compares data in linear buffer with specified buffer
   // @param buffer : the buffer to compare with linear buffer
   // @param length : the length of buffer to compare
   // @return : true if data are same, false otherwise
-  bool CompareBuffer(const unsigned char *buffer, unsigned int length);
+  bool CompareBuffer(const unsigned char *buffer, size_t length);
 
   // compares data in linear buffer with specified buffer
   // @param buffer : the buffer to compare with linear buffer
   // @param length : the length of buffer to compare
   // @param start : the position in linear buffer to start comparing
   // @return : true if data are same, false otherwise
-  bool CompareBuffer(const unsigned char *buffer, unsigned int length, unsigned int start);
+  bool CompareBuffer(const unsigned char *buffer, size_t length, size_t start);
 
   // compares data in linear buffer with specified linear buffer
   // @param buffer : the linear buffer to compare with linear buffer
@@ -178,7 +178,7 @@ public:
   // @param buffer : the buffer to compare with linear buffer
   // @param start : the position in specified linear buffer to start comparing
   // @return : true if data are same, false otherwise
-  bool CompareBuffer(CLinearBuffer *buffer, unsigned int start);
+  bool CompareBuffer(CLinearBuffer *buffer, size_t start);
 
 private:
   // internal buffer
@@ -191,7 +191,7 @@ private:
   unsigned char *dataEnd;
 
   // internal buffer size
-  unsigned int bufferSize;
+  size_t bufferSize;
 };
 
 #endif

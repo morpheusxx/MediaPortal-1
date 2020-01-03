@@ -2414,7 +2414,7 @@ HRESULT CDemuxer::DemuxerReadPosition(int64_t position, uint8_t *buffer, int len
         CStreamPackageDataResponse *response = dynamic_cast<CStreamPackageDataResponse *>(package->GetResponse());
 
         response->GetBuffer()->CopyFromBuffer(buffer, response->GetBuffer()->GetBufferOccupiedSpace());
-        result = response->GetBuffer()->GetBufferOccupiedSpace();
+        result = (HRESULT)response->GetBuffer()->GetBufferOccupiedSpace();
 
         if (response->IsDiscontinuity())
         {

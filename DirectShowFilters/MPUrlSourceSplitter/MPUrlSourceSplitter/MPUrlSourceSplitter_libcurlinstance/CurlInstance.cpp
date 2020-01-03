@@ -772,9 +772,9 @@ size_t CCurlInstance::CurlReceiveData(const unsigned char *buffer, size_t length
 
     this->totalReceivedBytes += length;
 
-    unsigned int bufferSize = this->downloadResponse->GetReceivedData()->GetBufferSize();
-    unsigned int freeSpace = this->downloadResponse->GetReceivedData()->GetBufferFreeSpace();
-    unsigned int newBufferSize = max(bufferSize * 2, bufferSize + length);
+    size_t bufferSize = this->downloadResponse->GetReceivedData()->GetBufferSize();
+    size_t freeSpace = this->downloadResponse->GetReceivedData()->GetBufferFreeSpace();
+    size_t newBufferSize = max(bufferSize * 2, bufferSize + length);
 
     if (freeSpace < length)
     {

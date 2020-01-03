@@ -107,8 +107,8 @@ STDMETHODIMP COutputPinMediaSample::SetPacket(COutputPinPacket *packet)
 
   if (SUCCEEDED(result))
   {
-    unsigned int bufferSize = packet->GetBuffer()->GetBufferSize();
-    unsigned int bufferSizeOccupied = packet->GetBuffer()->GetBufferOccupiedSpace();
+    size_t bufferSize = packet->GetBuffer()->GetBufferSize();
+    size_t bufferSizeOccupied = packet->GetBuffer()->GetBufferOccupiedSpace();
 
     this->m_pBuffer = ALLOC_MEM_SET(this->m_pBuffer, BYTE, bufferSize, 0);
     CHECK_POINTER_HRESULT(result, this->m_pBuffer, result, E_OUTOFMEMORY);
@@ -143,7 +143,7 @@ STDMETHODIMP COutputPinMediaSample::SetPacket(IMediaSample *mediaSample, COutput
 
     if (SUCCEEDED(result))
     {
-      unsigned int bufferSizeOccupied = min((unsigned long)mediaSample->GetSize(), packet->GetBuffer()->GetBufferOccupiedSpace());
+      size_t bufferSizeOccupied = min((unsigned long)mediaSample->GetSize(), packet->GetBuffer()->GetBufferOccupiedSpace());
 
       packet->GetBuffer()->CopyFromBuffer(buffer, bufferSizeOccupied);
 
