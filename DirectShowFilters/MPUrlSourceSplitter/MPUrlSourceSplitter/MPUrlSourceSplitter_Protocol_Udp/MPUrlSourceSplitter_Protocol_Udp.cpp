@@ -241,7 +241,7 @@ HRESULT CMPUrlSourceSplitter_Protocol_Udp::ReceiveData(CStreamPackage *streamPac
     {
       LOCK_MUTEX(this->lockCurlMutex, INFINITE)
 
-      unsigned int bytesRead = this->mainCurlInstance->GetUdpDownloadResponse()->GetReceivedData()->GetBufferOccupiedSpace();
+        size_t bytesRead = this->mainCurlInstance->GetUdpDownloadResponse()->GetReceivedData()->GetBufferOccupiedSpace();
       if (bytesRead > 0)
       {
         this->connectionState = Opened;
@@ -535,7 +535,7 @@ HRESULT CMPUrlSourceSplitter_Protocol_Udp::ReceiveData(CStreamPackage *streamPac
 
       // don not clear response buffer, we don't have to copy data again from start position
       // first try to find starting stream fragment (stream fragment which have first data)
-      unsigned int foundDataLength = response->GetBuffer()->GetBufferOccupiedSpace();
+      size_t foundDataLength = response->GetBuffer()->GetBufferOccupiedSpace();
 
       int64_t startPosition = request->GetStart() + foundDataLength;
       unsigned int packetIndex = this->streamFragments->GetStreamFragmentIndexBetweenPositions(startPosition);
@@ -546,8 +546,8 @@ HRESULT CMPUrlSourceSplitter_Protocol_Udp::ReceiveData(CStreamPackage *streamPac
         CUdpStreamFragment *fragment = this->streamFragments->GetItem(packetIndex);
 
         // set copy data start and copy data length
-        unsigned int copyDataStart = (startPosition > fragment->GetFragmentStartPosition()) ? (unsigned int)(startPosition - fragment->GetFragmentStartPosition()) : 0;
-        unsigned int copyDataLength = min(fragment->GetLength() - copyDataStart, request->GetLength() - foundDataLength);
+        size_t copyDataStart = (startPosition > fragment->GetFragmentStartPosition()) ? (size_t)(startPosition - fragment->GetFragmentStartPosition()) : 0;
+        size_t copyDataLength = min(fragment->GetLength() - copyDataStart, request->GetLength() - foundDataLength);
 
         // copy data from stream fragment to response buffer
         if (this->cacheFile->LoadItems(this->streamFragments, packetIndex, true, UINT_MAX, (this->lastProcessedSize == 0) ? CACHE_FILE_RELOAD_SIZE : this->lastProcessedSize))

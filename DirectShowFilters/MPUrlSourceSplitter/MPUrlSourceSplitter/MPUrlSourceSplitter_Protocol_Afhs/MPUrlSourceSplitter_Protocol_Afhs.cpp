@@ -98,7 +98,7 @@ CMPUrlSourceSplitter_Protocol_Afhs::CMPUrlSourceSplitter_Protocol_Afhs(HRESULT *
   this->lastBootstrapInfoUpdateTime = 0;
   this->lastProcessedSize = 0;
   this->currentProcessedSize = 0;
-  
+
   if ((result != NULL) && (SUCCEEDED(*result)))
   {
     this->logger->Log(LOGGER_INFO, METHOD_CONSTRUCTOR_START_FORMAT, PROTOCOL_IMPLEMENTATION_NAME, METHOD_CONSTRUCTOR_NAME, this);
@@ -226,7 +226,7 @@ HRESULT CMPUrlSourceSplitter_Protocol_Afhs::ParseUrl(const CParameterCollection 
     {
       int length = urlComponents->dwSchemeLength + 1;
       ALLOC_MEM_DEFINE_SET(protocol, wchar_t, length, 0);
-      if (protocol == NULL) 
+      if (protocol == NULL)
       {
         this->logger->Log(LOGGER_ERROR, METHOD_MESSAGE_FORMAT, PROTOCOL_IMPLEMENTATION_NAME, METHOD_PARSE_URL_NAME, L"cannot allocate memory for 'protocol'");
         result = E_OUTOFMEMORY;
@@ -272,23 +272,23 @@ HRESULT CMPUrlSourceSplitter_Protocol_Afhs::ReceiveData(CStreamPackage *streamPa
   {
     LOCK_MUTEX(this->lockMutex, INFINITE)
 
-    if (SUCCEEDED(result) && (this->mainCurlInstance->IsLockedCurlInstanceByOwner(this)) && (this->mainCurlInstance->GetConnectionState() == Opening))
-    {
-      unsigned int bufferSize = 0;
+      if (SUCCEEDED(result) && (this->mainCurlInstance->IsLockedCurlInstanceByOwner(this)) && (this->mainCurlInstance->GetConnectionState() == Opening))
       {
-        // only check received data length to not block Load() method
-        LOCK_MUTEX(this->lockCurlMutex, INFINITE)
+        size_t bufferSize = 0;
+        {
+          // only check received data length to not block Load() method
+          LOCK_MUTEX(this->lockCurlMutex, INFINITE)
 
-        bufferSize = this->mainCurlInstance->GetAfhsDownloadResponse()->GetReceivedData()->GetBufferOccupiedSpace();
+            bufferSize = this->mainCurlInstance->GetAfhsDownloadResponse()->GetReceivedData()->GetBufferOccupiedSpace();
 
-        UNLOCK_MUTEX(this->lockCurlMutex)
+          UNLOCK_MUTEX(this->lockCurlMutex)
+        }
+
+        if (bufferSize > 0)
+        {
+          this->mainCurlInstance->SetConnectionState(Opened);
+        }
       }
-
-      if (bufferSize > 0)
-      {
-        this->mainCurlInstance->SetConnectionState(Opened);
-      }
-    }
 
     if (SUCCEEDED(result) && (this->segmentFragments->HasEncryptedSegmentFragments()))
     {
@@ -326,8 +326,8 @@ HRESULT CMPUrlSourceSplitter_Protocol_Afhs::ReceiveData(CStreamPackage *streamPa
         // we can process segment and fragment
         // after processing we mark fragment as downloaded = it is ready for filter
 
-        unsigned int bufferSize = currentDecryptingFragment->GetBuffer()->GetBufferOccupiedSpace();
-        unsigned int processed = 0;
+        size_t bufferSize = currentDecryptingFragment->GetBuffer()->GetBufferOccupiedSpace();
+        size_t processed = 0;
 
         CHECK_CONDITION_HRESULT(result, bufferSize != 0, result, E_AFHS_DECRYPTED_DATA_SIZE_ZERO);
 
@@ -366,7 +366,7 @@ HRESULT CMPUrlSourceSplitter_Protocol_Afhs::ReceiveData(CStreamPackage *streamPa
                     CFlvPacket *metadataFlvPacket = new CFlvPacket(&result);
                     CHECK_POINTER_HRESULT(result, metadataFlvPacket, result, E_OUTOFMEMORY);
 
-                    CHECK_CONDITION_HRESULT(result, metadataFlvPacket->CreatePacket(FLV_PACKET_META, metadata, metadataLength, (unsigned int)currentDecryptingFragment->GetFragmentTimestamp(), false), result, E_AFHS_CANNOT_CREATE_METADATA_FLV_PACKET);
+                    CHECK_CONDITION_HRESULT(result, metadataFlvPacket->CreatePacket(FLV_PACKET_META, metadata, metadataLength, currentDecryptingFragment->GetFragmentTimestamp(), false), result, E_AFHS_CANNOT_CREATE_METADATA_FLV_PACKET);
                     CHECK_CONDITION_HRESULT(result, currentDecryptingFragment->GetBuffer()->AddToBufferWithResize(metadataFlvPacket->GetData(), metadataFlvPacket->GetSize()) == metadataFlvPacket->GetSize(), result, E_OUTOFMEMORY);
 
                     if (SUCCEEDED(result))
@@ -450,7 +450,7 @@ HRESULT CMPUrlSourceSplitter_Protocol_Afhs::ReceiveData(CStreamPackage *streamPa
                 // if not set fragment to download, then set fragment to download (get next not downloaded fragment from first fragment)
                 fragmentToDownload = (fragmentToDownload == UINT_MAX) ? this->segmentFragments->GetFirstNotDownloadedStreamFragmentIndex(0) : fragmentToDownload;
                 // fragment to download still can be UINT_MAX = no fragment to download
-  
+
                 this->segmentFragmentToDownload = fragmentToDownload;
 
                 if (this->segmentFragmentToDownload == UINT_MAX)
@@ -900,11 +900,11 @@ HRESULT CMPUrlSourceSplitter_Protocol_Afhs::ReceiveData(CStreamPackage *streamPa
       {
         // copy received data for parsing
 
-        unsigned int bootstrapInfoDataLength = this->mainCurlInstance->GetHttpDownloadResponse()->GetReceivedData()->GetBufferOccupiedSpace();
+        size_t bootstrapInfoDataLength = this->mainCurlInstance->GetHttpDownloadResponse()->GetReceivedData()->GetBufferOccupiedSpace();
         char *base64EncodedValue = NULL;
         wchar_t *bootstrapInfoData = NULL;
 
-        result = base64_encode(this->mainCurlInstance->GetHttpDownloadResponse()->GetReceivedData()->GetInternalBuffer(), bootstrapInfoDataLength, &base64EncodedValue);
+        result = base64_encode(this->mainCurlInstance->GetHttpDownloadResponse()->GetReceivedData()->GetInternalBuffer(), (uint32_t) bootstrapInfoDataLength, &base64EncodedValue);
         bootstrapInfoData = ConvertToUnicodeA(base64EncodedValue);
         CHECK_POINTER_HRESULT(result, bootstrapInfoData, result, E_CONVERT_STRING_ERROR);
 
@@ -922,17 +922,17 @@ HRESULT CMPUrlSourceSplitter_Protocol_Afhs::ReceiveData(CStreamPackage *streamPa
       {
         // bootstrap info received, check for error
         this->lastBootstrapInfoUpdateTime = GetTickCount();
-        
+
         if (SUCCEEDED(this->mainCurlInstance->GetAfhsDownloadResponse()->GetResultError()))
         {
           // successfully downloaded bootstrap info
-          unsigned int bootstrapInfoSize = this->mainCurlInstance->GetAfhsDownloadResponse()->GetReceivedData()->GetBufferOccupiedSpace();
+          size_t bootstrapInfoSize = this->mainCurlInstance->GetAfhsDownloadResponse()->GetReceivedData()->GetBufferOccupiedSpace();
           bool addedNewSegmentFragments = false;
-          
+
           if (bootstrapInfoSize > 0)
           {
             // we ignore zero length bootstrap info, in that case we request bootstrap info again
-            
+
             ALLOC_MEM_DEFINE_SET(bootstrapInfoBuffer, unsigned char, bootstrapInfoSize, 0);
             CHECK_CONDITION_HRESULT(result, bootstrapInfoBuffer, result, E_OUTOFMEMORY);
 
@@ -951,7 +951,7 @@ HRESULT CMPUrlSourceSplitter_Protocol_Afhs::ReceiveData(CStreamPackage *streamPa
                 CAfhsSegmentFragmentCollection *updateSegmentsFragments = this->GetSegmentsFragmentsFromBootstrapInfoBox(bootstrapInfoBox, false, lastSegmentFragment->GetFragmentTimestamp());
 
                 CHECK_POINTER_HRESULT(result, updateSegmentsFragments, result, E_AFHS_CANNOT_GET_SEGMENT_FRAGMENTS_FROM_BOOTSTRAP_INFO_BOX);
-                
+
                 for (unsigned int i = 0; (SUCCEEDED(result) && (i < updateSegmentsFragments->Count())); i++)
                 {
                   CAfhsSegmentFragment *parsedSegmentFragment = updateSegmentsFragments->GetItem(i);
@@ -978,7 +978,7 @@ HRESULT CMPUrlSourceSplitter_Protocol_Afhs::ReceiveData(CStreamPackage *streamPa
 
             FREE_MEM(bootstrapInfoBuffer);
           }
-          
+
           CHECK_CONDITION_EXECUTE(addedNewSegmentFragments, this->flags &= ~MP_URL_SOURCE_SPLITTER_PROTOCOL_AFHS_UPDATE_SEGMENT_FRAGMENTS);
         }
 
@@ -1140,11 +1140,11 @@ HRESULT CMPUrlSourceSplitter_Protocol_Afhs::ReceiveData(CStreamPackage *streamPa
 
         // don not clear response buffer, we don't have to copy data again from start position
         // first try to find starting segment fragment (segment fragment which have first data)
-        unsigned int foundDataLength = dataResponse->GetBuffer()->GetBufferOccupiedSpace();
+        size_t foundDataLength = dataResponse->GetBuffer()->GetBufferOccupiedSpace();
 
         int64_t startPosition = this->IsSetFlags(MP_URL_SOURCE_SPLITTER_PROTOCOL_AFHS_FLAG_SKIP_HEADER_AND_META) ? this->headerAndMetaPacketSize : 0;
         startPosition += dataRequest->GetStart() + foundDataLength;
-        
+
         unsigned int fragmentIndex = this->segmentFragments->GetStreamFragmentIndexBetweenPositions(startPosition);
 
         while (fragmentIndex != UINT_MAX)
@@ -1158,8 +1158,8 @@ HRESULT CMPUrlSourceSplitter_Protocol_Afhs::ReceiveData(CStreamPackage *streamPa
           int64_t streamFragmentRelativeStart = segmentFragment->GetFragmentStartPosition() - startSearchingSegmentFragment->GetFragmentStartPosition();
 
           // set copy data start and copy data length
-          unsigned int copyDataStart = (startPosition > streamFragmentRelativeStart) ? (unsigned int)(startPosition - streamFragmentRelativeStart) : 0;
-          unsigned int copyDataLength = min(segmentFragment->GetLength() - copyDataStart, dataRequest->GetLength() - foundDataLength);
+          size_t copyDataStart = (startPosition > streamFragmentRelativeStart) ? (startPosition - streamFragmentRelativeStart) : 0;
+          size_t copyDataLength = min(segmentFragment->GetLength() - copyDataStart, dataRequest->GetLength() - foundDataLength);
 
           // copy data from segment fragment to response buffer
           if (this->cacheFile->LoadItems(this->segmentFragments, fragmentIndex, true, UINT_MAX, (this->lastProcessedSize == 0) ? CACHE_FILE_RELOAD_SIZE : this->lastProcessedSize))
@@ -1510,7 +1510,7 @@ HRESULT CMPUrlSourceSplitter_Protocol_Afhs::StopReceivingData(void)
   // lock access to stream
   LOCK_MUTEX(this->lockMutex, INFINITE)
 
-  CHECK_CONDITION_NOT_NULL_EXECUTE(this->mainCurlInstance, this->mainCurlInstance->StopReceivingData());
+    CHECK_CONDITION_NOT_NULL_EXECUTE(this->mainCurlInstance, this->mainCurlInstance->StopReceivingData());
   this->flags &= ~(MP_URL_SOURCE_SPLITTER_PROTOCOL_AFHS_FLAG_CLOSE_CURL_INSTANCE | MP_URL_SOURCE_SPLITTER_PROTOCOL_AFHS_FLAG_STOP_RECEIVING_DATA);
 
   this->mainCurlInstance->SetConnectionState(None);
@@ -1519,7 +1519,7 @@ HRESULT CMPUrlSourceSplitter_Protocol_Afhs::StopReceivingData(void)
 
   UNLOCK_MUTEX(this->lockMutex)
 
-  this->logger->Log(LOGGER_INFO, METHOD_END_FORMAT, PROTOCOL_IMPLEMENTATION_NAME, METHOD_STOP_RECEIVING_DATA_NAME);
+    this->logger->Log(LOGGER_INFO, METHOD_END_FORMAT, PROTOCOL_IMPLEMENTATION_NAME, METHOD_STOP_RECEIVING_DATA_NAME);
   return S_OK;
 }
 
@@ -1530,7 +1530,7 @@ HRESULT CMPUrlSourceSplitter_Protocol_Afhs::QueryStreamProgress(CStreamProgress 
   {
     LOCK_MUTEX(this->lockMutex, INFINITE)
 
-    CHECK_POINTER_DEFAULT_HRESULT(result, streamProgress);
+      CHECK_POINTER_DEFAULT_HRESULT(result, streamProgress);
     CHECK_CONDITION_HRESULT(result, streamProgress->GetStreamId() == 0, result, E_INVALIDARG);
 
     if (SUCCEEDED(result))
@@ -1557,7 +1557,7 @@ void CMPUrlSourceSplitter_Protocol_Afhs::ClearSession(void)
   this->StopReceivingData();
 
   __super::ClearSession();
- 
+
   this->decryptionHoster->ClearSession();
   this->streamLength = 0;
   this->mainCurlInstance->ClearSession();
@@ -1619,7 +1619,7 @@ int64_t CMPUrlSourceSplitter_Protocol_Afhs::SeekToTime(unsigned int streamId, in
 
   LOCK_MUTEX(this->lockMutex, INFINITE)
 
-  this->logger->Log(LOGGER_VERBOSE, METHOD_START_FORMAT, PROTOCOL_IMPLEMENTATION_NAME, METHOD_SEEK_TO_TIME_NAME);
+    this->logger->Log(LOGGER_VERBOSE, METHOD_START_FORMAT, PROTOCOL_IMPLEMENTATION_NAME, METHOD_SEEK_TO_TIME_NAME);
   this->logger->Log(LOGGER_VERBOSE, L"%s: %s: from time: %llu", PROTOCOL_IMPLEMENTATION_NAME, METHOD_SEEK_TO_TIME_NAME, time);
 
   // find segment fragment to process
@@ -1697,7 +1697,7 @@ int64_t CMPUrlSourceSplitter_Protocol_Afhs::SeekToTime(unsigned int streamId, in
   this->logger->Log(LOGGER_VERBOSE, METHOD_END_INT64_FORMAT, PROTOCOL_IMPLEMENTATION_NAME, METHOD_SEEK_TO_TIME_NAME, result);
   UNLOCK_MUTEX(this->lockMutex)
 
-  return result;
+    return result;
 }
 
 // CPlugin implementation
@@ -1769,7 +1769,7 @@ int64_t CMPUrlSourceSplitter_Protocol_Afhs::GetBytePosition(void)
   {
     LOCK_MUTEX(this->lockMutex, INFINITE)
 
-    unsigned int first = this->segmentFragments->GetStartSearchingIndex();
+      unsigned int first = this->segmentFragments->GetStartSearchingIndex();
     unsigned int count = this->segmentFragments->GetSearchCount();
 
     if (count != 0)
@@ -1954,7 +1954,7 @@ CAfhsSegmentFragmentCollection *CMPUrlSourceSplitter_Protocol_Afhs::GetSegmentsF
           CFragmentRunEntry *nextFragmentEntry = fragmentRunEntryTableTemp->GetItem(i + 1);   // NULL on last fragment entry
 
           fragmentTimestamp = max(fragmentTimestamp, fragmentEntry->GetFirstFragmentTimestamp());
-          
+
           unsigned int indexInFragmentEntry = (unsigned int)((fragmentTimestamp - fragmentEntry->GetFirstFragmentTimestamp()) / (uint64_t)fragmentEntry->GetFragmentDuration());
           unsigned int indexCount = (nextFragmentEntry == NULL) ? (segmentRunEntryTable->GetFragmentsCount() - fragmentEntry->GetCumulatedFragmentCount()) : (nextFragmentEntry->GetCumulatedFragmentCount() - fragmentEntry->GetCumulatedFragmentCount());
 

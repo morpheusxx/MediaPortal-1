@@ -119,8 +119,8 @@ HRESULT CMPUrlSourceSplitter_Protocol_Afhs_Decryption_Default::DecryptSegmentFra
       CIndexedAfhsSegmentFragment *indexedEncryptedSegmentFragment = indexedEncryptedSegmentFragments->GetItem(i);
       CAfhsSegmentFragment *currentEncryptedFragment = indexedEncryptedSegmentFragment->GetItem();
 
-      unsigned int bufferSize = currentEncryptedFragment->GetBuffer()->GetBufferOccupiedSpace();
-      unsigned int processed = 0;
+      size_t bufferSize = currentEncryptedFragment->GetBuffer()->GetBufferOccupiedSpace();
+      size_t processed = 0;
 
       CHECK_CONDITION_HRESULT(result, bufferSize != 0, result, E_AFHS_DECRYPTED_DATA_SIZE_ZERO);
 

@@ -66,7 +66,7 @@ public:
   // gets pending incoming data length
   // @param incomingDataLength : the reference to variable to hold pending incoming data length
   // @return : S_OK if successful, E_NOT_VALID_STATE if socket is not readable, error code otherwise
-  virtual HRESULT GetPendingIncomingDataLength(unsigned int *incomingDataLength);
+  virtual HRESULT GetPendingIncomingDataLength(size_t *incomingDataLength);
 
   // gets received data length
   // @return : received data length
@@ -124,7 +124,7 @@ public:
   // @param length : the length, in bytes, of the data in buffer pointed to by the buffer parameter
   // @param sentLength : reference to total number of bytes sent, which can be less than the number requested to be sent
   // @return : S_OK if successful, error code otherwise (can be system or WSA)
-  virtual HRESULT Send(const char *buffer, unsigned int length, unsigned int *sentLength);
+  virtual HRESULT Send(const char *buffer, size_t length, size_t *sentLength);
 
   // sends data on a connected socket
   // @param buffer : pointer to a buffer containing the data to be transmitted
@@ -132,14 +132,14 @@ public:
   // @param flags : set of flags that specify the way in which the call is made, see remarks of send() method
   // @param sentLength : reference to total number of bytes sent, which can be less than the number requested to be sent
   // @return : S_OK if successful, error code otherwise (can be system or WSA)
-  virtual HRESULT Send(const char *buffer, unsigned int length, int flags, unsigned int *sentLength);
+  virtual HRESULT Send(const char *buffer, size_t length, int flags, size_t *sentLength);
 
   // receives data from a connected socket
   // @param buffer : pointer to the buffer to receive the incoming data
   // @param length : the length, in bytes, of the buffer pointed to by the buffer parameter
   // @param receivedLength : reference to the number of bytes received, if the connection has been gracefully closed, value is zero
   // @return : S_OK if successful, error code otherwise (can be system or WSA)
-  virtual HRESULT Receive(char *buffer, unsigned int length, unsigned int *receivedLength);
+  virtual HRESULT Receive(char *buffer, size_t length, size_t *receivedLength);
 
   // receives data from a connected socket
   // @param buffer : pointer to the buffer to receive the incoming data
@@ -147,7 +147,7 @@ public:
   // @param flasg : set of flags that influences the behavior of this function, see remarks of recv() method
   // @param receivedLength : reference to the number of bytes received, if the connection has been gracefully closed, value is zero
   // @return : S_OK if successful, error code otherwise (can be system or WSA)
-  virtual HRESULT Receive(char *buffer, unsigned int length, int flags, unsigned int *receivedLength);
+  virtual HRESULT Receive(char *buffer, size_t length, int flags, size_t *receivedLength);
 
   // receives data from a connected socket
   // @param buffer : pointer to the buffer to receive the incoming data
@@ -155,7 +155,7 @@ public:
   // @param receivedLength : reference to the number of bytes received, if the connection has been gracefully closed, value is zero
   // @param sender : reference to variable to hold sender who sends data
   // @return : S_OK if successful, error code otherwise (can be system or WSA)
-  virtual HRESULT Receive(char *buffer, unsigned int length, unsigned int *receivedLength, CIpAddress **sender);
+  virtual HRESULT Receive(char *buffer, size_t length, size_t *receivedLength, CIpAddress **sender);
 
   // receives data from a connected socket
   // @param buffer : pointer to the buffer to receive the incoming data
@@ -164,7 +164,7 @@ public:
   // @param receivedLength : reference to the number of bytes received, if the connection has been gracefully closed, value is zero
   // @param sender : reference to variable to hold sender who sends data
   // @return : S_OK if successful, error code otherwise (can be system or WSA)
-  virtual HRESULT Receive(char *buffer, unsigned int length, int flags, unsigned int *receivedLength, CIpAddress **sender);
+  virtual HRESULT Receive(char *buffer, size_t length, int flags, size_t *receivedLength, CIpAddress **sender);
 
   // determines the status of socket
   // @param read : determine if socket is in readable state (incoming connection or unread data)

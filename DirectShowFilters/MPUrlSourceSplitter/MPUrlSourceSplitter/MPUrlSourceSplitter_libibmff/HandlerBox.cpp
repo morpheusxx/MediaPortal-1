@@ -140,7 +140,7 @@ bool CHandlerBox::ParseInternal(const unsigned char *buffer, uint32_t length, bo
         // reserved, 3 x uint32_t
         position += 12;
 
-        uint32_t positionAfter = position;
+        size_t positionAfter = position;
         continueParsing = this->GetString(buffer, length, position, &this->name, &positionAfter);
 
         if (SUCCEEDED(continueParsing))

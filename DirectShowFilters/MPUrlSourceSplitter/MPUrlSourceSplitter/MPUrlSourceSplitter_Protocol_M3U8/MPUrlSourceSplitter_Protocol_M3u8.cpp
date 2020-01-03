@@ -266,7 +266,7 @@ HRESULT CMPUrlSourceSplitter_Protocol_M3u8::ReceiveData(CStreamPackage *streamPa
       // Opened state will be set after receiving all data to reset protocol hoster timeout
       // after reseting protocol timeout will be connection closed and new stream fragment(s) will be donwloaded
 
-      unsigned int bufferSize = 0;
+      size_t bufferSize = 0;
       {
         // only check received data length to not block Load() method
         LOCK_MUTEX(this->lockCurlMutex, INFINITE)
@@ -365,7 +365,7 @@ HRESULT CMPUrlSourceSplitter_Protocol_M3u8::ReceiveData(CStreamPackage *streamPa
 
               if (SUCCEEDED(result))
               {
-                CMediaPlaylist *tempPlaylist = factory->CreateMediaPlaylist(&result, decompressed, wcslen(decompressed));
+                CMediaPlaylist *tempPlaylist = factory->CreateMediaPlaylist(&result, decompressed, (uint32_t)wcslen(decompressed));
 
                 if (SUCCEEDED(result))
                 {
@@ -729,7 +729,7 @@ HRESULT CMPUrlSourceSplitter_Protocol_M3u8::ReceiveData(CStreamPackage *streamPa
         if (SUCCEEDED(this->mainCurlInstance->GetM3u8DownloadResponse()->GetResultError()))
         {
           // successfully downloaded media playlist
-          unsigned int mediaPlaylistSize = this->mainCurlInstance->GetM3u8DownloadResponse()->GetReceivedData()->GetBufferOccupiedSpace();
+          size_t mediaPlaylistSize = this->mainCurlInstance->GetM3u8DownloadResponse()->GetReceivedData()->GetBufferOccupiedSpace();
           
           if (this->mainCurlInstance->GetConnectionState() == Opening)
           {
@@ -752,7 +752,7 @@ HRESULT CMPUrlSourceSplitter_Protocol_M3u8::ReceiveData(CStreamPackage *streamPa
 
                 if (SUCCEEDED(result))
                 {
-                  CMediaPlaylist *tempPlaylist = factory->CreateMediaPlaylist(&result, tempMediaPlaylistBuffer, wcslen(tempMediaPlaylistBuffer));
+                  CMediaPlaylist *tempPlaylist = factory->CreateMediaPlaylist(&result, tempMediaPlaylistBuffer, (uint32_t)wcslen(tempMediaPlaylistBuffer));
 
                   if (SUCCEEDED(result))
                   {
@@ -1041,7 +1041,7 @@ HRESULT CMPUrlSourceSplitter_Protocol_M3u8::ReceiveData(CStreamPackage *streamPa
 
         // don not clear response buffer, we don't have to copy data again from start position
         // first try to find starting segment fragment (segment fragment which have first data)
-        unsigned int foundDataLength = dataResponse->GetBuffer()->GetBufferOccupiedSpace();
+        size_t foundDataLength = dataResponse->GetBuffer()->GetBufferOccupiedSpace();
 
         int64_t startPosition = dataRequest->GetStart() + foundDataLength;
         unsigned int fragmentIndex = this->streamFragments->GetStreamFragmentIndexBetweenPositions(startPosition);
@@ -1057,8 +1057,8 @@ HRESULT CMPUrlSourceSplitter_Protocol_M3u8::ReceiveData(CStreamPackage *streamPa
           int64_t streamFragmentRelativeStart = streamFragment->GetFragmentStartPosition() - startSearchingStreamFragment->GetFragmentStartPosition();
 
           // set copy data start and copy data length
-          unsigned int copyDataStart = (startPosition > streamFragmentRelativeStart) ? (unsigned int)(startPosition - streamFragmentRelativeStart) : 0;
-          unsigned int copyDataLength = min(streamFragment->GetLength() - copyDataStart, dataRequest->GetLength() - foundDataLength);
+          size_t copyDataStart = (startPosition > streamFragmentRelativeStart) ? (size_t)(startPosition - streamFragmentRelativeStart) : 0;
+          size_t copyDataLength = min(streamFragment->GetLength() - copyDataStart, dataRequest->GetLength() - foundDataLength);
 
           // copy data from stream fragment to response buffer
           if (this->cacheFile->LoadItems(this->streamFragments, fragmentIndex, true, UINT_MAX, (this->lastProcessedSize == 0) ? CACHE_FILE_RELOAD_SIZE : this->lastProcessedSize))

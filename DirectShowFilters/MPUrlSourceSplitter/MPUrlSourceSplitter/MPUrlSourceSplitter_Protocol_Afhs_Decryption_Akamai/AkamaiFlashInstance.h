@@ -75,7 +75,7 @@ public:
   // @param keyLength : the length of decryption key
   // @param encryptedDataCollection : encrypted data collection
   // @return : decrypted data collection
-  CDecryptedDataCollection *GetDecryptedData(const uint8_t *key, unsigned int keyLength, CEncryptedDataCollection *encryptedDataCollection);
+  CDecryptedDataCollection *GetDecryptedData(const uint8_t *key, size_t keyLength, CEncryptedDataCollection *encryptedDataCollection);
 
   /* set methods */
 

@@ -246,7 +246,7 @@ HRESULT CMPUrlSourceSplitter_Protocol_Rtmp::ReceiveData(CStreamPackage *streamPa
     if (SUCCEEDED(result) && (this->mainCurlInstance != NULL) && ((this->connectionState == Opening) || (this->connectionState == Opened)))
     {
       unsigned char *buffer = NULL;
-      unsigned int bufferSize = 0;
+      size_t bufferSize = 0;
 
       {
         // copy packets to avoid blocking of RTMP download instance
@@ -266,7 +266,7 @@ HRESULT CMPUrlSourceSplitter_Protocol_Rtmp::ReceiveData(CStreamPackage *streamPa
         this->connectionState = Opened;
 
         // holds processed data size, which can be removed from CURL instance
-        unsigned int processed = 0;
+        size_t processed = 0;
 
         // split or add received FLV packets to stream fragments
         CRtmpStreamFragment *currentDownloadingFragment = this->streamFragments->GetItem(this->streamFragmentDownloading);
@@ -284,13 +284,13 @@ HRESULT CMPUrlSourceSplitter_Protocol_Rtmp::ReceiveData(CStreamPackage *streamPa
             this->logger->Log(LOGGER_WARNING, L"%s: %s: malformed FLV packet detected, type: 0x%02X, size: %u, timestamp: %u", PROTOCOL_IMPLEMENTATION_NAME, METHOD_RECEIVE_DATA_NAME, flvPacket->GetType(), flvPacket->GetSize(), flvPacket->GetTimestamp());
 
             // we have received data, it seems that we have FLV packet, but with incorrect check size = malformed FLV packet
-            int findResult = flvPacket->FindPacket(buffer + processed, bufferSize - processed, FLV_PACKET_MINIMUM_CHECKED_UNSPECIFIED);
+            int findResult = flvPacket->FindPacket(buffer + processed, (uint32_t)(bufferSize - processed), FLV_PACKET_MINIMUM_CHECKED_UNSPECIFIED);
 
             if (findResult >= 0)
             {
               // found sequence of correct FLV packets
               // just remove malformed data from buffer and continue
-              processed += (unsigned int)findResult;
+              processed += (size_t)findResult;
             }
             else
             {
@@ -892,7 +892,7 @@ HRESULT CMPUrlSourceSplitter_Protocol_Rtmp::ReceiveData(CStreamPackage *streamPa
 
         // don not clear response buffer, we don't have to copy data again from start position
         // first try to find starting stream fragment (stream fragment which have first data)
-        unsigned int foundDataLength = dataResponse->GetBuffer()->GetBufferOccupiedSpace();
+        size_t foundDataLength = dataResponse->GetBuffer()->GetBufferOccupiedSpace();
 
         int64_t startPosition = this->IsSetFlags(MP_URL_SOURCE_SPLITTER_PROTOCOL_RTMP_FLAG_SKIP_HEADER_AND_META) ? this->headerAndMetaPacketSize : 0;
         startPosition += dataRequest->GetStart() + foundDataLength;
@@ -910,8 +910,8 @@ HRESULT CMPUrlSourceSplitter_Protocol_Rtmp::ReceiveData(CStreamPackage *streamPa
           int64_t streamFragmentRelativeStart = streamFragment->GetFragmentStartPosition() - startSearchingStreamFragment->GetFragmentStartPosition();
 
           // set copy data start and copy data length
-          unsigned int copyDataStart = (startPosition > streamFragmentRelativeStart) ? (unsigned int)(startPosition - streamFragmentRelativeStart) : 0;
-          unsigned int copyDataLength = min(streamFragment->GetLength() - copyDataStart, dataRequest->GetLength() - foundDataLength);
+          size_t copyDataStart = (startPosition > streamFragmentRelativeStart) ? (size_t)(startPosition - streamFragmentRelativeStart) : 0;
+          size_t copyDataLength = min(streamFragment->GetLength() - copyDataStart, dataRequest->GetLength() - foundDataLength);
 
           // copy data from stream fragment to response buffer
           if (this->cacheFile->LoadItems(this->streamFragments, fragmentIndex, true, UINT_MAX, (this->lastProcessedSize == 0) ? CACHE_FILE_RELOAD_SIZE : this->lastProcessedSize))

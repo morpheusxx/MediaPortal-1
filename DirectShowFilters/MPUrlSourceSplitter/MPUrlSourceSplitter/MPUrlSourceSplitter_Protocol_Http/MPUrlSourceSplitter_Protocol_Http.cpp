@@ -250,7 +250,7 @@ HRESULT CMPUrlSourceSplitter_Protocol_Http::ReceiveData(CStreamPackage *streamPa
         FREE_MEM_CLASS(this->currentCookies);
         this->currentCookies = this->mainCurlInstance->GetCurrentCookies();
 
-        unsigned int bytesRead = this->mainCurlInstance->GetHttpDownloadResponse()->GetReceivedData()->GetBufferOccupiedSpace();
+        size_t bytesRead = this->mainCurlInstance->GetHttpDownloadResponse()->GetReceivedData()->GetBufferOccupiedSpace();
         if (bytesRead > 0)
         {
           this->connectionState = Opened;
@@ -767,7 +767,7 @@ HRESULT CMPUrlSourceSplitter_Protocol_Http::ReceiveData(CStreamPackage *streamPa
 
       // don not clear response buffer, we don't have to copy data again from start position
       // first try to find starting stream fragment (packet which have first data)
-      unsigned int foundDataLength = response->GetBuffer()->GetBufferOccupiedSpace();
+      size_t foundDataLength = response->GetBuffer()->GetBufferOccupiedSpace();
 
       int64_t startPosition = request->GetStart() + foundDataLength;
       unsigned int fragmentIndex = this->streamFragments->GetStreamFragmentIndexBetweenPositions(startPosition);
@@ -778,8 +778,8 @@ HRESULT CMPUrlSourceSplitter_Protocol_Http::ReceiveData(CStreamPackage *streamPa
         CHttpStreamFragment *fragment = this->streamFragments->GetItem(fragmentIndex);
 
         // set copy data start and copy data length
-        unsigned int copyDataStart = (startPosition > fragment->GetFragmentStartPosition()) ? (unsigned int)(startPosition - fragment->GetFragmentStartPosition()) : 0;
-        unsigned int copyDataLength = min(fragment->GetLength() - copyDataStart, request->GetLength() - foundDataLength);
+        size_t copyDataStart = (startPosition > fragment->GetFragmentStartPosition()) ? (size_t)(startPosition - fragment->GetFragmentStartPosition()) : 0;
+        size_t copyDataLength = min(fragment->GetLength() - copyDataStart, request->GetLength() - foundDataLength);
 
         // copy data from stream fragment to response buffer
         if (this->cacheFile->LoadItems(this->streamFragments, fragmentIndex, true, UINT_MAX, (this->lastProcessedSize == 0) ? CACHE_FILE_RELOAD_SIZE : this->lastProcessedSize))

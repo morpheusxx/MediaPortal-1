@@ -66,7 +66,7 @@ CBoxFactory::~CBoxFactory(void)
 {
 }
 
-CBox *CBoxFactory::CreateBox(const uint8_t *buffer, uint32_t length)
+CBox *CBoxFactory::CreateBox(const uint8_t *buffer, size_t length)
 {
   CBox *result = NULL;
   HRESULT continueParsing = ((buffer != NULL) && (length > 0)) ? S_OK : E_INVALIDARG;

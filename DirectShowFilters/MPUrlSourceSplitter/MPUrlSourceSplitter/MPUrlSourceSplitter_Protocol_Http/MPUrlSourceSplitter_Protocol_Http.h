@@ -176,8 +176,8 @@ protected:
   // holds last receive data time
   unsigned int lastReceiveDataTime;
   // holds last processed size from last store time
-  unsigned int lastProcessedSize;
-  unsigned int currentProcessedSize;
+  size_t lastProcessedSize;
+  size_t currentProcessedSize;
 
   // holds which fragment is currently downloading (UINT_MAX means none)
   unsigned int streamFragmentDownloading;

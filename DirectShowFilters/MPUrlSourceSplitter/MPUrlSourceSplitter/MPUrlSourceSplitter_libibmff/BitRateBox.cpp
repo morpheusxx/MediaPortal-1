@@ -119,7 +119,7 @@ uint64_t CBitrateBox::GetBoxSize(void)
   return result;
 }
 
-bool CBitrateBox::ParseInternal(const unsigned char *buffer, uint32_t length, bool processAdditionalBoxes)
+bool CBitrateBox::ParseInternal(const unsigned char *buffer, size_t length, bool processAdditionalBoxes)
 {
   if (__super::ParseInternal(buffer, length, false))
   {
@@ -152,9 +152,9 @@ bool CBitrateBox::ParseInternal(const unsigned char *buffer, uint32_t length, bo
   return this->IsSetFlags(BOX_FLAG_PARSED);
 }
 
-uint32_t CBitrateBox::GetBoxInternal(uint8_t *buffer, uint32_t length, bool processAdditionalBoxes)
+size_t CBitrateBox::GetBoxInternal(uint8_t *buffer, size_t length, bool processAdditionalBoxes)
 {
-  uint32_t result = __super::GetBoxInternal(buffer, length, false);
+  size_t result = __super::GetBoxInternal(buffer, length, false);
 
   if (result != 0)
   {
@@ -164,7 +164,7 @@ uint32_t CBitrateBox::GetBoxInternal(uint8_t *buffer, uint32_t length, bool proc
 
     if ((result != 0) && processAdditionalBoxes && (this->GetBoxes()->Count() != 0))
     {
-      uint32_t boxSizes = this->GetAdditionalBoxes(buffer + result, length - result);
+      size_t boxSizes = this->GetAdditionalBoxes(buffer + result, length - result);
       result = (boxSizes != 0) ? (result + boxSizes) : 0;
     }
   }

@@ -179,7 +179,7 @@ uint32_t CChunkOffsetBox::GetBoxInternal(uint8_t *buffer, uint32_t length, bool 
 
     if ((result != 0) && processAdditionalBoxes && (this->GetBoxes()->Count() != 0))
     {
-      uint32_t boxSizes = this->GetAdditionalBoxes(buffer + result, length - result);
+      size_t boxSizes = this->GetAdditionalBoxes(buffer + result, length - result);
       result = (boxSizes != 0) ? (result + boxSizes) : 0;
     }
   }

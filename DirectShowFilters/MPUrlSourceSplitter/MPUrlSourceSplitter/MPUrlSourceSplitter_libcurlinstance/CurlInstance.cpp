@@ -834,7 +834,7 @@ void CCurlInstance::CurlDebug(curl_infotype type, const unsigned char *data, siz
     {
       dumpBox->SetInputData(true);
       dumpBox->SetTimeWithLocalTime();
-      dumpBox->SetPayload(data, size);
+      dumpBox->SetPayload(data, (uint32_t)size);
     }
 
     CHECK_CONDITION_EXECUTE((dumpBox != NULL) && (!this->dumpFile->AddDumpBox(dumpBox)), FREE_MEM_CLASS(dumpBox));
@@ -848,7 +848,7 @@ void CCurlInstance::CurlDebug(curl_infotype type, const unsigned char *data, siz
     {
       dumpBox->SetOutputData(true);
       dumpBox->SetTimeWithLocalTime();
-      dumpBox->SetPayload(data, size);
+      dumpBox->SetPayload(data, (uint32_t)size);
     }
 
     CHECK_CONDITION_EXECUTE((dumpBox != NULL) && (!this->dumpFile->AddDumpBox(dumpBox)), FREE_MEM_CLASS(dumpBox));

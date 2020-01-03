@@ -28,7 +28,7 @@ CLinearBuffer::CLinearBuffer(HRESULT *result)
   this->DeleteBuffer();
 }
 
-CLinearBuffer::CLinearBuffer(HRESULT *result, unsigned int size)
+CLinearBuffer::CLinearBuffer(HRESULT *result, size_t size)
 {
   this->buffer = NULL;
   this->DeleteBuffer();

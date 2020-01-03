@@ -56,7 +56,7 @@ const wchar_t *CBox::GetType(void)
   return this->type;
 }
 
-bool CBox::GetBox(uint8_t *buffer, uint32_t length)
+bool CBox::GetBox(uint8_t *buffer, size_t length)
 {
   return (this->GetBoxInternal(buffer, length, true) != 0);
 }
@@ -95,7 +95,7 @@ bool CBox::HasExtendedHeader(void)
   return this->IsSetFlags(BOX_FLAG_HAS_EXTENDED_HEADER);
 }
 
-bool CBox::Parse(const uint8_t *buffer, uint32_t length)
+bool CBox::Parse(const uint8_t *buffer, size_t length)
 {
   return this->ParseInternal(buffer, length, true);
 }
@@ -119,12 +119,12 @@ uint64_t CBox::GetBoxSize(void)
   return result;
 }
 
-HRESULT CBox::GetString(const uint8_t *buffer, uint32_t length, uint32_t startPosition, wchar_t **output, uint32_t *positionAfterString)
+HRESULT CBox::GetString(const uint8_t *buffer, size_t length, size_t startPosition, wchar_t **output, size_t *positionAfterString)
 {
   return this->GetString(buffer, length, startPosition, output, positionAfterString, UINT32_MAX);
 }
 
-HRESULT CBox::GetString(const uint8_t *buffer, uint32_t length, uint32_t startPosition, wchar_t **output, uint32_t *positionAfterString, uint32_t maxLength)
+HRESULT CBox::GetString(const uint8_t *buffer, size_t length, size_t startPosition, wchar_t **output, size_t *positionAfterString, size_t maxLength)
 {
   HRESULT result = S_OK;
   CHECK_POINTER_DEFAULT_HRESULT(result, buffer);
@@ -135,7 +135,7 @@ HRESULT CBox::GetString(const uint8_t *buffer, uint32_t length, uint32_t startPo
   {
     bool foundEnd = false;
     bool maxLengthReached = false;
-    uint32_t tempPosition = startPosition;
+    size_t tempPosition = startPosition;
 
     while (tempPosition < length)
     {
@@ -165,7 +165,7 @@ HRESULT CBox::GetString(const uint8_t *buffer, uint32_t length, uint32_t startPo
     if (SUCCEEDED(result))
     {
       // if foundEnd is true then in tempPosition is positon of null terminating character
-      uint32_t copyLength = tempPosition - startPosition;
+      size_t copyLength = tempPosition - startPosition;
       uint8_t *utf8string = ALLOC_MEM_SET(utf8string, uint8_t, copyLength + 1, 0);
       CHECK_POINTER_HRESULT(result, utf8string, result, E_OUTOFMEMORY);
 
@@ -184,9 +184,9 @@ HRESULT CBox::GetString(const uint8_t *buffer, uint32_t length, uint32_t startPo
   return result;
 }
 
-uint32_t CBox::SetString(uint8_t *buffer, uint32_t length, const wchar_t *input)
+size_t CBox::SetString(uint8_t *buffer, size_t length, const wchar_t *input)
 {
-  uint32_t result = 0;
+  size_t result = 0;
 
   if (buffer != NULL)
   {
@@ -195,7 +195,7 @@ uint32_t CBox::SetString(uint8_t *buffer, uint32_t length, const wchar_t *input)
       char *converted = ConvertUnicodeToUtf8(input);
       if (converted != NULL)
       {
-        unsigned int length = strlen(converted);
+        size_t length = strlen(converted);
         memcpy(buffer, converted, length);
         result += length;
 
@@ -209,9 +209,9 @@ uint32_t CBox::SetString(uint8_t *buffer, uint32_t length, const wchar_t *input)
   return result;
 }
 
-uint32_t CBox::GetStringSize(const wchar_t *input)
+size_t CBox::GetStringSize(const wchar_t *input)
 {
-  uint32_t result = 0;
+  size_t result = 0;
 
   if (input != NULL)
   {
@@ -282,24 +282,24 @@ bool CBox::IsType(const wchar_t *type)
   return ((this->GetType() != NULL) && (type != NULL) && (wcsncmp(this->GetType(), type, BOX_TYPE_LENGTH) == 0));
 }
 
-bool CBox::ProcessAdditionalBoxes(const uint8_t *buffer, uint32_t length, uint32_t position)
+bool CBox::ProcessAdditionalBoxes(const uint8_t *buffer, size_t length, size_t position)
 {
   HRESULT continueParsing = ((this->boxes != NULL) && (this->GetSize() <= (uint64_t)length)) ? S_OK : E_INVALIDARG;
 
   if (SUCCEEDED(continueParsing))
   {
-    uint32_t processed = 0;
-    uint32_t sizeToProcess = (uint32_t)this->GetSize() -  position;
+    size_t processed = 0;
+    size_t sizeToProcess = (size_t)this->GetSize() -  position;
     CBoxFactory *factory = this->GetBoxFactory();
     CHECK_POINTER_HRESULT(continueParsing, factory, continueParsing, E_OUTOFMEMORY);
 
     while (SUCCEEDED(continueParsing) && (processed < sizeToProcess))
     {
-      CBox *box = factory->CreateBox(buffer + position + processed, (uint32_t)(sizeToProcess - processed));
+      CBox *box = factory->CreateBox(buffer + position + processed, (size_t)(sizeToProcess - processed));
       CHECK_POINTER_HRESULT(continueParsing, box, continueParsing, E_OUTOFMEMORY);
 
       CHECK_CONDITION_HRESULT(continueParsing, this->boxes->Add(box), continueParsing, E_OUTOFMEMORY);
-      CHECK_CONDITION_EXECUTE(SUCCEEDED(continueParsing), processed += (uint32_t)box->GetSize());
+      CHECK_CONDITION_EXECUTE(SUCCEEDED(continueParsing), processed += (size_t)box->GetSize());
 
       CHECK_CONDITION_EXECUTE(FAILED(continueParsing), FREE_MEM_CLASS(box));
     }
@@ -315,7 +315,7 @@ bool CBox::ProcessAdditionalBoxes(const uint8_t *buffer, uint32_t length, uint32
   return SUCCEEDED(continueParsing);
 }
 
-bool CBox::ParseInternal(const unsigned char *buffer, uint32_t length, bool processAdditionalBoxes)
+bool CBox::ParseInternal(const unsigned char *buffer, size_t length, bool processAdditionalBoxes)
 {
   this->length = 0;
   this->flags &= ~(BOX_FLAG_HAS_EXTENDED_HEADER | BOX_FLAG_PARSED | BOX_FLAG_UNSPECIFIED_SIZE);
@@ -361,14 +361,14 @@ bool CBox::ParseInternal(const unsigned char *buffer, uint32_t length, bool proc
   return this->IsSetFlags(BOX_FLAG_PARSED);
 }
 
-uint32_t CBox::GetBoxInternal(uint8_t *buffer, uint32_t length, bool processAdditionalBoxes)
+size_t CBox::GetBoxInternal(uint8_t *buffer, size_t length, bool processAdditionalBoxes)
 {
-  uint32_t position = 0;
+  size_t position = 0;
 
   if (((buffer != NULL) && (!this->IsBigSize())))
   {
     // check box size against buffer length
-    unsigned int size = (uint32_t)this->GetSize();
+    size_t size = (size_t)this->GetSize();
 
     if (size <= length)
     {
@@ -387,7 +387,7 @@ uint32_t CBox::GetBoxInternal(uint8_t *buffer, uint32_t length, bool processAddi
 
       if ((position != 0) && processAdditionalBoxes && (this->GetBoxes()->Count() != 0))
       {
-        uint32_t boxSizes = this->GetAdditionalBoxes(buffer + position, length - position);
+        size_t boxSizes = this->GetAdditionalBoxes(buffer + position, length - position);
         position = (boxSizes != 0) ? (position + boxSizes) : 0;
       }
     }
@@ -396,15 +396,15 @@ uint32_t CBox::GetBoxInternal(uint8_t *buffer, uint32_t length, bool processAddi
   return position;
 }
 
-uint32_t CBox::GetAdditionalBoxes(uint8_t *buffer, uint32_t length)
+size_t CBox::GetAdditionalBoxes(uint8_t *buffer, size_t length)
 {
-  uint32_t processed = 0;
+  size_t processed = 0;
 
   for (unsigned int i = 0; i < this->GetBoxes()->Count(); i++)
   {
     CBox *box = this->GetBoxes()->GetItem(i);
 
-    processed = (box->GetBox(buffer + processed, length - processed)) ? (processed + (uint32_t)box->GetBoxSize()) : 0;
+    processed = (box->GetBox(buffer + processed, length - processed)) ? (processed + (size_t)box->GetBoxSize()) : 0;
 
     if (processed == 0)
     {

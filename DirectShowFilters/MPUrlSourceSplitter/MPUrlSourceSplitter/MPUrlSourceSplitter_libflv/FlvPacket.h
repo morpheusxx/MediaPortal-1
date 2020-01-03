@@ -105,7 +105,7 @@ public:
   // @param buffer : buffer to parse
   // @param length : length of buffer
   // @return : 0 if FLV packet found, FLV_PARSE_RESULT value otherwise
-  virtual int ParsePacket(const unsigned char *buffer, unsigned int length);
+  virtual int ParsePacket(const unsigned char *buffer, size_t length);
 
   // creates FLV packet and fill it with data from buffer
   // @param packetType : type of FLV packet (FLV_PACKET_AUDIO, FLV_PACKET_VIDEO, FLV_PACKET_META)
@@ -114,7 +114,7 @@ public:
   // @param timestamp : the timestamp of FLV packet
   // @param encrypted : specifies if FLV packet is encrypted
   // @return : true if FLV packet successfully created, false otherwise
-  virtual bool CreatePacket(unsigned int packetType, const unsigned char *buffer, unsigned int length, unsigned int timestamp, bool encrypted);
+  virtual bool CreatePacket(unsigned int packetType, const unsigned char *buffer, size_t length, size_t timestamp, bool encrypted);
 
   // tests if FLV packet is encrypted
   // @return : true if packet is encrypted, false otherwise
@@ -176,7 +176,7 @@ protected:
   unsigned int type;
 
   // holds FLV packet size
-  unsigned int size;
+  size_t size;
 
   // holds FLV packet data
   unsigned char *packet;

@@ -312,7 +312,7 @@ HRESULT CMPUrlSourceSplitter_Protocol_M3u8_Decryption_Aes128::DecryptStreamFragm
               EVP_CIPHER_CTX_init(aesDecryptionContext);
               CHECK_CONDITION_HRESULT(result, EVP_DecryptInit_ex(aesDecryptionContext, EVP_aes_128_cbc(), NULL, this->decryptionKey, initializationVector) == 1, result, E_M3U8_AES128_DECRYPTION_FAILED_TO_INITIALIZE);
 
-              unsigned int encryptedDataLength = currentEncryptedFragment->GetBuffer()->GetBufferOccupiedSpace();
+              uint32_t encryptedDataLength = (uint32_t)currentEncryptedFragment->GetBuffer()->GetBufferOccupiedSpace();
 
               ALLOC_MEM_DEFINE_SET(decryptedData, uint8_t, encryptedDataLength, 0);
               CHECK_POINTER_HRESULT(result, decryptedData, result, E_OUTOFMEMORY);

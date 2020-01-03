@@ -196,8 +196,8 @@ protected:
   unsigned headerAndMetaPacketSize;
 
   // holds last processed size from last store time
-  unsigned int lastProcessedSize;
-  unsigned int currentProcessedSize;
+  size_t lastProcessedSize;
+  size_t currentProcessedSize;
 
   /* methods */
 

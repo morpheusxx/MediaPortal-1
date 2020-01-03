@@ -204,11 +204,11 @@ protected:
   unsigned int lastTrackID;
 
   // holds last processed size from last store time
-  unsigned int lastProcessedSize;
-  unsigned int currentProcessedSize;
+  size_t lastProcessedSize;
+  size_t currentProcessedSize;
 
   // holds reconstructed header size
-  unsigned int reconstructedHeaderSize;
+  size_t reconstructedHeaderSize;
 
   // holds fragmented index box, which is needed after seeking
   CFragmentedIndexBox *fragmentedIndexBox;

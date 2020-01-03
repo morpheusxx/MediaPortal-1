@@ -975,10 +975,18 @@ OLECONTAINER(LRESULT CALLBACK)::WndProcStatic(HWND hWnd, UINT uMsg, WPARAM wPara
 	if (uMsg == WM_CREATE)
 	{
 		LPCREATESTRUCT lpcs = (LPCREATESTRUCT)lParam;
-		SetWindowLong(hWnd, GWL_USERDATA, (long)lpcs->lpCreateParams);
+#if _WIN64
+		SetWindowLongPtr(hWnd, GWLP_USERDATA, (LONG_PTR)lpcs->lpCreateParams);
+#else
+    SetWindowLong(hWnd, GWL_USERDATA, (long)lpcs->lpCreateParams);
+#endif
 		return 0;
 	}
-	COleContainerWindow<TObj> *lpWnd = (COleContainerWindow<TObj> *)GetWindowLong(hWnd, GWL_USERDATA);
+#if _WIN64
+  COleContainerWindow<TObj> *lpWnd = (COleContainerWindow<TObj> *)GetWindowLongPtr(hWnd, GWLP_USERDATA);
+#else
+  COleContainerWindow<TObj> *lpWnd = (COleContainerWindow<TObj> *)GetWindowLong(hWnd, GWL_USERDATA);
+#endif
 	if (lpWnd)
 		return lpWnd->WndProc(hWnd, uMsg, wParam, lParam);
 	else
@@ -992,7 +1000,11 @@ OLECONTAINER(LRESULT)::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPara
 	case WM_CREATE:
 		{
 			LPCREATESTRUCT lpcs = (LPCREATESTRUCT)lParam;
-			SetWindowLong(hWnd, GWL_USERDATA, (long)lpcs->lpCreateParams);
+#if _WIN64
+      SetWindowLongPtr(hWnd, GWLP_USERDATA, (LONG_PTR)lpcs->lpCreateParams);
+#else
+      SetWindowLong(hWnd, GWL_USERDATA, (long)lpcs->lpCreateParams);
+#endif
 			return 0;
 		}
 		break;

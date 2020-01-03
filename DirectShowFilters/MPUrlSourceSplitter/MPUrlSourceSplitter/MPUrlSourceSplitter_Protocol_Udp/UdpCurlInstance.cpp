@@ -305,7 +305,7 @@ unsigned int CUdpCurlInstance::CurlWorker(void)
           {
             CUdpSocketContext *udpContext = (CUdpSocketContext *)(server->GetSockets()->GetItem(i));
 
-            unsigned int pendingIncomingDataLength = 0;
+            size_t pendingIncomingDataLength = 0;
             HRESULT res = S_OK;
             do
             {
@@ -314,7 +314,7 @@ unsigned int CUdpCurlInstance::CurlWorker(void)
               if (SUCCEEDED(res) && (pendingIncomingDataLength != 0))
               {
                 // allocate buffer and receive data
-                unsigned int receivedLength = 0;
+                size_t receivedLength = 0;
 
                 CHECK_CONDITION_EXECUTE(SUCCEEDED(res), res = udpContext->Receive((char *)buffer, pendingIncomingDataLength, &receivedLength));
                 CHECK_CONDITION_HRESULT(res, pendingIncomingDataLength == receivedLength, res, E_NOT_VALID_STATE);

@@ -32,7 +32,7 @@ public:
   CLinearBuffer(HRESULT *result);
 
   // create linear buffer with specified size
-  CLinearBuffer(HRESULT *result, unsigned int size);
+  CLinearBuffer(HRESULT *result, size_t size);
 
   // destructor
   ~CLinearBuffer(void);

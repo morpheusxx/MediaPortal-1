@@ -174,7 +174,7 @@ public:
 
 protected:
   // holds last received length of data when requesting parser result
-  unsigned int lastReceivedLength;
+  size_t lastReceivedLength;
   // mutex for locking access to file, buffer, ...
   HANDLE mutex;
 
@@ -185,8 +185,8 @@ protected:
   // holds cache file
   CCacheFile *cacheFile;
   // holds last processed size from last store time
-  unsigned int lastProcessedSize;
-  unsigned int currentProcessedSize;
+  size_t lastProcessedSize;
+  size_t currentProcessedSize;
   // holds which fragment is currently downloading (UINT_MAX means none)
   unsigned int streamFragmentDownloading;
   // holds which fragment have to be downloaded

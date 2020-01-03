@@ -80,7 +80,7 @@ bool CCacheFile::LoadItems(CCacheFileItemCollection *collection, unsigned int in
   return this->LoadItems(collection, index, loadFromCacheFileAllowed, maxItems, CACHE_FILE_RELOAD_SIZE);
 }
 
-bool CCacheFile::LoadItems(CCacheFileItemCollection *collection, unsigned int index, bool loadFromCacheFileAllowed, unsigned int maxItems, unsigned int maxSize)
+bool CCacheFile::LoadItems(CCacheFileItemCollection *collection, unsigned int index, bool loadFromCacheFileAllowed, unsigned int maxItems, size_t maxSize)
 {
   HRESULT result = ((collection != NULL) && (index < collection->Count())) ? S_OK : E_NOT_VALID_STATE;
 

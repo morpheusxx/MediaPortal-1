@@ -72,7 +72,7 @@ public:
 
 protected:
   // holds last received length
-  unsigned int lastReceivedLength;
+  size_t lastReceivedLength;
 
   /* methods */
 

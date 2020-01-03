@@ -84,14 +84,14 @@ HRESULT CSocketContext::GetOption(int level, int optionName, char *optionValue, 
   return result;
 }
 
-HRESULT CSocketContext::GetPendingIncomingDataLength(unsigned int *incomingDataLength)
+HRESULT CSocketContext::GetPendingIncomingDataLength(size_t *incomingDataLength)
 {
   HRESULT result = S_OK;
   CHECK_POINTER_DEFAULT_HRESULT(result, incomingDataLength);
 
   if (SUCCEEDED(result))
   {
-    unsigned int state = SOCKET_STATE_UNDEFINED;
+    uint32_t state = SOCKET_STATE_UNDEFINED;
     result = this->Select(true, false, 0, &state);
 
     CHECK_CONDITION_EXECUTE(SUCCEEDED(result), result = (state == SOCKET_STATE_READABLE) ? result : E_NOT_VALID_STATE);
@@ -245,7 +245,7 @@ HRESULT CSocketContext::IsClosed(void)
 
     if (SUCCEEDED(result))
     {
-      unsigned int receivedLength = 0;
+      size_t receivedLength = 0;
       result = this->Receive(buffer, BUFFER_REQUEST_SIZE_DEFAULT, MSG_PEEK, &receivedLength);
 
       if (SUCCEEDED(result))
@@ -276,12 +276,12 @@ HRESULT CSocketContext::Bind(void)
   return result;
 }
 
-HRESULT CSocketContext::Send(const char *buffer, unsigned int length, unsigned int *sentLength)
+HRESULT CSocketContext::Send(const char *buffer, size_t length, size_t *sentLength)
 {
   return this->Send(buffer, length, 0, sentLength);
 }
 
-HRESULT CSocketContext::Send(const char *buffer, unsigned int length, int flags, unsigned int *sentLength)
+HRESULT CSocketContext::Send(const char *buffer, size_t length, int flags, size_t *sentLength)
 {
   HRESULT result = S_OK;
   CHECK_POINTER_HRESULT(result, buffer, result, E_INVALIDARG);
@@ -304,22 +304,22 @@ HRESULT CSocketContext::Send(const char *buffer, unsigned int length, int flags,
   return result;
 }
 
-HRESULT CSocketContext::Receive(char *buffer, unsigned int length, unsigned int *receivedLength)
+HRESULT CSocketContext::Receive(char *buffer, size_t length, size_t *receivedLength)
 {
   return this->Receive(buffer, length, 0, receivedLength);
 }
 
-HRESULT CSocketContext::Receive(char *buffer, unsigned int length, int flags, unsigned int *receivedLength)
+HRESULT CSocketContext::Receive(char *buffer, size_t length, int flags, size_t *receivedLength)
 {
   return this->Receive(buffer, length, flags, receivedLength, NULL);
 }
 
-HRESULT CSocketContext::Receive(char *buffer, unsigned int length, unsigned int *receivedLength, CIpAddress **sender)
+HRESULT CSocketContext::Receive(char *buffer, size_t length, size_t *receivedLength, CIpAddress **sender)
 {
   return this->Receive(buffer, length, 0, receivedLength, sender);
 }
 
-HRESULT CSocketContext::Receive(char *buffer, unsigned int length, int flags, unsigned int *receivedLength, CIpAddress **sender)
+HRESULT CSocketContext::Receive(char *buffer, size_t length, int flags, size_t *receivedLength, CIpAddress **sender)
 {
   HRESULT result = S_OK;
   CHECK_POINTER_HRESULT(result, buffer, result, E_INVALIDARG);

@@ -113,11 +113,11 @@ public:
 
   // gets last processed size of data from stream track
   // @return : last processed size of data from stream track
-  unsigned int GetLastProcessedSize(void);
+  size_t GetLastProcessedSize(void);
 
   // gets current processed size of data from stream track
   // @return : current processed size of data from stream track
-  unsigned int GetCurrentProcessedSize(void);
+  size_t GetCurrentProcessedSize(void);
 
   /* set methods */
 
@@ -171,11 +171,11 @@ public:
 
   // sets last processed size of data from stream track
   // @param lastProcessedSize : last processed size of data from stream track to set
-  void SetLastProcessedSize(unsigned lastProcessedSize);
+  void SetLastProcessedSize(size_t lastProcessedSize);
 
   // sets current processed size of data from stream track
   // @param currentProcessedSize : current processed size of data from stream track to set
-  void SetCurrentProcessedSize(unsigned int currentProcessedSize);
+  void SetCurrentProcessedSize(size_t currentProcessedSize);
 
   /* other methods */
 
@@ -235,8 +235,8 @@ protected:
   CCacheFile *cacheFile;
 
   // holds last processed size from last store time
-  unsigned int lastProcessedSize;
-  unsigned int currentProcessedSize;
+  size_t lastProcessedSize;
+  size_t currentProcessedSize;
 
   /* methods */
 };

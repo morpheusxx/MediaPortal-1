@@ -52,22 +52,22 @@ bool CUdpSocketContext::SetLastSenderIpAddress(CIpAddress *sender)
 
 /* other methods */
 
-HRESULT CUdpSocketContext::Send(const char *buffer, unsigned int length, unsigned int *sentLength)
+HRESULT CUdpSocketContext::Send(const char *buffer, size_t length, size_t *sentLength)
 {
   return this->Send(buffer, length, sentLength, this->GetLastSenderIpAddress());
 }
 
-HRESULT CUdpSocketContext::Send(const char *buffer, unsigned int length, int flags, unsigned int *sentLength)
+HRESULT CUdpSocketContext::Send(const char *buffer, size_t length, int flags, size_t *sentLength)
 {
   return this->Send(buffer, length, flags, sentLength, this->GetLastSenderIpAddress());
 }
 
-HRESULT CUdpSocketContext::Send(const char *buffer, unsigned int length, unsigned int *sentLength, CIpAddress *client)
+HRESULT CUdpSocketContext::Send(const char *buffer, size_t length, size_t *sentLength, CIpAddress *client)
 {
   return this->Send(buffer, length, 0, sentLength, client);
 }
 
-HRESULT CUdpSocketContext::Send(const char *buffer, unsigned int length, int flags, unsigned int *sentLength, CIpAddress *client)
+HRESULT CUdpSocketContext::Send(const char *buffer, size_t length, int flags, size_t *sentLength, CIpAddress *client)
 {
   HRESULT result = S_OK;
   CHECK_POINTER_HRESULT(result, buffer, result, E_INVALIDARG);
@@ -91,22 +91,22 @@ HRESULT CUdpSocketContext::Send(const char *buffer, unsigned int length, int fla
   return result;
 }
 
-HRESULT CUdpSocketContext::Receive(char *buffer, unsigned int length, unsigned int *receivedLength)
+HRESULT CUdpSocketContext::Receive(char *buffer, size_t length, size_t *receivedLength)
 {
   return this->Receive(buffer, length, 0, receivedLength);
 }
 
-HRESULT CUdpSocketContext::Receive(char *buffer, unsigned int length, int flags, unsigned int *receivedLength)
+HRESULT CUdpSocketContext::Receive(char *buffer, size_t length, int flags, size_t *receivedLength)
 {
   return this->Receive(buffer, length, flags, receivedLength, NULL);
 }
 
-HRESULT CUdpSocketContext::Receive(char *buffer, unsigned int length, unsigned int *receivedLength, CIpAddress **sender)
+HRESULT CUdpSocketContext::Receive(char *buffer, size_t length, size_t *receivedLength, CIpAddress **sender)
 {
   return this->Receive(buffer, length, 0, receivedLength, sender);
 }
 
-HRESULT CUdpSocketContext::Receive(char *buffer, unsigned int length, int flags, unsigned int *receivedLength, CIpAddress **sender)
+HRESULT CUdpSocketContext::Receive(char *buffer, size_t length, int flags, size_t *receivedLength, CIpAddress **sender)
 {
   HRESULT result = S_OK;
 

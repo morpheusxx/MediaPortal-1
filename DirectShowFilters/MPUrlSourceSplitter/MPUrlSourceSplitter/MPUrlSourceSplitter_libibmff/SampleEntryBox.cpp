@@ -77,11 +77,11 @@ uint64_t CSampleEntryBox::GetBoxSize(void)
   return (8 + __super::GetBoxSize());
 }
 
-bool CSampleEntryBox::ParseInternal(const unsigned char *buffer, uint32_t length, bool processAdditionalBoxes)
+bool CSampleEntryBox::ParseInternal(const unsigned char *buffer, size_t length, bool processAdditionalBoxes)
 {
   if (__super::ParseInternal(buffer, length, false))
   {
-    uint32_t position = this->HasExtendedHeader() ? BOX_HEADER_LENGTH_SIZE64 : BOX_HEADER_LENGTH;
+    size_t position = this->HasExtendedHeader() ? BOX_HEADER_LENGTH_SIZE64 : BOX_HEADER_LENGTH;
     HRESULT continueParsing = ((position + SAMPLE_ENTRY_BOX_DATA_SIZE) <= min(length, (uint32_t)this->GetSize())) ? S_OK : E_NOT_VALID_STATE;
 
     if (SUCCEEDED(continueParsing))
@@ -104,9 +104,9 @@ bool CSampleEntryBox::ParseInternal(const unsigned char *buffer, uint32_t length
   return this->IsSetFlags(BOX_FLAG_PARSED);
 }
 
-uint32_t CSampleEntryBox::GetBoxInternal(uint8_t *buffer, uint32_t length, bool processAdditionalBoxes)
+size_t CSampleEntryBox::GetBoxInternal(uint8_t *buffer, size_t length, bool processAdditionalBoxes)
 {
-  uint32_t result = __super::GetBoxInternal(buffer, length, false);
+  size_t result = __super::GetBoxInternal(buffer, length, false);
 
   if (result != 0)
   {

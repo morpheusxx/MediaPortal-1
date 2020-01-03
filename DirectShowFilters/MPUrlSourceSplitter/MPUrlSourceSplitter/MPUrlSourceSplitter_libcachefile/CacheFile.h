@@ -83,7 +83,7 @@ public:
   // @param maxItems : the maximum items to load from cache file
   // @param maxSize : the maximum size of data to load from cache file
   // @return : true if item successfully loaded (also in case if item is in memory), false otherwise
-  bool LoadItems(CCacheFileItemCollection *collection, unsigned int index, bool loadFromCacheFileAllowed, unsigned int maxItems, unsigned int maxSize);
+  bool LoadItems(CCacheFileItemCollection *collection, unsigned int index, bool loadFromCacheFileAllowed, unsigned int maxItems, size_t maxSize);
 
   // stores unstored items to cache file
   // it also release from memory items which are loaded to memory more than specified time span

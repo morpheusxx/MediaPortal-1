@@ -97,7 +97,7 @@ uint64_t CDataEntryUrlBox::GetBoxSize(void)
   return result;
 }
 
-bool CDataEntryUrlBox::ParseInternal(const unsigned char *buffer, uint32_t length, bool processAdditionalBoxes)
+bool CDataEntryUrlBox::ParseInternal(const unsigned char *buffer, size_t length, bool processAdditionalBoxes)
 {
   FREE_MEM(this->location);
 
@@ -109,12 +109,12 @@ bool CDataEntryUrlBox::ParseInternal(const unsigned char *buffer, uint32_t lengt
     if (this->IsSetFlags(BOX_FLAG_PARSED))
     {
       // box is data entry url box, parse all values
-      uint32_t position = this->HasExtendedHeader() ? FULL_BOX_HEADER_LENGTH_SIZE64 : FULL_BOX_HEADER_LENGTH;
+      size_t position = this->HasExtendedHeader() ? FULL_BOX_HEADER_LENGTH_SIZE64 : FULL_BOX_HEADER_LENGTH;
       HRESULT continueParsing = (this->GetSize() <= (uint64_t)length) ? S_OK : E_NOT_VALID_STATE;
 
       if (SUCCEEDED(continueParsing) && (!this->IsSelfContained()))
       {
-        uint32_t positionAfter = position;
+        size_t positionAfter = position;
         continueParsing = this->GetString(buffer, length, position, &this->location, &positionAfter);
 
         CHECK_CONDITION_EXECUTE(SUCCEEDED(continueParsing), position = positionAfter);
@@ -133,21 +133,21 @@ bool CDataEntryUrlBox::ParseInternal(const unsigned char *buffer, uint32_t lengt
   return this->IsSetFlags(BOX_FLAG_PARSED);
 }
 
-uint32_t CDataEntryUrlBox::GetBoxInternal(uint8_t *buffer, uint32_t length, bool processAdditionalBoxes)
+size_t CDataEntryUrlBox::GetBoxInternal(uint8_t *buffer, size_t length, bool processAdditionalBoxes)
 {
-  uint32_t result = __super::GetBoxInternal(buffer, length, false);
+  size_t result = __super::GetBoxInternal(buffer, length, false);
 
   if (result != 0)
   {
     if (!this->IsSelfContained())
     {
-      uint32_t res = this->SetString(buffer + result, length - result, this->GetLocation());
+      size_t res = this->SetString(buffer + result, length - result, this->GetLocation());
       result = (res != 0) ? (result + res) : 0;
     }
 
     if ((result != 0) && processAdditionalBoxes && (this->GetBoxes()->Count() != 0))
     {
-      uint32_t boxSizes = this->GetAdditionalBoxes(buffer + result, length - result);
+      size_t boxSizes = this->GetAdditionalBoxes(buffer + result, length - result);
       result = (boxSizes != 0) ? (result + boxSizes) : 0;
     }
   }

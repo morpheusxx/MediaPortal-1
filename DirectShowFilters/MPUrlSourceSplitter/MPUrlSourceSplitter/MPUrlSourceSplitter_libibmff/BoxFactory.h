@@ -51,7 +51,7 @@ public:
   // @param buffer : buffer with box data for parsing
   // @param length : the length of data in buffer
   // @return : box or NULL if error
-  virtual CBox *CreateBox(const uint8_t *buffer, uint32_t length);
+  virtual CBox *CreateBox(const uint8_t *buffer, size_t length);
 };
 
 #endif

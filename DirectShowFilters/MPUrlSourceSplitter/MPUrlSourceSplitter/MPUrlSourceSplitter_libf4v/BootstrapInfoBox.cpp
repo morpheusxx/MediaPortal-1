@@ -329,7 +329,7 @@ bool CBootstrapInfoBox::ParseInternal(const unsigned char *buffer, uint32_t leng
 
       if (SUCCEEDED(continueParsing))
       {
-        uint32_t positionAfter = position;
+        size_t positionAfter = position;
         continueParsing = this->GetString(buffer, length, position, &this->movieIdentifier, &positionAfter);
 
         CHECK_CONDITION_EXECUTE(SUCCEEDED(continueParsing), position = positionAfter);
@@ -344,7 +344,7 @@ bool CBootstrapInfoBox::ParseInternal(const unsigned char *buffer, uint32_t leng
 
         for(uint8_t i = 0; (SUCCEEDED(continueParsing) && (i < serverEntryCount)); i++)
         {
-          uint32_t positionAfter = position;
+          size_t positionAfter = position;
           wchar_t *serverEntry = NULL;
           continueParsing = this->GetString(buffer, length, position, &serverEntry, &positionAfter);
 
@@ -375,7 +375,7 @@ bool CBootstrapInfoBox::ParseInternal(const unsigned char *buffer, uint32_t leng
 
         for(uint8_t i = 0; (SUCCEEDED(continueParsing) && (i < qualityEntryCount)); i++)
         {
-          uint32_t positionAfter = position;
+          size_t positionAfter = position;
           wchar_t *qualityEntry = NULL;
           continueParsing = this->GetString(buffer, length, position, &qualityEntry, &positionAfter);
 
@@ -401,7 +401,7 @@ bool CBootstrapInfoBox::ParseInternal(const unsigned char *buffer, uint32_t leng
       if (SUCCEEDED(continueParsing))
       {
         // read DRM data string
-        uint32_t positionAfter = position;
+        size_t positionAfter = position;
         continueParsing = this->GetString(buffer, length, position, &this->drmData, &positionAfter);
 
         CHECK_CONDITION_EXECUTE(SUCCEEDED(continueParsing), position = positionAfter);
@@ -411,7 +411,7 @@ bool CBootstrapInfoBox::ParseInternal(const unsigned char *buffer, uint32_t leng
       if (SUCCEEDED(continueParsing))
       {
         // read metadata string
-        uint32_t positionAfter = position;
+        size_t positionAfter = position;
         continueParsing = this->GetString(buffer, length, position, &this->metaData, &positionAfter);
 
         CHECK_CONDITION_EXECUTE(SUCCEEDED(continueParsing), position = positionAfter);

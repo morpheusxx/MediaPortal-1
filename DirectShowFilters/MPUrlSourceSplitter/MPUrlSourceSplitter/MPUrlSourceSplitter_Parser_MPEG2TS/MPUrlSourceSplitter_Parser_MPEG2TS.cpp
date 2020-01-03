@@ -594,8 +594,8 @@ HRESULT CMPUrlSourceSplitter_Parser_Mpeg2TS::StartReceivingData(CParameterCollec
 
     if (SUCCEEDED(result))
     {
-      unsigned int requestLength = MP_URL_SOURCE_SPLITTER_PARSER_MPEG2TS_DATA_LENGTH_DEFAULT;
-      unsigned int lastReceivedLength = 0;
+      size_t requestLength = MP_URL_SOURCE_SPLITTER_PARSER_MPEG2TS_DATA_LENGTH_DEFAULT;
+      size_t lastReceivedLength = 0;
       bool receivedSameLength = false;
 
       while (SUCCEEDED(result) && (!receivedSameLength))
@@ -608,7 +608,7 @@ HRESULT CMPUrlSourceSplitter_Parser_Mpeg2TS::StartReceivingData(CParameterCollec
         if (SUCCEEDED(result))
         {
           request->SetStart(0);
-          request->SetLength(requestLength);
+          request->SetLength((uint32_t)requestLength);
           request->SetAnyDataLength(true);
 
           package->SetRequest(request);
@@ -875,7 +875,7 @@ unsigned int WINAPI CMPUrlSourceSplitter_Parser_Mpeg2TS::ReceiveDataWorker(LPVOI
             // move remaining data to next fragment or drop it when next fragment doesn't exist
             if ((nextStreamFragment != NULL) && (processingBuffer->GetBufferOccupiedSpace() != 0))
             {
-              unsigned int length = nextStreamFragment->GetLength() + processingBuffer->GetBufferOccupiedSpace();
+              size_t length = nextStreamFragment->GetLength() + processingBuffer->GetBufferOccupiedSpace();
 
               ALLOC_MEM_DEFINE_SET(buffer, unsigned char, length, 0);
               CHECK_POINTER_HRESULT(result, buffer, result, E_OUTOFMEMORY);
@@ -949,13 +949,13 @@ unsigned int WINAPI CMPUrlSourceSplitter_Parser_Mpeg2TS::ReceiveDataWorker(LPVOI
 
           if (caller->IsSetAnyOfFlags(MP_URL_SOURCE_SPLITTER_PARSER_MPEG2TS_FLAG_DETECT_DISCONTINUITY | MP_URL_SOURCE_SPLITTER_PARSER_MPEG2TS_FLAG_SET_NOT_SCRAMBLED))
           {
-            unsigned int processed = 0;
-            unsigned int length = currentAlignedStreamFragment->GetBuffer()->GetBufferOccupiedSpace();
+            size_t processed = 0;
+            size_t length = currentAlignedStreamFragment->GetBuffer()->GetBufferOccupiedSpace();
             unsigned char *buffer = currentAlignedStreamFragment->GetBuffer()->GetInternalBuffer();
 
             while (SUCCEEDED(result) && (processed < length))
             {
-              CHECK_CONDITION_HRESULT(result, packet->Parse(buffer + processed, length - processed), result, E_MPEG2TS_CANNOT_PARSE_PACKET);
+              CHECK_CONDITION_HRESULT(result, packet->Parse(buffer + processed, (uint32_t)(length - processed)), result, E_MPEG2TS_CANNOT_PARSE_PACKET);
 
               if (SUCCEEDED(result) && caller->IsSetFlags(MP_URL_SOURCE_SPLITTER_PARSER_MPEG2TS_FLAG_DETECT_DISCONTINUITY))
               {
@@ -1022,8 +1022,8 @@ unsigned int WINAPI CMPUrlSourceSplitter_Parser_Mpeg2TS::ReceiveDataWorker(LPVOI
         {
           // changing stream identification is required or stream should be marked as not scrambled or filtering program elements is required or remembering sections is required
 
-          unsigned int processed = 0;
-          unsigned int length = currentDiscontinuityProcessedStreamFragment->GetBuffer()->GetBufferOccupiedSpace();
+          size_t processed = 0;
+          size_t length = currentDiscontinuityProcessedStreamFragment->GetBuffer()->GetBufferOccupiedSpace();
           const unsigned char *buffer = currentDiscontinuityProcessedStreamFragment->GetBuffer()->GetInternalBuffer();
 
           // create only reference TS packet (we don't copy data from original TS packet from buffer)
@@ -1032,7 +1032,7 @@ unsigned int WINAPI CMPUrlSourceSplitter_Parser_Mpeg2TS::ReceiveDataWorker(LPVOI
 
           while (SUCCEEDED(result) && (processed < length))
           {
-            CHECK_CONDITION_HRESULT(result, packet->Parse(buffer + processed, length - processed), result, E_MPEG2TS_CANNOT_PARSE_PACKET);
+            CHECK_CONDITION_HRESULT(result, packet->Parse(buffer + processed, (uint32_t)(length - processed)), result, E_MPEG2TS_CANNOT_PARSE_PACKET);
 
             // process stream fragment for program association section
             if (SUCCEEDED(result) && (packet->GetPID() == PROGRAM_ASSOCIATION_PARSER_PSI_PACKET_PID) && caller->IsSetAnyOfFlags(
@@ -1047,7 +1047,7 @@ unsigned int WINAPI CMPUrlSourceSplitter_Parser_Mpeg2TS::ReceiveDataWorker(LPVOI
               CProgramSpecificInformationPacket *psiPacket = new CProgramSpecificInformationPacket(&result, PROGRAM_ASSOCIATION_PARSER_PSI_PACKET_PID, PROGRAM_ASSOCIATION_SECTION_TABLE_ID, true);
               CHECK_POINTER_HRESULT(result, psiPacket, result, E_OUTOFMEMORY);
 
-              if (psiPacket->Parse(buffer + processed, length - processed))
+              if (psiPacket->Parse(buffer + processed, (uint32_t)(length - processed)))
               {
                 // PSI packet with specified PID
                 // program association section PSI packet
@@ -1310,7 +1310,7 @@ unsigned int WINAPI CMPUrlSourceSplitter_Parser_Mpeg2TS::ReceiveDataWorker(LPVOI
 
                   CSectionMultiplexer *multiplexer = caller->multiplexers->GetMultiplexerByPID(psiPacket->GetPID());
 
-                  CHECK_CONDITION_HRESULT(result, multiplexer->AddStreamFragmentContext(currentDiscontinuityProcessedStreamFragment, processed / TS_PACKET_SIZE, sectionPayloadCount), result, E_OUTOFMEMORY);
+                  CHECK_CONDITION_HRESULT(result, multiplexer->AddStreamFragmentContext(currentDiscontinuityProcessedStreamFragment, (uint32_t)(processed / TS_PACKET_SIZE), sectionPayloadCount), result, E_OUTOFMEMORY);
                 }
               }
 
@@ -1334,7 +1334,7 @@ unsigned int WINAPI CMPUrlSourceSplitter_Parser_Mpeg2TS::ReceiveDataWorker(LPVOI
                 CProgramSpecificInformationPacket *psiPacket = new CProgramSpecificInformationPacket(&result, context->GetParser()->GetTransportStreamProgramMapSectionPID(), TRANSPORT_STREAM_PROGRAM_MAP_SECTION_TABLE_ID, true);
                 CHECK_POINTER_HRESULT(result, psiPacket, result, E_OUTOFMEMORY);
 
-                if (SUCCEEDED(result) && (psiPacket->Parse(buffer + processed, length - processed)))
+                if (SUCCEEDED(result) && (psiPacket->Parse(buffer + processed, (uint32_t)(length - processed))))
                 {
                   // PSI packet with specified PID
                   // transport stream program map PSI packet
@@ -1569,7 +1569,7 @@ unsigned int WINAPI CMPUrlSourceSplitter_Parser_Mpeg2TS::ReceiveDataWorker(LPVOI
 
                     CSectionMultiplexer *multiplexer = caller->multiplexers->GetMultiplexerByPID(psiPacket->GetPID());
 
-                    CHECK_CONDITION_HRESULT(result, multiplexer->AddStreamFragmentContext(currentDiscontinuityProcessedStreamFragment, processed / TS_PACKET_SIZE, sectionPayloadCount), result, E_OUTOFMEMORY);
+                    CHECK_CONDITION_HRESULT(result, multiplexer->AddStreamFragmentContext(currentDiscontinuityProcessedStreamFragment, (uint32_t)(processed / TS_PACKET_SIZE), sectionPayloadCount), result, E_OUTOFMEMORY);
                   }
                 }
 
@@ -1586,7 +1586,7 @@ unsigned int WINAPI CMPUrlSourceSplitter_Parser_Mpeg2TS::ReceiveDataWorker(LPVOI
               CProgramSpecificInformationPacket *psiPacket = new CProgramSpecificInformationPacket(&result, CONDITIONAL_ACCESS_PARSER_PSI_PACKET_PID, CONDITIONAL_ACCESS_SECTION_TABLE_ID, true);
               CHECK_POINTER_HRESULT(result, psiPacket, result, E_OUTOFMEMORY);
 
-              if (psiPacket->Parse(buffer + processed, length - processed))
+              if (psiPacket->Parse(buffer + processed, (uint32_t)(length - processed)))
               {
                 // PSI packet with specified PID
                 // conditional access section PSI packet
@@ -1697,7 +1697,7 @@ unsigned int WINAPI CMPUrlSourceSplitter_Parser_Mpeg2TS::ReceiveDataWorker(LPVOI
 
                   CSectionMultiplexer *multiplexer = caller->multiplexers->GetMultiplexerByPID(psiPacket->GetPID());
 
-                  CHECK_CONDITION_HRESULT(result, multiplexer->AddStreamFragmentContext(currentDiscontinuityProcessedStreamFragment, processed / TS_PACKET_SIZE, sectionPayloadCount), result, E_OUTOFMEMORY);
+                  CHECK_CONDITION_HRESULT(result, multiplexer->AddStreamFragmentContext(currentDiscontinuityProcessedStreamFragment, (uint32_t)(processed / TS_PACKET_SIZE), sectionPayloadCount), result, E_OUTOFMEMORY);
                 }
               }
 
@@ -2187,7 +2187,7 @@ unsigned int WINAPI CMPUrlSourceSplitter_Parser_Mpeg2TS::ReceiveDataWorker(LPVOI
 
             // don not clear response buffer, we don't have to copy data again from start position
             // first try to find starting stream fragment (stream fragment which have first data)
-            unsigned int foundDataLength = dataResponse->GetBuffer()->GetBufferOccupiedSpace();
+            size_t foundDataLength = dataResponse->GetBuffer()->GetBufferOccupiedSpace();
 
             int64_t startPosition = dataRequest->GetStart() + foundDataLength - caller->positionOffset;
             unsigned int fragmentIndex = caller->streamFragments->GetStreamFragmentIndexBetweenPositions(startPosition);
@@ -2201,8 +2201,8 @@ unsigned int WINAPI CMPUrlSourceSplitter_Parser_Mpeg2TS::ReceiveDataWorker(LPVOI
               int64_t streamFragmentRelativeStart = streamFragment->GetFragmentStartPosition() - startSearchingStreamFragment->GetFragmentStartPosition();
 
               // set copy data start and copy data length
-              unsigned int copyDataStart = (startPosition > streamFragmentRelativeStart) ? (unsigned int)(startPosition - streamFragmentRelativeStart) : 0;
-              unsigned int copyDataLength = min(streamFragment->GetLength() - copyDataStart, dataRequest->GetLength() - foundDataLength);
+              const size_t copyDataStart = (startPosition > streamFragmentRelativeStart) ? startPosition - streamFragmentRelativeStart : 0;
+              const size_t copyDataLength = min(streamFragment->GetLength() - copyDataStart, dataRequest->GetLength() - foundDataLength);
 
               // copy data from stream fragment to response buffer
               if (caller->cacheFile->LoadItems(caller->streamFragments, fragmentIndex, true, UINT_MAX, (caller->lastProcessedSize == 0) ? CACHE_FILE_RELOAD_SIZE : caller->lastProcessedSize))

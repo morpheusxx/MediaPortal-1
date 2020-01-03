@@ -285,7 +285,7 @@ HRESULT CMPUrlSourceSplitter_Protocol_Mshs::ReceiveData(CStreamPackage *streamPa
 
     if (SUCCEEDED(result) && (this->mainCurlInstance->IsLockedCurlInstanceByOwner(this)) && (this->mainCurlInstance->GetConnectionState() == Opening))
     {
-      unsigned int bufferSize = 0;
+      size_t bufferSize = 0;
       {
         // only check received data length to not block Load() method
         LOCK_MUTEX(this->lockCurlMutex, INFINITE)
@@ -412,8 +412,8 @@ HRESULT CMPUrlSourceSplitter_Protocol_Mshs::ReceiveData(CStreamPackage *streamPa
           // in track fragment header box we need to set track ID
           // in track run box we need to set flags and data offset
 
-          unsigned int fragmentSize = currentProcessingFragment->GetBuffer()->GetBufferOccupiedSpace();
-          unsigned int fragmentPosition = 0;
+          size_t fragmentSize = currentProcessingFragment->GetBuffer()->GetBufferOccupiedSpace();
+          size_t fragmentPosition = 0;
 
           CLinearBuffer *processedFragment = new CLinearBuffer(&result, fragmentSize);
           CHECK_POINTER_HRESULT(result, processedFragment, result, E_OUTOFMEMORY);
@@ -924,7 +924,7 @@ HRESULT CMPUrlSourceSplitter_Protocol_Mshs::ReceiveData(CStreamPackage *streamPa
 
         // don not clear response buffer, we don't have to copy data again from start position
         // first try to find starting segment fragment (segment fragment which have first data)
-        unsigned int foundDataLength = dataResponse->GetBuffer()->GetBufferOccupiedSpace();
+        size_t foundDataLength = dataResponse->GetBuffer()->GetBufferOccupiedSpace();
 
         int64_t startPosition = this->IsSetFlags(MP_URL_SOURCE_SPLITTER_PROTOCOL_MSHS_FLAG_SKIP_HEADER) ? this->reconstructedHeaderSize : 0;
         startPosition += dataRequest->GetStart() + foundDataLength;
@@ -965,8 +965,8 @@ HRESULT CMPUrlSourceSplitter_Protocol_Mshs::ReceiveData(CStreamPackage *streamPa
           int64_t streamFragmentRelativeStart = streamFragment->GetFragmentStartPosition() - startSearchingStreamFragment->GetFragmentStartPosition();
 
           // set copy data start and copy data length
-          unsigned int copyDataStart = (startPosition > streamFragmentRelativeStart) ? (unsigned int)(startPosition - streamFragmentRelativeStart) : 0;
-          unsigned int copyDataLength = min(streamFragment->GetLength() - copyDataStart, dataRequest->GetLength() - foundDataLength);
+          size_t copyDataStart = (startPosition > streamFragmentRelativeStart) ? (size_t)(startPosition - streamFragmentRelativeStart) : 0;
+          size_t copyDataLength = min(streamFragment->GetLength() - copyDataStart, dataRequest->GetLength() - foundDataLength);
 
           // copy data from stream fragment to response buffer
           if (this->cacheFile->LoadItems(this->streamFragments, fragmentIndex, true, UINT_MAX, (this->lastProcessedSize == 0) ? CACHE_FILE_RELOAD_SIZE : this->lastProcessedSize))
@@ -1787,7 +1787,7 @@ HRESULT CMPUrlSourceSplitter_Protocol_Mshs::GetTrackFragmentHeaderBox(CTrackFrag
 
   if (SUCCEEDED(result))
   {
-    unsigned int bufferSize = fragment->GetBuffer()->GetBufferOccupiedSpace();
+    size_t bufferSize = fragment->GetBuffer()->GetBufferOccupiedSpace();
     ALLOC_MEM_DEFINE_SET(buffer, uint8_t, bufferSize, 0);
     CHECK_POINTER_HRESULT(result, buffer, result, E_OUTOFMEMORY);
 
@@ -2384,8 +2384,8 @@ HRESULT CMPUrlSourceSplitter_Protocol_Mshs::GetVideoSampleTableBox(CSampleTableB
                 if (SUCCEEDED(result))
                 {
                   ppsStart += 8;
-                  unsigned int ppsLength = strlen(ppsStart);
-                  unsigned int spsLength = strlen(spsStart) - ppsLength - 8;
+                  size_t ppsLength = strlen(ppsStart);
+                  size_t spsLength = strlen(spsStart) - ppsLength - 8;
 
                   // we have SPS start and PPS start
                   // parse data to AVC configuration box
@@ -2416,7 +2416,7 @@ HRESULT CMPUrlSourceSplitter_Protocol_Mshs::GetVideoSampleTableBox(CSampleTableB
                       CSequenceParameterSetNALUnit *spsUnit = new CSequenceParameterSetNALUnit(&result);
                       CHECK_POINTER_HRESULT(result, spsUnit, result, E_OUTOFMEMORY);
 
-                      CHECK_CONDITION_HRESULT(result, spsUnit->SetBuffer(convertedSps, spsLength / 2), result, E_OUTOFMEMORY);
+                      CHECK_CONDITION_HRESULT(result, spsUnit->SetBuffer(convertedSps, (uint16_t)(spsLength / 2)), result, E_OUTOFMEMORY);
 
                       CHECK_CONDITION_HRESULT(result, avcConfigurationBox->GetAVCDecoderConfiguration()->GetSequenceParameterSetNALUnits()->Add(spsUnit), result, E_OUTOFMEMORY);
                       CHECK_CONDITION_EXECUTE(FAILED(result), FREE_MEM_CLASS(spsUnit));
@@ -2427,7 +2427,7 @@ HRESULT CMPUrlSourceSplitter_Protocol_Mshs::GetVideoSampleTableBox(CSampleTableB
                       CPictureParameterSetNALUnit *ppsUnit = new CPictureParameterSetNALUnit(&result);
                       CHECK_POINTER_HRESULT(result, ppsUnit, result, E_OUTOFMEMORY);
 
-                      CHECK_CONDITION_HRESULT(result, ppsUnit->SetBuffer(convertedPps, ppsLength / 2), result, E_OUTOFMEMORY);
+                      CHECK_CONDITION_HRESULT(result, ppsUnit->SetBuffer(convertedPps, (uint16_t)(ppsLength / 2)), result, E_OUTOFMEMORY);
 
                       CHECK_CONDITION_HRESULT(result, avcConfigurationBox->GetAVCDecoderConfiguration()->GetPictureParameterSetNALUnits()->Add(ppsUnit), result, E_OUTOFMEMORY);
                       CHECK_CONDITION_EXECUTE(FAILED(result), FREE_MEM_CLASS(ppsUnit));
@@ -2531,7 +2531,7 @@ HRESULT CMPUrlSourceSplitter_Protocol_Mshs::GetAudioSampleTableBox(CSampleTableB
 
           if (SUCCEEDED(result))
           {
-            uint32_t length = (track->GetCodecPrivateData() != NULL) ? wcslen(track->GetCodecPrivateData()) : 0;
+            size_t length = (track->GetCodecPrivateData() != NULL) ? wcslen(track->GetCodecPrivateData()) : 0;
 
             esdBox->SetTrackId(fragmentHeaderBox->GetTrackId());
             esdBox->SetCodecTag(CODEC_TAG_AAC);
@@ -2542,7 +2542,7 @@ HRESULT CMPUrlSourceSplitter_Protocol_Mshs::GetAudioSampleTableBox(CSampleTableB
               uint8_t *convertedCodecPrivateData = HexToDecW(track->GetCodecPrivateData());
               CHECK_POINTER_HRESULT(result, convertedCodecPrivateData, result, E_OUTOFMEMORY);
 
-              CHECK_CONDITION_HRESULT(result, esdBox->SetCodecPrivateData(convertedCodecPrivateData, length / 2), result, E_OUTOFMEMORY);
+              CHECK_CONDITION_HRESULT(result, esdBox->SetCodecPrivateData(convertedCodecPrivateData, (uint32_t)(length / 2)), result, E_OUTOFMEMORY);
               
               FREE_MEM(convertedCodecPrivateData);
             }

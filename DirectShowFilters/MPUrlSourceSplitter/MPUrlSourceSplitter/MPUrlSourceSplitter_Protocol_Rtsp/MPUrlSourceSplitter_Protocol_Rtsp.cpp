@@ -517,7 +517,7 @@ HRESULT CMPUrlSourceSplitter_Protocol_Rtsp::ReceiveData(CStreamPackage *streamPa
             if (this->sessionDescription == NULL)
             {
               const wchar_t *rawSDP = this->mainCurlInstance->GetRtspDownloadResponse()->GetRawSessionDescription();
-              unsigned int rawSDPlength = wcslen(rawSDP);
+              uint32_t rawSDPlength = (uint32_t)wcslen(rawSDP);
 
               this->sessionDescription = new CSessionDescription(&result);
               CHECK_POINTER_HRESULT(result, this->sessionDescription, result, E_OUTOFMEMORY);
@@ -978,7 +978,7 @@ HRESULT CMPUrlSourceSplitter_Protocol_Rtsp::ReceiveData(CStreamPackage *streamPa
 
         // don not clear response buffer, we don't have to copy data again from start position
         // first try to find starting stream fragment (stream fragment which have first data)
-        unsigned int foundDataLength = dataResponse->GetBuffer()->GetBufferOccupiedSpace();
+        size_t foundDataLength = dataResponse->GetBuffer()->GetBufferOccupiedSpace();
 
         int64_t startPosition = dataRequest->GetStart() + foundDataLength;
         unsigned int fragmentIndex = streamTrack->GetStreamFragments()->GetStreamFragmentIndexBetweenPositions(startPosition);
@@ -994,8 +994,8 @@ HRESULT CMPUrlSourceSplitter_Protocol_Rtsp::ReceiveData(CStreamPackage *streamPa
           int64_t streamFragmentRelativeStart = streamFragment->GetFragmentStartPosition() - startSearchingStreamFragment->GetFragmentStartPosition();
 
           // set copy data start and copy data length
-          unsigned int copyDataStart = (startPosition > streamFragmentRelativeStart) ? (unsigned int)(startPosition - streamFragmentRelativeStart) : 0;
-          unsigned int copyDataLength = min(streamFragment->GetLength() - copyDataStart, dataRequest->GetLength() - foundDataLength);
+          size_t copyDataStart = (startPosition > streamFragmentRelativeStart) ? (size_t)(startPosition - streamFragmentRelativeStart) : 0;
+          size_t copyDataLength = min(streamFragment->GetLength() - copyDataStart, dataRequest->GetLength() - foundDataLength);
 
           // copy data from stream fragment to response buffer
           if (streamTrack->GetCacheFile()->LoadItems(streamTrack->GetStreamFragments(), fragmentIndex, true, UINT_MAX, (streamTrack->GetLastProcessedSize() == 0) ? CACHE_FILE_RELOAD_SIZE : streamTrack->GetLastProcessedSize()))

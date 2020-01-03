@@ -209,7 +209,7 @@ HRESULT CMPUrlSourceSplitter_Protocol_Afhs_Decryption_Akamai::DecryptSegmentFrag
             // write data to swf file file
             unsigned long written = 0;
 
-            CHECK_CONDITION_HRESULT(result, WriteFile(akamaiSwfFile, buffer, akamaiDecryptorResource->GetBufferOccupiedSpace(), &written, NULL) != 0, result, HRESULT_FROM_WIN32(GetLastError()));
+            CHECK_CONDITION_HRESULT(result, WriteFile(akamaiSwfFile, buffer, (uint32_t)akamaiDecryptorResource->GetBufferOccupiedSpace(), &written, NULL) != 0, result, HRESULT_FROM_WIN32(GetLastError()));
             CHECK_CONDITION_HRESULT(result, written == akamaiDecryptorResource->GetBufferOccupiedSpace(), result, E_AFHS_AKAMAI_DECRYPTOR_CANNOT_SAVE_DECRYPTOR);
           }
 
@@ -931,7 +931,7 @@ HRESULT CMPUrlSourceSplitter_Protocol_Afhs_Decryption_Akamai::GetBoxes(CBoxColle
 
     // for box factory we need buffer, position and length
     uint32_t position = 0;
-    uint32_t length = segmentFragment->GetBuffer()->GetBufferOccupiedSpace();
+    size_t length = segmentFragment->GetBuffer()->GetBufferOccupiedSpace();
 
     ALLOC_MEM_DEFINE_SET(buffer, uint8_t, length, 0);
     CHECK_POINTER_HRESULT(result, buffer, result, E_OUTOFMEMORY);

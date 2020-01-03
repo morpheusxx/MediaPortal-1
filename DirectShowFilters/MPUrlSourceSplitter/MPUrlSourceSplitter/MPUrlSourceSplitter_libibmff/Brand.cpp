@@ -92,7 +92,7 @@ bool CBrand::ConvertBrandToUnsignedInteger(void)
 
   if (result)
   {
-    uint32_t length = strlen(buffer);
+    size_t length = strlen(buffer);
     this->brand = 0;
 
     for (uint32_t i = 0; i < 4; i++)

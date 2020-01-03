@@ -1782,7 +1782,7 @@ unsigned int CRtspCurlInstance::CurlWorker(void)
                 for (unsigned int j = 0; (SUCCEEDED(result) && (j < dataServer->GetSockets()->Count())); j++)
                 {
                   CUdpSocketContext *udpContext = (CUdpSocketContext *)(dataServer->GetSockets()->GetItem(j));
-                  unsigned int pendingIncomingDataLength = 0;
+                  size_t pendingIncomingDataLength = 0;
 
                   if (SUCCEEDED(udpContext->GetPendingIncomingDataLength(&pendingIncomingDataLength)))
                   {
@@ -1814,7 +1814,7 @@ unsigned int CRtspCurlInstance::CurlWorker(void)
               {
                 CUdpSocketContext *udpContext = (CUdpSocketContext *)(server->GetSockets()->GetItem(j));
 
-                unsigned int pendingIncomingDataLength = 0;
+                size_t pendingIncomingDataLength = 0;
                 unsigned int interleavedPacketLength = 0;
 
                 do
@@ -1835,7 +1835,7 @@ unsigned int CRtspCurlInstance::CurlWorker(void)
                       ALLOC_MEM_DEFINE_SET(buffer, unsigned char, interleavedPacketLength, 0);
                       CHECK_POINTER_HRESULT(result, buffer, result, E_OUTOFMEMORY);
 
-                      unsigned int receivedLength = 0;
+                      size_t receivedLength = 0;
                       CIpAddress *sender = NULL;
 
                       CHECK_CONDITION_EXECUTE_RESULT(SUCCEEDED(result), udpContext->Receive((char *)(buffer + 4), pendingIncomingDataLength, &receivedLength, &sender), result);
@@ -1909,7 +1909,7 @@ unsigned int CRtspCurlInstance::CurlWorker(void)
                     CHECK_POINTER_HRESULT(result, buffer, result, E_OUTOFMEMORY);
 
                     // ignore return code, it's always error
-                    unsigned int readData = 0;
+                    size_t readData = 0;
                     udpContext->Receive((char *)buffer, 1024, &readData);
 
                     FREE_MEM(buffer);
@@ -2190,7 +2190,7 @@ unsigned int CRtspCurlInstance::CurlWorker(void)
                       // for sure, set server control port, some servers sent data/control packets on another ports as they negotiated
                       udpContext->GetLastSenderIpAddress()->SetPort(track->GetServerControlPort());
 
-                      unsigned int sentLength = 0;
+                      size_t sentLength = 0;
                       result = udpContext->Send((const char *)(reportBuffer + 4), receiverReportSize + sourceDescriptionSize, &sentLength);
 
                       if (SUCCEEDED(result) && this->IsDumpOutputData())

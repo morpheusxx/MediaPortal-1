@@ -89,7 +89,7 @@ protected:
   wchar_t *sessionID;
   // holds last key
   uint8_t *lastKey;
-  unsigned int lastKeyLength;
+  size_t lastKeyLength;
 
   // holds akamai swf file name
   wchar_t *akamaiSwfFileName;

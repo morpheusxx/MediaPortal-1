@@ -137,7 +137,7 @@ uint64_t CCleanApertureBox::GetBoxSize(void)
   return __super::GetBoxSize();
 }
 
-bool CCleanApertureBox::ParseInternal(const unsigned char *buffer, uint32_t length, bool processAdditionalBoxes)
+bool CCleanApertureBox::ParseInternal(const unsigned char *buffer, size_t length, bool processAdditionalBoxes)
 {
   if (__super::ParseInternal(buffer, length, false))
   {
@@ -175,9 +175,9 @@ bool CCleanApertureBox::ParseInternal(const unsigned char *buffer, uint32_t leng
   return this->IsSetFlags(BOX_FLAG_PARSED);
 }
 
-uint32_t CCleanApertureBox::GetBoxInternal(uint8_t *buffer, uint32_t length, bool processAdditionalBoxes)
+size_t CCleanApertureBox::GetBoxInternal(uint8_t *buffer, size_t length, bool processAdditionalBoxes)
 {
-  uint32_t result = __super::GetBoxInternal(buffer, length, false);
+  size_t result = __super::GetBoxInternal(buffer, length, false);
 
   if (result != 0)
   {

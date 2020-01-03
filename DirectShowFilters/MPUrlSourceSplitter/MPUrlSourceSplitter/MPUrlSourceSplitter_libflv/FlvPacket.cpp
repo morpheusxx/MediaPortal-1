@@ -55,7 +55,7 @@ unsigned int CFlvPacket::GetType(void)
   return this->type;
 }
 
-int CFlvPacket::ParsePacket(const unsigned char *buffer, unsigned int length)
+int CFlvPacket::ParsePacket(const unsigned char *buffer, size_t length)
 {
   int result = FLV_PARSE_RESULT_NOT_ENOUGH_DATA_FOR_HEADER;
   this->Clear();
@@ -188,7 +188,7 @@ int CFlvPacket::ParsePacket(CLinearBuffer *buffer)
   return result;
 }
 
-bool CFlvPacket::CreatePacket(unsigned int packetType, const unsigned char *buffer, unsigned int length, unsigned int timestamp, bool encrypted)
+bool CFlvPacket::CreatePacket(unsigned int packetType, const unsigned char *buffer, size_t length, size_t timestamp, bool encrypted)
 {
   bool result = false;
   this->Clear();
@@ -217,7 +217,7 @@ bool CFlvPacket::CreatePacket(unsigned int packetType, const unsigned char *buff
 
       memcpy(this->packet + 11, buffer, length);
 
-      unsigned int checkSize = this->size - 0x04;
+      size_t checkSize = this->size - 0x04;
       this->packet[this->size - 4] = (unsigned char)((checkSize & 0xFF000000) >> 24);
       this->packet[this->size - 3] = (unsigned char)((checkSize & 0x00FF0000) >> 16);
       this->packet[this->size - 2] = (unsigned char)((checkSize & 0x0000FF00) >> 8);

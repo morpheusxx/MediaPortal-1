@@ -443,7 +443,7 @@ int CTsPacket::FindPacket(CLinearBuffer *buffer, unsigned int minimumPacketsToCh
   {
     // at least size for MPEG2 TS packet header
 
-    result = CTsPacket::FindPacket(buffer->GetInternalBuffer(), buffer->GetBufferOccupiedSpace(), minimumPacketsToCheck);
+    result = CTsPacket::FindPacket(buffer->GetInternalBuffer(), (unsigned int)buffer->GetBufferOccupiedSpace(), minimumPacketsToCheck);
   }
 
   return result;
@@ -559,7 +559,7 @@ HRESULT CTsPacket::FindPacketSequence(CLinearBuffer *buffer, unsigned int *first
     {
       // at least size for MPEG2 TS packet header
 
-      result = CTsPacket::FindPacketSequence(buffer->GetInternalBuffer(), buffer->GetBufferOccupiedSpace(), firstPacketPosition, packetSequenceLength);
+      result = CTsPacket::FindPacketSequence(buffer->GetInternalBuffer(), (unsigned int)buffer->GetBufferOccupiedSpace(), firstPacketPosition, packetSequenceLength);
     }
   }
 

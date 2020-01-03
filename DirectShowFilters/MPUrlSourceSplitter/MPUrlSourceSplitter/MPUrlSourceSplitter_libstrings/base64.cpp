@@ -30,12 +30,12 @@ static inline bool is_base64(unsigned char c)
   return (isalnum(c) || (c == '+') || (c == '/'));
 }
 
-HRESULT base64_encode(const unsigned char *input, unsigned int length, char **output)
+HRESULT base64_encode(const unsigned char *input, size_t length, char **output)
 {
   return base64_encode(input, length, output, NULL);
 }
 
-HRESULT base64_encode(const unsigned char *input, unsigned int length, char **output, unsigned int *outputLength)
+HRESULT base64_encode(const unsigned char *input, size_t length, char **output, size_t *outputLength)
 {
   HRESULT result = S_OK;
 
@@ -111,12 +111,12 @@ HRESULT base64_encode(const unsigned char *input, unsigned int length, char **ou
   return result;
 }
 
-HRESULT base64_encode(const unsigned char *input, unsigned int length, wchar_t **output)
+HRESULT base64_encode(const unsigned char *input, size_t length, wchar_t **output)
 {
   return base64_encode(input, length, output, NULL);
 }
 
-HRESULT base64_encode(const unsigned char *input, unsigned int length, wchar_t **output, unsigned int *outputLength)
+HRESULT base64_encode(const unsigned char *input, size_t length, wchar_t **output, size_t *outputLength)
 {
   HRESULT result = S_OK;
 
@@ -145,7 +145,7 @@ HRESULT base64_encode(const unsigned char *input, unsigned int length, wchar_t *
   return result;
 }
 
-HRESULT base64_decode(const char *input, unsigned char **output, unsigned int *length)
+HRESULT base64_decode(const char *input, unsigned char **output, size_t *length)
 {
   HRESULT result = S_OK;
   CHECK_POINTER_DEFAULT_HRESULT(result, input);

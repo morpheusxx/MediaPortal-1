@@ -102,8 +102,8 @@ wchar_t *CDataEntryUrnBox::GetParsedHumanReadable(const wchar_t *indent)
 
 uint64_t CDataEntryUrnBox::GetBoxSize(void)
 {
-  uint32_t nameLength = this->GetStringSize(this->name);
-  uint32_t locationLength = this->GetStringSize(this->location);
+  size_t nameLength = this->GetStringSize(this->name);
+  size_t locationLength = this->GetStringSize(this->location);
 
   uint64_t result = ((nameLength != 0) && (locationLength != 0)) ? (nameLength + locationLength) : 0;
 
@@ -135,7 +135,7 @@ bool CDataEntryUrnBox::ParseInternal(const unsigned char *buffer, uint32_t lengt
       // self contained flag is valid only for DataEntryUrlBox
       if (SUCCEEDED(continueParsing))
       {
-        uint32_t positionAfter = position;
+        size_t positionAfter = position;
         continueParsing = this->GetString(buffer, length, position, &this->name, &positionAfter);
 
         CHECK_CONDITION_EXECUTE(SUCCEEDED(continueParsing), position = positionAfter);
@@ -143,7 +143,7 @@ bool CDataEntryUrnBox::ParseInternal(const unsigned char *buffer, uint32_t lengt
 
       if (SUCCEEDED(continueParsing))
       {
-        uint32_t positionAfter = position;
+        size_t positionAfter = position;
         continueParsing = this->GetString(buffer, length, position, &this->location, &positionAfter);
 
         CHECK_CONDITION_EXECUTE(SUCCEEDED(continueParsing), position = positionAfter);

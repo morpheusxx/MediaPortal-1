@@ -167,12 +167,12 @@ unsigned int CRtspStreamTrack::GetLastReceiveDataTime(void)
   return this->lastReceiveDataTime;
 }
 
-unsigned int CRtspStreamTrack::GetLastProcessedSize(void)
+size_t CRtspStreamTrack::GetLastProcessedSize(void)
 {
   return this->lastProcessedSize;
 }
 
-unsigned int CRtspStreamTrack::GetCurrentProcessedSize(void)
+size_t CRtspStreamTrack::GetCurrentProcessedSize(void)
 {
   return this->currentProcessedSize;
 }
@@ -252,12 +252,12 @@ void CRtspStreamTrack::SetLastReceiveDataTime(unsigned int lastReceiveDataTime)
   this->lastReceiveDataTime = lastReceiveDataTime;
 }
 
-void CRtspStreamTrack::SetLastProcessedSize(unsigned lastProcessedSize)
+void CRtspStreamTrack::SetLastProcessedSize(size_t lastProcessedSize)
 {
   this->lastProcessedSize = lastProcessedSize;
 }
 
-void CRtspStreamTrack::SetCurrentProcessedSize(unsigned int currentProcessedSize)
+void CRtspStreamTrack::SetCurrentProcessedSize(size_t currentProcessedSize)
 {
   this->currentProcessedSize = currentProcessedSize;
 }

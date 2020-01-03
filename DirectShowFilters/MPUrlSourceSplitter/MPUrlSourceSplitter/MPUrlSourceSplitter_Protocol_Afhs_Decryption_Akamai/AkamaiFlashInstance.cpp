@@ -102,7 +102,7 @@ int SpecialIndexOf(const wchar_t *buffer, unsigned int start, wchar_t c)
   return (buffer[start + index] != L'\0') ? index : (-1);
 }
 
-CDecryptedDataCollection *CAkamaiFlashInstance::GetDecryptedData(const uint8_t *key, unsigned int keyLength, CEncryptedDataCollection *encryptedDataCollection)
+CDecryptedDataCollection *CAkamaiFlashInstance::GetDecryptedData(const uint8_t *key, size_t keyLength, CEncryptedDataCollection *encryptedDataCollection)
 {
   HRESULT result = S_OK;
   CDecryptedDataCollection *decryptedData = new CDecryptedDataCollection(&result);
@@ -189,9 +189,9 @@ CDecryptedDataCollection *CAkamaiFlashInstance::GetDecryptedData(const uint8_t *
   {
     // now we have accepted connection from client if continueProcessing is true
 
-    unsigned int invokeMessageLength = 68 + 17 + 30;
-    unsigned int socketDataLength = 0;
-    unsigned int encryptedDataRawLength = 0;
+    size_t invokeMessageLength = 68 + 17 + 30;
+    size_t socketDataLength = 0;
+    size_t encryptedDataRawLength = 0;
 
     ALLOC_MEM_DEFINE_SET(encryptedDataCountStr, wchar_t, UINT8_MAX, 0);
     ALLOC_MEM_DEFINE_SET(encryptedRawDataLengthStr, wchar_t, UINT8_MAX, 0);
@@ -222,7 +222,7 @@ CDecryptedDataCollection *CAkamaiFlashInstance::GetDecryptedData(const uint8_t *
       {
         // fill socket data buffer
         // add key length in BIG ENDIAN encoding, add key
-        unsigned int socketDataPosition = 0;
+        size_t socketDataPosition = 0;
 
         WBE32INC(socketData, socketDataPosition, keyLength);
         memcpy(socketData + socketDataPosition, key, keyLength);
@@ -238,7 +238,7 @@ CDecryptedDataCollection *CAkamaiFlashInstance::GetDecryptedData(const uint8_t *
           socketDataPosition += data->GetEncryptedLength();
         }
 
-        unsigned int encryptedDataCountLength = wcslen(encryptedDataCountStr);
+        size_t encryptedDataCountLength = wcslen(encryptedDataCountStr);
 
         invokeMessageLength += encryptedDataCountLength;
         // for memory space we need one extra null character at end
@@ -248,7 +248,7 @@ CDecryptedDataCollection *CAkamaiFlashInstance::GetDecryptedData(const uint8_t *
 
         if (SUCCEEDED(result))
         {
-          unsigned int encryptedDataRawLengthStrLength = wcslen(encryptedRawDataLengthStr);
+          size_t encryptedDataRawLengthStrLength = wcslen(encryptedRawDataLengthStr);
           invokeMessageLength += encryptedDataRawLengthStrLength;
 
           // fastest string concatenation is direct memory copying
@@ -281,8 +281,8 @@ CDecryptedDataCollection *CAkamaiFlashInstance::GetDecryptedData(const uint8_t *
             // send all prepared data to flash instance, wait max COMMUNICATION_MAX_WAIT_TIME ms
 
             currentTime = GetTickCount();
-            unsigned int sentDataLength = 0;
-            unsigned int lastSentDataLength = 0;
+            size_t sentDataLength = 0;
+            size_t lastSentDataLength = 0;
 
             while (SUCCEEDED(result) && (sentDataLength < socketDataLength) && ((GetTickCount() - currentTime) <= COMMUNICATION_MAX_WAIT_TIME))
             {
@@ -337,9 +337,9 @@ CDecryptedDataCollection *CAkamaiFlashInstance::GetDecryptedData(const uint8_t *
               // result data are delimited by '|'
               // each response consist of 2 fields : decrypted data count, raw decrypted data length
 
-              unsigned int decodedDataCount = 0;        // decoded data count (should be encodedDataCount - 1)
-              unsigned int decodedDataRawLength = 0;    // decoded data raw length (decoded raw data + error strings)
-              unsigned int length = 0;                  // length of string variables
+              size_t decodedDataCount = 0;        // decoded data count (should be encodedDataCount - 1)
+              size_t decodedDataRawLength = 0;    // decoded data raw length (decoded raw data + error strings)
+              size_t length = 0;                  // length of string variables
               position = 0;                             // parsing position
               int index = 0;
 
@@ -351,7 +351,7 @@ CDecryptedDataCollection *CAkamaiFlashInstance::GetDecryptedData(const uint8_t *
               {
                 index += (int)position;
 
-                length = (unsigned int)index - position + 1;
+                length = index - position + 1;
 
                 ALLOC_MEM_DEFINE_SET(decodedDataCountStr, wchar_t, length, 0);
                 CHECK_POINTER_HRESULT(result, decodedDataCountStr, result, E_OUTOFMEMORY);
@@ -402,7 +402,7 @@ CDecryptedDataCollection *CAkamaiFlashInstance::GetDecryptedData(const uint8_t *
                 // 4 bytes = error code in BIG ENDIAN encoding
                 // 4 bytes = error string length in BIG endian encoding
                 // error string length bytes = error string in UTF8
-                unsigned int receivedDataLength = decodedDataCount * 12 + decodedDataRawLength;
+                size_t receivedDataLength = decodedDataCount * 12 + decodedDataRawLength;
 
                 ALLOC_MEM_DEFINE_SET(buffer, uint8_t, receivedDataLength, 0);
                 CHECK_POINTER_HRESULT(result, buffer, result, E_OUTOFMEMORY);
@@ -411,8 +411,8 @@ CDecryptedDataCollection *CAkamaiFlashInstance::GetDecryptedData(const uint8_t *
                 if (SUCCEEDED(result))
                 {
                   currentTime = GetTickCount();
-                  unsigned int readDataLength = 0;
-                  unsigned int lastReadDataLength = 0;
+                  size_t readDataLength = 0;
+                  size_t lastReadDataLength = 0;
 
                   while (SUCCEEDED(result) && (readDataLength < receivedDataLength) && ((GetTickCount() - currentTime) <= COMMUNICATION_MAX_WAIT_TIME))
                   {

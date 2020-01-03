@@ -168,7 +168,7 @@ bool CFragmentRunTableBox::ParseInternal(const unsigned char *buffer, uint32_t l
 
         for(uint32_t i = 0; (SUCCEEDED(continueParsing) && (i < qualityEntryCount)); i++)
         {
-          uint32_t  positionAfter = position;
+          size_t  positionAfter = position;
           wchar_t *qualitySegmentUrlModifier = NULL;
           continueParsing = this->GetString(buffer, length, position, &qualitySegmentUrlModifier, &positionAfter);
 

@@ -156,7 +156,7 @@ HRESULT CMPUrlSourceSplitter_Parser_M3U8::GetParserResult(void)
               if (!receivedSameLength)
               {
                 // try parse data
-                unsigned int length = response->GetBuffer()->GetBufferOccupiedSpace() + 2;
+                size_t length = response->GetBuffer()->GetBufferOccupiedSpace() + 2;
                 ALLOC_MEM_DEFINE_SET(buffer, unsigned char, length, 0);
                 CHECK_POINTER_HRESULT(this->parserResult, buffer, this->parserResult, E_OUTOFMEMORY);
 
@@ -179,7 +179,7 @@ HRESULT CMPUrlSourceSplitter_Parser_M3U8::GetParserResult(void)
 
                   if (tempBuffer != NULL)
                   {
-                    unsigned int tempBufferLength = wcslen(tempBuffer);
+                    size_t tempBufferLength = wcslen(tempBuffer);
 
                     if (tempBufferLength != 0)
                     {
@@ -188,7 +188,7 @@ HRESULT CMPUrlSourceSplitter_Parser_M3U8::GetParserResult(void)
 
                       if (SUCCEEDED(this->parserResult))
                       {
-                        CMediaPlaylist *mediaPlaylist = factory->CreateMediaPlaylist(&this->parserResult, tempBuffer, tempBufferLength);
+                        CMediaPlaylist *mediaPlaylist = factory->CreateMediaPlaylist(&this->parserResult, tempBuffer, (uint32_t)tempBufferLength);
 
                         if (this->parserResult == E_M3U8_NOT_PLAYLIST)
                         {
@@ -221,7 +221,7 @@ HRESULT CMPUrlSourceSplitter_Parser_M3U8::GetParserResult(void)
                                     uint8_t *compressed = NULL;
                                     uint32_t compressedSize = 0;
 
-                                    this->parserResult = compress_zlib((const uint8_t *)tempBuffer, (tempBufferLength + 1) * sizeof(wchar_t), &compressed, &compressedSize, -1);
+                                    this->parserResult = compress_zlib((const uint8_t *)tempBuffer, (uint32_t)(tempBufferLength + 1) * sizeof(wchar_t), &compressed, &compressedSize, -1);
                                     CHECK_CONDITION_EXECUTE(SUCCEEDED(this->parserResult), this->parserResult = PARSER_RESULT_KNOWN);
 
                                     if (SUCCEEDED(this->parserResult))

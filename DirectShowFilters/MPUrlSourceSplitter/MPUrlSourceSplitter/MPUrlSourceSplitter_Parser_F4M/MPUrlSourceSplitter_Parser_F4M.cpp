@@ -156,7 +156,7 @@ HRESULT CMPUrlSourceSplitter_Parser_F4M::GetParserResult(void)
               if (!receivedSameLength)
               {
                 // try parse data
-                unsigned int length = response->GetBuffer()->GetBufferOccupiedSpace() + 2;
+                size_t length = response->GetBuffer()->GetBufferOccupiedSpace() + 2;
                 ALLOC_MEM_DEFINE_SET(buffer, unsigned char, length, 0);
                 CHECK_POINTER_HRESULT(this->parserResult, buffer, this->parserResult, E_OUTOFMEMORY);
 

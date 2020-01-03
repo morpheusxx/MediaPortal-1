@@ -232,7 +232,7 @@ bool CVisualSampleEntryBox::ParseInternal(const unsigned char *buffer, uint32_t 
 
       RBE8INC_DEFINE(buffer, position, compressorNameLength, uint8_t);
 
-      uint32_t positionAfterString = 0;
+      size_t positionAfterString = 0;
       continueParsing = this->GetString(buffer, length, position, &this->compressorName, &positionAfterString);
       position += 31;
 
