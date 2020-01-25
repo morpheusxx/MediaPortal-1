@@ -74,10 +74,6 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="EntityFramework, Version=4.1.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\ExternalBinaries\EntityFramework.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
@@ -93,7 +89,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="EntitySQLDebug.cs" />
-    <Compile Include="DBaseContext\DbContextBuilder.cs" />
     <Compile Include="DBaseContext\DbContextInitializer.cs" />
     <Compile Include="DBaseContext\DbContextManager.cs" />
     <Compile Include="Interfaces\ICardRepository.cs" />
@@ -107,7 +102,6 @@
     </Compile>
     <Compile Include="ObjContext\EntityFrameworkExtension.cs" />
     <Compile Include="ObjContext\IObjectContextStorage.cs" />
-    <Compile Include="ObjContext\ObjectContextBuilder.cs" />
     <Compile Include="ObjContext\ObjectContextInitializer.cs" />
     <Compile Include="ObjContext\ObjectContextManager.cs" />
     <Compile Include="ObjContext\SimpleObjectContextStorage.cs" />
@@ -180,6 +174,11 @@
     <Content Include="Model.edmx.sql" />
     <Content Include="Model_MySQL.edmx.sql" />
     <Content Include="Model_SQLite.edmx.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="EntityFramework">
+      <Version>6.4.0</Version>
+    </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
