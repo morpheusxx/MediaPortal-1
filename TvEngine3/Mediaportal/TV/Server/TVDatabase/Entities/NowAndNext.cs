@@ -19,154 +19,47 @@
 #endregion
 
 using System;
-using System.Runtime.Serialization;
 
 namespace Mediaportal.TV.Server.TVDatabase.Entities
 {
-  [DataContract]
   public class NowAndNext
   {
-    private int _idChannel;
-    private DateTime _nowStart;
-    private DateTime _nowEnd;
-    private string _titleNow;
-    private string _titleNext;
-    private int _idProgramNow;
-    private int _idProgramNext;
-    private string _episodeName;
-    private string _episodeNameNext;
-    private string _seriesNum;
-    private string _seriesNumNext;
-    private string _episodeNum;
-    private string _episodeNumNext;
-    private string _episodePart;
-    private string _episodePartNext;
-
-    public NowAndNext(int idChannel, DateTime nowStart, DateTime nowEnd, string titleNow, string titleNext,
-                      int idProgramNow, int idProgramNext,
+    public NowAndNext(int channelId, DateTime nowStart, DateTime nowEnd, string titleNow, string titleNext,
+                      int programNowId, int programNextId,
                       string episodeName, string episodeNameNext, string seriesNum, string seriesNumNext,
-                      string episodeNum, string EpisodeNumNext, string episodePart, string episodePartNext)
+                      string episodeNum, string episodeNumNext, string episodePart, string episodePartNext)
     {
-      _idChannel = idChannel;
-      _nowStart = nowStart;
-      _nowEnd = nowEnd;
-      _titleNow = titleNow;
-      _titleNext = titleNext;
-      _idProgramNow = idProgramNow;
-      _idProgramNext = idProgramNext;
-      _episodeName = episodeName;
-      _episodeNameNext = episodeNameNext;
-      _seriesNum = seriesNum;
-      _seriesNumNext = seriesNumNext;
-      _episodeNum = episodeNum;
-      _episodeNumNext = EpisodeNumNext;
-      _episodePart = episodePart;
-      _episodePartNext = episodePartNext;
+      ChannelId = channelId;
+      NowStartTime = nowStart;
+      NowEndTime = nowEnd;
+      TitleNow = titleNow;
+      TitleNext = titleNext;
+      ProgramNowId = programNowId;
+      ProgramNextId = programNextId;
+      EpisodeName = episodeName;
+      EpisodeNameNext = episodeNameNext;
+      SeriesNum = seriesNum;
+      SeriesNumNext = seriesNumNext;
+      EpisodeNum = episodeNum;
+      EpisodeNumNext = episodeNumNext;
+      EpisodePart = episodePart;
+      EpisodePartNext = episodePartNext;
     }
 
-    [DataMember]
-    public int IdChannel
-    {
-      get { return _idChannel; }
-      set { _idChannel = value; }
-    }
-
-    [DataMember]
-    public DateTime NowStartTime
-    {
-      get { return _nowStart; }
-      set { _nowStart = value; }
-    }
-
-    [DataMember]
-    public DateTime NowEndTime
-    {
-      get { return _nowEnd; }
-      set { _nowEnd = value; }
-    }
-
-    [DataMember]
-    public string TitleNow
-    {
-      get { return _titleNow; }
-      set { _titleNow = value; }
-    }
-
-    [DataMember]
-    public string TitleNext
-    {
-      get { return _titleNext; }
-      set { _titleNext = value; }
-    }
-
-    [DataMember]
-    public int IdProgramNow
-    {
-      get { return _idProgramNow; }
-      set { _idProgramNow = value; }
-    }
-
-    [DataMember]
-    public int IdProgramNext
-    {
-      get { return _idProgramNext; }
-      set { _idProgramNext = value; }
-    }
-
-    [DataMember]
-    public string EpisodeName
-    {
-      get { return _episodeName; }
-      set { _episodeName = value; }
-    }
-
-    [DataMember]
-    public string EpisodeNameNext
-    {
-      get { return _episodeNameNext; }
-      set { _episodeNameNext = value; }
-    }
-
-    [DataMember]
-    public string SeriesNum
-    {
-      get { return _seriesNum; }
-      set { _seriesNum = value; }
-    }
-
-    [DataMember]
-    public string SeriesNumNext
-    {
-      get { return _seriesNumNext; }
-      set { _seriesNumNext = value; }
-    }
-
-    [DataMember]
-    public string EpisodeNum
-    {
-      get { return _episodeNum; }
-      set { _episodeNum = value; }
-    }
-
-    [DataMember]
-    public string EpisodeNumNext
-    {
-      get { return _episodeNumNext; }
-      set { _episodeNumNext = value; }
-    }
-
-    [DataMember]
-    public string EpisodePart
-    {
-      get { return _episodePart; }
-      set { _episodePart = value; }
-    }
-
-    [DataMember]
-    public string EpisodePartNext
-    {
-      get { return _episodePartNext; }
-      set { _episodePartNext = value; }
-    }
+    public int ChannelId { get; set; }
+    public DateTime NowStartTime { get; set; }
+    public DateTime NowEndTime { get; set; }
+    public string TitleNow { get; set; }
+    public string TitleNext { get; set; }
+    public int ProgramNowId { get; set; }
+    public int ProgramNextId { get; set; }
+    public string EpisodeName { get; set; }
+    public string EpisodeNameNext { get; set; }
+    public string SeriesNum { get; set; }
+    public string SeriesNumNext { get; set; }
+    public string EpisodeNum { get; set; }
+    public string EpisodeNumNext { get; set; }
+    public string EpisodePart { get; set; }
+    public string EpisodePartNext { get; set; }
   }
 }

@@ -84,70 +84,44 @@
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Data.Entity" />
-    <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="System.Security" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CanceledSchedule.cs">
-      <DependentUpon>Model.tt</DependentUpon>
-      <SubType>
-      </SubType>
-    </Compile>
-    <Compile Include="Card.cs">
-      <DependentUpon>Model.tt</DependentUpon>
-      <SubType>
-      </SubType>
-    </Compile>
-    <Compile Include="CardGroup.cs">
-      <DependentUpon>Model.tt</DependentUpon>
-      <SubType>
-      </SubType>
-    </Compile>
-    <Compile Include="CardGroupMap.cs">
-      <DependentUpon>Model.tt</DependentUpon>
-      <SubType>
-      </SubType>
-    </Compile>
-    <Compile Include="Channel.cs">
-      <DependentUpon>Model.tt</DependentUpon>
-      <SubType>
-      </SubType>
-    </Compile>
-    <Compile Include="ChannelGroup.cs">
-      <DependentUpon>Model.tt</DependentUpon>
-      <SubType>
-      </SubType>
-    </Compile>
-    <Compile Include="ChannelLinkageMap.cs">
-      <DependentUpon>Model.tt</DependentUpon>
-      <SubType>
-      </SubType>
-    </Compile>
-    <Compile Include="ChannelMap.cs">
-      <DependentUpon>Model.tt</DependentUpon>
-      <SubType>
-      </SubType>
-    </Compile>
-    <Compile Include="ChannelPartial.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Conflict.cs">
-      <DependentUpon>Model.tt</DependentUpon>
-      <SubType>
-      </SubType>
-    </Compile>
-    <Compile Include="Enums\ScheduleIncludeRelationEnum.cs" />
-    <Compile Include="LnbTypePartial.cs" />
-    <Compile Include="DisEqcMotor.cs">
-      <DependentUpon>Model.tt</DependentUpon>
-      <SubType>
-      </SubType>
-    </Compile>
-    <Compile Include="EntityExtensions.cs" />
+    <Compile Include="CanceledSchedule.cs" />
+    <Compile Include="Card.cs" />
+    <Compile Include="CardGroup.cs" />
+    <Compile Include="CardGroupMap.cs" />
+    <Compile Include="Channel.cs" />
+    <Compile Include="ChannelGroup.cs" />
+    <Compile Include="ChannelLinkageMap.cs" />
+    <Compile Include="ChannelMap.cs" />
+    <Compile Include="Conflict.cs" />
+    <Compile Include="DiSEqCMotor.cs" />
+    <Compile Include="Favorite.cs" />
+    <Compile Include="GroupMap.cs" />
+    <Compile Include="History.cs" />
+    <Compile Include="Keyword.cs" />
+    <Compile Include="KeywordMap.cs" />
+    <Compile Include="LnbType.cs" />
+    <Compile Include="NowAndNext.cs" />
+    <Compile Include="PendingDeletion.cs" />
+    <Compile Include="PersonalTVGuideMap.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="ProgramAttribute.cs" />
+    <Compile Include="ProgramCategory.cs" />
+    <Compile Include="ProgramCredit.cs" />
+    <Compile Include="ProgramPartial.cs" />
+    <Compile Include="Recording.cs" />
+    <Compile Include="RecordingCredit.cs" />
+    <Compile Include="RuleBasedSchedule.cs" />
+    <Compile Include="Satellite.cs" />
+    <Compile Include="Schedule.cs" />
+    <Compile Include="ScheduleRulesTemplate.cs" />
+    <Compile Include="Setting.cs" />
+    <Compile Include="SoftwareEncoder.cs" />
+    <Compile Include="Timespan.cs" />
+    <Compile Include="TuningDetail.cs" />
+    <Compile Include="TvGuideCategory.cs" />
+    <Compile Include="TvMovieMapping.cs" />
     <Compile Include="Enums\CardIncludeRelationEnum.cs" />
     <Compile Include="Enums\ChannelGroupIncludeRelationEnum.cs" />
     <Compile Include="Enums\ChannelIncludeRelationEnum.cs" />
@@ -156,194 +130,22 @@
     <Compile Include="Enums\KeepMethodType.cs" />
     <Compile Include="Enums\MediaType.cs" />
     <Compile Include="Enums\ProgramState.cs" />
+    <Compile Include="Enums\ScheduleIncludeRelationEnum.cs" />
     <Compile Include="Enums\ScheduleRecordingType.cs" />
     <Compile Include="Enums\StringComparisonEnum.cs" />
     <Compile Include="Enums\TuningDetailSearchEnum.cs" />
-    <Compile Include="Factories\ChannelFactory.cs" />
-    <Compile Include="Factories\CloneHelper.cs" />
     <Compile Include="Factories\CanceledScheduleFactory.cs" />
-    <Compile Include="Factories\TuningDetailFactory.cs" />
-    <Compile Include="Factories\RecordingFactory.cs" />
+    <Compile Include="Factories\ChannelFactory.cs" />
     <Compile Include="Factories\ProgramFactory.cs" />
+    <Compile Include="Factories\RecordingFactory.cs" />
     <Compile Include="Factories\ScheduleFactory.cs" />
-    <Compile Include="Favorite.cs">
-      <DependentUpon>Model.tt</DependentUpon>
-      <SubType>
-      </SubType>
-    </Compile>
-    <Compile Include="GroupMap.cs">
-      <DependentUpon>Model.tt</DependentUpon>
-      <SubType>
-      </SubType>
-    </Compile>
-    <Compile Include="History.cs">
-      <DependentUpon>Model.tt</DependentUpon>
-      <SubType>
-      </SubType>
-    </Compile>
-    <Compile Include="Keyword.cs">
-      <DependentUpon>Model.tt</DependentUpon>
-      <SubType>
-      </SubType>
-    </Compile>
-    <Compile Include="KeywordMap.cs">
-      <DependentUpon>Model.tt</DependentUpon>
-      <SubType>
-      </SubType>
-    </Compile>
-    <Compile Include="LnbType.cs">
-      <DependentUpon>Model.tt</DependentUpon>
-      <SubType>
-      </SubType>
-    </Compile>
-    <Compile Include="Model.Context.cs">
-      <DependentUpon>Model.Context.tt</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <SubType>
-      </SubType>
-    </Compile>
-    <Compile Include="Model.Context.Extensions.cs">
-      <DependentUpon>Model.Context.tt</DependentUpon>
-      <SubType>
-      </SubType>
-    </Compile>
-    <Compile Include="Model.cs">
-      <DependentUpon>Model.tt</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <SubType>
-      </SubType>
-    </Compile>
-    <Compile Include="NowAndNext.cs" />
-    <Compile Include="PendingDeletion.cs">
-      <DependentUpon>Model.tt</DependentUpon>
-      <SubType>
-      </SubType>
-    </Compile>
-    <Compile Include="PersonalTVGuideMap.cs">
-      <DependentUpon>Model.tt</DependentUpon>
-      <SubType>
-      </SubType>
-    </Compile>
-    <Compile Include="Program.cs">
-      <DependentUpon>Model.tt</DependentUpon>
-      <SubType>
-      </SubType>
-    </Compile>
-    <Compile Include="ProgramAttribute.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="ProgramCategory.cs">
-      <DependentUpon>Model.tt</DependentUpon>
-      <SubType>
-      </SubType>
-    </Compile>
-    <Compile Include="ProgramCategoryPartial.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="ProgramCredit.cs">
-      <DependentUpon>Model.tt</DependentUpon>
-      <SubType>
-      </SubType>
-    </Compile>
-    <Compile Include="ProgramCreditPartial.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="ProgramPartial.cs">
-      <SubType>Code</SubType>
-    </Compile>
+    <Compile Include="Factories\TuningDetailFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Recording.cs">
-      <DependentUpon>Model.tt</DependentUpon>
-      <SubType>
-      </SubType>
-    </Compile>
-    <Compile Include="RecordingCredit.cs">
-      <DependentUpon>Model.tt</DependentUpon>
-      <SubType>
-      </SubType>
-    </Compile>
-    <Compile Include="RuleBasedSchedule.cs">
-      <DependentUpon>Model.tt</DependentUpon>
-      <SubType>
-      </SubType>
-    </Compile>
-    <Compile Include="Satellite.cs">
-      <DependentUpon>Model.tt</DependentUpon>
-      <SubType>
-      </SubType>
-    </Compile>
-    <Compile Include="Schedule.cs">
-      <DependentUpon>Model.tt</DependentUpon>
-      <SubType>
-      </SubType>
-    </Compile>
-    <Compile Include="SchedulePartial.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="ScheduleRulesTemplate.cs">
-      <DependentUpon>Model.tt</DependentUpon>
-      <SubType>
-      </SubType>
-    </Compile>
-    <Compile Include="Setting.cs">
-      <DependentUpon>Model.tt</DependentUpon>
-      <SubType>
-      </SubType>
-    </Compile>
-    <Compile Include="SoftwareEncoder.cs">
-      <DependentUpon>Model.tt</DependentUpon>
-      <SubType>
-      </SubType>
-    </Compile>
-    <Compile Include="Timespan.cs">
-      <DependentUpon>Model.tt</DependentUpon>
-      <SubType>
-      </SubType>
-    </Compile>
-    <Compile Include="TuningDetail.cs">
-      <DependentUpon>Model.tt</DependentUpon>
-      <SubType>
-      </SubType>
-    </Compile>
-    <Compile Include="TvGuideCategory.cs">
-      <DependentUpon>Model.tt</DependentUpon>
-      <SubType>
-      </SubType>
-    </Compile>
-    <Compile Include="TvMovieMapping.cs">
-      <DependentUpon>Model.tt</DependentUpon>
-      <SubType>
-      </SubType>
-    </Compile>
-    <Compile Include="Version.cs">
-      <DependentUpon>Model.tt</DependentUpon>
-      <SubType>
-      </SubType>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="Model.Context.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>Model.Context.cs</LastGenOutput>
-    </None>
-    <None Include="Model.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>Model.cs</LastGenOutput>
-      <SubType>
-      </SubType>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\..\..\..\Common-MP-TVE3\Common.Utils\Common.Utils.csproj">
-      <Project>{F6EDA1F3-3DCD-43F4-8A90-E32DA70C8227}</Project>
-      <Name>Common.Utils</Name>
-    </ProjectReference>
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

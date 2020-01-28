@@ -11,30 +11,30 @@ namespace Mediaportal.TV.Server.TVDatabase.Entities.Factories
                      string seriesNum, string episodeNum, string episodePart)
     {
       var recording = new Recording
-                          {
-                            IdChannel = idChannel,
-                            IdSchedule = idSchedule,
-                            IsRecording = isRecording,
-                            StartTime = startTime,
-                            EndTime = endTime,
-                            Title = title,
-                            Description = description,
-                            ProgramCategory = programCategory,
-                            FileName = fileName,
-                            KeepUntil = keepUntil,
-                            KeepUntilDate = keepUntilDate,
-                            TimesWatched = timesWatched,
-                            EpisodeName = episodeName,
-                            SeriesNum = seriesNum,
-                            EpisodeNum = episodeNum,
-                            EpisodePart = episodePart
+      {
+        ChannelId = idChannel,
+        ScheduleId = idSchedule,
+        IsRecording = isRecording,
+        StartTime = startTime,
+        EndTime = endTime,
+        Title = title,
+        Description = description,
+        ProgramCategory = programCategory,
+        FileName = fileName,
+        KeepUntil = keepUntil,
+        KeepUntilDate = keepUntilDate,
+        TimesWatched = timesWatched,
+        EpisodeName = episodeName,
+        SeriesNum = seriesNum,
+        EpisodeNum = episodeNum,
+        EpisodePart = episodePart
 
-                          };
+      };
       return recording;
     }
-               
-       
-     
-      
+
+
+
+
   }
 }

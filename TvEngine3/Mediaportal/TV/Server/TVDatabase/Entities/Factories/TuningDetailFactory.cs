@@ -9,45 +9,39 @@ namespace Mediaportal.TV.Server.TVDatabase.Entities.Factories
     {
       var tuningDetail = new TuningDetail
       {
-        IdChannel = idChannel,
-        Name= name,
+        ChannelId = idChannel,
+        Name = name,
         Provider = provider,
         ChannelType = channelType,
         ChannelNumber = channelNumber,
-        Frequency= frequency,
-        CountryId=countryId,
-        MediaType = (int) mediaType,
-        NetworkId= networkId, 
-        TransportId= transportId, 
-        ServiceId= serviceId,
-        PmtPid=pmtPid , 
-        FreeToAir= freeToAir, 
-        Modulation= modulation, 
-        Polarisation=polarisation , 
-        Symbolrate= symbolrate, 
-        DiSEqC= diseqc,         
-        Bandwidth= bandwidth, 
-        MajorChannel= majorChannel, 
-        MinorChannel=minorChannel ,
-        VideoSource= videoSource, 
-        AudioSource=audioSource , 
-        IsVCRSignal= isVCRSignal, 
-        TuningSource= tuningSource,
-        Band= band,
-        SatIndex=satIndex , 
-        InnerFecRate=innerFecRate , 
-        Pilot= pilot, 
-        RollOff=rollOff , 
-        Url= url, 
-        Bitrate= bitrate
-
+        Frequency = frequency,
+        CountryId = countryId,
+        MediaType = (int)mediaType,
+        NetworkId = networkId,
+        TransportId = transportId,
+        ServiceId = serviceId,
+        PmtPid = pmtPid,
+        FreeToAir = freeToAir,
+        Modulation = modulation,
+        Polarisation = polarisation,
+        Symbolrate = symbolrate,
+        DiSEqC = diseqc,
+        Bandwidth = bandwidth,
+        MajorChannel = majorChannel,
+        MinorChannel = minorChannel,
+        VideoSource = videoSource,
+        AudioSource = audioSource,
+        IsVCRSignal = isVCRSignal,
+        TuningSource = tuningSource,
+        Band = band,
+        SatIndex = satIndex,
+        InnerFecRate = innerFecRate,
+        Pilot = pilot,
+        RollOff = rollOff,
+        Url = url,
+        Bitrate = bitrate
       };
       return tuningDetail;
     }
-    /**/
-   
-
-
-   
   }
 }
