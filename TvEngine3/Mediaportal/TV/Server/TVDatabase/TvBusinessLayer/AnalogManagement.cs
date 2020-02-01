@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Mediaportal.TV.Server.TVDatabase.Entities;
-using Mediaportal.TV.Server.TVDatabase.EntityModel.Interfaces;
-using Mediaportal.TV.Server.TVDatabase.EntityModel.Repositories;
+using Mediaportal.TV.Server.TVDatabase.EntityModel.Context;
 
 namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
 {
@@ -10,22 +9,20 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
   {
     #region SoftwareEncoders
 
-    public static IList<SoftwareEncoder> GetSofwareEncodersVideo()
+    public static IList<SoftwareEncoder> GetSoftwareEncodersVideo()
     {
-      using (IRepository<Model> channelRepository = new GenericRepository<Model>())
+      using (TvEngineDbContext context = new TvEngineDbContext())
       {
-        List<SoftwareEncoder> sofwareEncodersVideo = channelRepository.GetQuery<SoftwareEncoder>(s => s.Type == 0).OrderBy(s => s.Priority).ToList();
-        return sofwareEncodersVideo;
-      }    
+        return context.SoftwareEncoders.Where(s => s.Type == 0).OrderBy(s => s.Priority).ToList();
+      }
     }
 
-    public static IList<SoftwareEncoder> GetSofwareEncodersAudio()
+    public static IList<SoftwareEncoder> GetSoftwareEncodersAudio()
     {
-      using (IRepository<Model> channelRepository = new GenericRepository<Model>())
+      using (TvEngineDbContext context = new TvEngineDbContext())
       {
-        List<SoftwareEncoder> sofwareEncodersAudio = channelRepository.GetQuery<SoftwareEncoder>(s => s.Type == 1).OrderBy(s => s.Priority).ToList();
-        return sofwareEncodersAudio;
-      }    
+        return context.SoftwareEncoders.Where(s => s.Type == 1).OrderBy(s => s.Priority).ToList();
+      }
     }
 
     #endregion

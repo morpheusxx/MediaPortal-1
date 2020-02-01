@@ -4,10 +4,11 @@ using System.Linq;
 using Mediaportal.TV.Server.TVDatabase.Entities;
 using Mediaportal.TV.Server.TVDatabase.Entities.Enums;
 using Mediaportal.TV.Server.TVDatabase.Entities.Factories;
-using Mediaportal.TV.Server.TVDatabase.EntityModel.Interfaces;
-using Mediaportal.TV.Server.TVDatabase.EntityModel.Repositories;
+using Mediaportal.TV.Server.TVDatabase.EntityModel.Context;
+using Mediaportal.TV.Server.TVDatabase.EntityModel.Extensions;
 using Mediaportal.TV.Server.TVDatabase.TVBusinessLayer.Entities;
 using Mediaportal.TV.Server.TVLibrary.Interfaces.Logging;
+using Microsoft.EntityFrameworkCore.Internal;
 
 namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
 {
@@ -16,62 +17,53 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
 
     public static IList<Schedule> ListAllSchedules(ScheduleIncludeRelationEnum includeRelations)
     {
-      using (IScheduleRepository scheduleRepository = new ScheduleRepository())
+      using (TvEngineDbContext context = new TvEngineDbContext())
       {
-        IQueryable<Schedule> listAllSchedules = scheduleRepository.GetAll<Schedule>();
-        listAllSchedules = scheduleRepository.IncludeAllRelations(listAllSchedules, includeRelations);
-        return listAllSchedules.ToList();
+        return context.Schedules.IncludeAllRelations().ToList();
       }
     }
 
     public static IList<Schedule> ListAllSchedules()
     {
-      using (IScheduleRepository scheduleRepository = new ScheduleRepository())
+      using (TvEngineDbContext context = new TvEngineDbContext())
       {
-        IQueryable<Schedule> listAllSchedules = scheduleRepository.GetAll<Schedule>();
-        listAllSchedules = scheduleRepository.IncludeAllRelations(listAllSchedules);
-        return listAllSchedules.ToList();
+        return context.Schedules.IncludeAllRelations().ToList();
       }
     }
 
     public static Schedule SaveSchedule(Schedule schedule)
     {
-      using (IScheduleRepository scheduleRepository = new ScheduleRepository())
+      using (TvEngineDbContext context = new TvEngineDbContext())
       {
-        scheduleRepository.AttachEntityIfChangeTrackingDisabled(scheduleRepository.ObjectContext.Schedules, schedule);
-        scheduleRepository.ApplyChanges(scheduleRepository.ObjectContext.Schedules, schedule);
-        scheduleRepository.UnitOfWork.SaveChanges();
-        schedule.AcceptChanges();
+        context.Schedules.Add(schedule);
+        context.SaveChanges();
       }
-      ProgramManagement.SynchProgramStates(schedule.IdSchedule);
+      ProgramManagement.SynchProgramStates(schedule.ScheduleId);
       return schedule;
     }
 
     public static Schedule GetSchedule(int idSchedule)
     {
-      using (IScheduleRepository scheduleRepository = new ScheduleRepository())
+      using (TvEngineDbContext context = new TvEngineDbContext())
       {
-        return scheduleRepository.Single<Schedule>(s => s.IdSchedule == idSchedule);
+        return context.Schedules.IncludeAllRelations().FirstOrDefault(s => s.ScheduleId == idSchedule);
       }
     }
 
     public static Schedule GetSchedule(int idSchedule, ScheduleIncludeRelationEnum includeRelations)
     {
-      using (IScheduleRepository scheduleRepository = new ScheduleRepository())
+      using (TvEngineDbContext context = new TvEngineDbContext())
       {
-        var query = scheduleRepository.GetQuery<Schedule>(s => s.IdSchedule == idSchedule);
-        query = scheduleRepository.IncludeAllRelations(query, includeRelations);
-        var schedule = query.FirstOrDefault();
-        return schedule;
+        return context.Schedules.IncludeAllRelations(includeRelations).FirstOrDefault(s => s.ScheduleId == idSchedule);
       }
     }
 
     public static bool IsScheduleRecording(int idSchedule)
     {
       bool isScheduleRecording = false;
-      using (IScheduleRepository scheduleRepository = new ScheduleRepository())
+      using (TvEngineDbContext context = new TvEngineDbContext())
       {
-        Schedule schedule = scheduleRepository.First<Schedule>(s => s.IdSchedule == idSchedule);
+        Schedule schedule = context.Schedules.FirstOrDefault(s => s.ScheduleId == idSchedule);
 
         if (schedule != null)
         {
@@ -80,7 +72,7 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
           {
             schedule = spawnedSchedule;
           }
-          isScheduleRecording = (RecordingManagement.GetActiveRecording(schedule.IdSchedule) != null);
+          isScheduleRecording = (RecordingManagement.GetActiveRecording(schedule.ScheduleId) != null);
         }
       }
       return isScheduleRecording;
@@ -88,35 +80,35 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
 
     public static Schedule RetrieveSpawnedSchedule(int parentScheduleId, DateTime startTime)
     {
-      using (IScheduleRepository scheduleRepository = new ScheduleRepository())
+      using (TvEngineDbContext context = new TvEngineDbContext())
       {
-        Schedule schedule = scheduleRepository.First<Schedule>(s => s.IdParentSchedule == parentScheduleId && s.StartTime == startTime);
+        Schedule schedule = context.Schedules.FirstOrDefault(s => s.ParentScheduleId == parentScheduleId && s.StartTime == startTime);
         if (schedule == null)
         {
-          schedule = scheduleRepository.First<Schedule>(s => s.IdParentSchedule == parentScheduleId);
+          schedule = context.Schedules.FirstOrDefault(s => s.ParentScheduleId == parentScheduleId);
         }
         return schedule;
       }
     }
 
     /// <summary>
-    /// Retreives the first found instance of a 'Series' typed schedule given its Channel,Title
+    /// Retrieves the first found instance of a 'Series' typed schedule given its Channel,Title
     /// </summary>
     /// <param name="idChannel">Channel id to look for</param>
     /// <param name="programName">Title we wanna look for</param>    
     /// <returns>schedule instance or null</returns>
     public static Schedule RetrieveSeries(int idChannel, string programName)
     {
-      using (IScheduleRepository scheduleRepository = new ScheduleRepository())
+      using (TvEngineDbContext context = new TvEngineDbContext())
       {
-        var retrieveSeries = scheduleRepository.First<Schedule>(
-          s => s.ScheduleType != 0 && s.IdChannel == idChannel && s.ProgramName == programName);
+        var retrieveSeries = context.Schedules.FirstOrDefault(
+          s => s.ScheduleType != 0 && s.ChannelId == idChannel && s.ProgramName == programName);
         return retrieveSeries;
       }
     }
 
     /// <summary>
-    /// Retreives the first found instance of a 'Series' typed schedule given its Channel,Title,Start and End Times 
+    /// Retrieves the first found instance of a 'Series' typed schedule given its Channel,Title,Start and End Times 
     /// </summary>
     /// <param name="idChannel">Channel id to look for</param>
     /// <param name="programName">Title we wanna look for</param>
@@ -125,18 +117,18 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
     /// <returns>schedule instance or null</returns>
     public static Schedule RetrieveSeries(int idChannel, string programName, DateTime startTime, DateTime endTime)
     {
-      using (IScheduleRepository scheduleRepository = new ScheduleRepository())
+      using (TvEngineDbContext context = new TvEngineDbContext())
       {
-        var retrieveSeries = scheduleRepository.First<Schedule>(
+        var retrieveSeries = context.Schedules.FirstOrDefault(
           s =>
-          s.ScheduleType != 0 && s.IdChannel == idChannel && s.ProgramName == programName && s.StartTime == startTime &&
+          s.ScheduleType != 0 && s.ChannelId == idChannel && s.ProgramName == programName && s.StartTime == startTime &&
           s.EndTime == endTime);
         return retrieveSeries;
       }
     }
 
     /// <summary>
-    /// Retreives the first found instance of a 'Series' typed schedule given its Channel,Title,Start and End Times 
+    /// Retrieves the first found instance of a 'Series' typed schedule given its Channel,Title,Start and End Times 
     /// </summary>
     /// <param name="idChannel">Channel id to look for</param>    
     /// <param name="startTime">StartTime</param>
@@ -144,10 +136,10 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
     /// <returns>schedule instance or null</returns>
     public static Schedule RetrieveSeries(int idChannel, DateTime startTime, DateTime endTime)
     {
-      using (IScheduleRepository scheduleRepository = new ScheduleRepository())
+      using (TvEngineDbContext context = new TvEngineDbContext())
       {
-        var retrieveSeries = scheduleRepository.First<Schedule>(
-          s => s.ScheduleType != 0 && s.IdChannel == idChannel && s.StartTime == startTime && s.EndTime == endTime);
+        var retrieveSeries = context.Schedules.FirstOrDefault(
+          s => s.ScheduleType != 0 && s.ChannelId == idChannel && s.StartTime == startTime && s.EndTime == endTime);
         return retrieveSeries;
       }
     }
@@ -155,42 +147,41 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
     public static void DeleteSchedule(int idSchedule)
     {
       Schedule scheduleToDelete;
-      using (IScheduleRepository scheduleRepository = new ScheduleRepository(true))
+      using (TvEngineDbContext context = new TvEngineDbContext())
       {
-        SetRelatedRecordingsToNull(idSchedule, scheduleRepository);
-        scheduleToDelete = scheduleRepository.First<Schedule>(schedule => schedule.IdSchedule == idSchedule);
+        //SetRelatedRecordingsToNull(idSchedule, scheduleRepository);
+        scheduleToDelete = context.Schedules.FirstOrDefault(schedule => schedule.ScheduleId == idSchedule);
         if (scheduleToDelete == null)
           return;
 
-        scheduleRepository.Delete(scheduleToDelete);
-        scheduleRepository.UnitOfWork.SaveChanges();
-        scheduleToDelete.MarkAsDeleted();
+        context.Schedules.Remove(scheduleToDelete);
+        context.SaveChanges();
       }
       ProgramManagement.SynchProgramStates(new ScheduleBLL(scheduleToDelete));
     }
 
-    private static void SetRelatedRecordingsToNull(int idSchedule, IScheduleRepository scheduleRepository)
-    {
-      // todo : since "on delete: set null" is not currently supported in EF, we have to do this manually - remove this ugly workaround once EF gets mature enough.
-      var schedules = scheduleRepository.GetQuery<Schedule>(s => s.IdSchedule == idSchedule);
-      // Morpheus_xx, 2013-12-15: only include the recordings here, it's the only relation we change. Limiting the query to recordings fixes a bug with SQLite database,
-      // EF throws an exception: System.ServiceModel.FaultException`1[System.ServiceModel.ExceptionDetail]:
-      // The type of the key field 'IdSchedule' is expected to be 'System.Int32', but the value provided is actually of type 'System.Int64'.
+    //private static void SetRelatedRecordingsToNull(int idSchedule, IScheduleRepository scheduleRepository)
+    //{
+    //  // todo : since "on delete: set null" is not currently supported in EF, we have to do this manually - remove this ugly workaround once EF gets mature enough.
+    //  var schedules = scheduleRepository.GetQuery<Schedule>(s => s.ScheduleId == idSchedule);
+    //  // Morpheus_xx, 2013-12-15: only include the recordings here, it's the only relation we change. Limiting the query to recordings fixes a bug with SQLite database,
+    //  // EF throws an exception: System.ServiceModel.FaultException`1[System.ServiceModel.ExceptionDetail]:
+    //  // The type of the key field 'ScheduleId' is expected to be 'System.Int32', but the value provided is actually of type 'System.Int64'.
 
-      schedules = scheduleRepository.IncludeAllRelations(schedules, ScheduleIncludeRelationEnum.Recordings);
-      Schedule schedule = schedules.FirstOrDefault();
+    //  schedules = scheduleRepository.IncludeAllRelations(schedules, ScheduleIncludeRelationEnum.Recordings);
+    //  Schedule schedule = schedules.FirstOrDefault();
 
-      if (schedule != null)
-      {
-        //scheduleRepository.DeleteList(schedule.Recordings);
-        for (int i = schedule.Recordings.Count - 1; i >= 0; i--)
-        {
-          Recording recording = schedule.Recordings[i];
-          recording.IdSchedule = null;
-        }
-        scheduleRepository.ApplyChanges<Schedule>(scheduleRepository.ObjectContext.Schedules, schedule);
-      }
-    }
+    //  if (schedule != null)
+    //  {
+    //    //scheduleRepository.DeleteList(schedule.Recordings);
+    //    for (int i = schedule.Recordings.Count - 1; i >= 0; i--)
+    //    {
+    //      Recording recording = schedule.Recordings[i];
+    //      recording.ScheduleId = null;
+    //    }
+    //    scheduleRepository.ApplyChanges<Schedule>(scheduleRepository.ObjectContext.Schedules, schedule);
+    //  }
+    //}
 
     public static bool IsScheduleRecording(int idSchedule, int idProgram)
     {
@@ -202,9 +193,9 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
         var programBll = new ProgramBLL(prg);
         if (programBll.IsRecording)
         {
-          using (IScheduleRepository scheduleRepository = new ScheduleRepository())
+          using (TvEngineDbContext context = new TvEngineDbContext())
           {
-            Schedule schedule = scheduleRepository.FindOne<Schedule>(s => s.IdSchedule == idSchedule);
+            Schedule schedule = context.Schedules.FirstOrDefault(s => s.ScheduleId == idSchedule);
             if (schedule != null)
             {
               Schedule spawnedSchedule = RetrieveSpawnedSchedule(idSchedule, prg.StartTime);
@@ -215,7 +206,7 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
             }
             if (schedule != null)
             {
-              isScheduleRecording = (RecordingManagement.GetActiveRecording(schedule.IdSchedule) != null);
+              isScheduleRecording = (RecordingManagement.GetActiveRecording(schedule.ScheduleId) != null);
             }
           }
         }
@@ -226,29 +217,29 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
 
     public static Schedule GetScheduleWithNoEPG(int idChannel)
     {
-      using (IScheduleRepository scheduleRepository = new ScheduleRepository())
+      using (TvEngineDbContext context = new TvEngineDbContext())
       {
-        var scheduleWithNoEpg = scheduleRepository.FindOne<Schedule>(
-          s => s.ScheduleType == 0 && s.IdChannel == idChannel && s.IdParentSchedule <= 0 && !s.Series);
+        var scheduleWithNoEpg = context.Schedules.FirstOrDefault(
+          s => s.ScheduleType == 0 && s.ChannelId == idChannel && s.ParentScheduleId <= 0 && !s.Series);
         return scheduleWithNoEpg;
       }
     }
 
     public static void UnCancelSerie(Schedule schedule, DateTime startTime, int idChannel)
     {
-      using (IScheduleRepository scheduleRepository = new ScheduleRepository(true))
+      using (TvEngineDbContext context = new TvEngineDbContext())
       {
         foreach (CanceledSchedule canceledSchedule in schedule.CanceledSchedules)
         {
-          if (canceledSchedule.CancelDateTime == startTime && canceledSchedule.IdChannel == idChannel)
+          if (canceledSchedule.CancelDateTime == startTime && canceledSchedule.ChannelId == idChannel)
           {
-            scheduleRepository.Delete(canceledSchedule);
+            context.CanceledSchedules.Remove(canceledSchedule);
             ProgramManagement.SetSingleStateSeriesPending(canceledSchedule.CancelDateTime,
-                                                           canceledSchedule.IdChannel,
+                                                           canceledSchedule.ChannelId,
                                                            canceledSchedule.Schedule.ProgramName);
           }
         }
-        scheduleRepository.UnitOfWork.SaveChanges();
+        context.SaveChanges();
       }
     }
 
@@ -256,7 +247,7 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
     public static IList<Schedule> GetConflictingSchedules(Schedule sched, out List<Schedule> notViewableSchedules)
     {
       notViewableSchedules = new List<Schedule>();
-      sched.Channel = ChannelManagement.GetChannel(sched.IdChannel);
+      sched.Channel = ChannelManagement.GetChannel(sched.ChannelId);
       Log.Info("GetConflictingSchedules: Schedule = " + sched);
       var conflicts = new List<Schedule>();
       IEnumerable<Schedule> schedulesList = ListAllSchedules();
@@ -333,14 +324,14 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
       foreach (Card card in cards)
       {
         ScheduleBLL scheduleBll = new ScheduleBLL(schedule);
-        if (card.Enabled && CardManagement.CanViewTvChannel(card, schedule.IdChannel))
+        if (card.Enabled && CardManagement.CanViewTvChannel(card, schedule.ChannelId))
         {
           canView = true;
           // checks if any schedule assigned to this cards overlaps current parsed schedule
           bool free = true;
           foreach (Schedule assignedSchedule in cardSchedules[count])
           {
-            Log.Info("AssignSchedulesToCard: card {0}, ID = {1} has schedule = " + assignedSchedule, count, card.IdCard);
+            Log.Info("AssignSchedulesToCard: card {0}, ID = {1} has schedule = " + assignedSchedule, count, card.CardId);
             bool hasOverlappingSchedule = scheduleBll.IsOverlapping(assignedSchedule);
             if (hasOverlappingSchedule)
             {
@@ -349,7 +340,7 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
               {
                 overlappingSchedules.Add(assignedSchedule);
                 Log.Info("AssignSchedulesToCard: overlapping with " + assignedSchedule + " on card {0}, ID = {1}", count,
-                         card.IdCard);
+                         card.CardId);
                 free = false;
                 break;
               }
@@ -357,7 +348,7 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
           }
           if (free)
           {
-            Log.Info("AssignSchedulesToCard: free on card {0}, ID = {1}", count, card.IdCard);
+            Log.Info("AssignSchedulesToCard: free on card {0}, ID = {1}", count, card.CardId);
             cardSchedules[count].Add(schedule);
             assigned = true;
             break;
@@ -456,7 +447,7 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
 
       if (recBLL.Entity.ScheduleType == (int)ScheduleRecordingType.Weekends)
       {
-        IEnumerable<Program> progList = ProgramManagement.GetProgramsByChannelAndTitleAndStartEndTimes(recBLL.Entity.IdChannel,
+        IEnumerable<Program> progList = ProgramManagement.GetProgramsByChannelAndTitleAndStartEndTimes(recBLL.Entity.ChannelId,
                                                                         recBLL.Entity.ProgramName, dtDay,
                                                                         dtDay.AddDays(days));
         foreach (Program prog in progList)
@@ -517,7 +508,7 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
       if (recBLL.Entity.ScheduleType == (int)ScheduleRecordingType.WeeklyEveryTimeOnThisChannel)
       {
         //this.LogDebug("get {0} {1} EveryTimeOnThisChannel", rec.ProgramName, rec.ReferencedChannel().Name);
-        programs = ProgramManagement.GetProgramsByChannelAndTitleAndStartEndTimes(recBLL.Entity.IdChannel,
+        programs = ProgramManagement.GetProgramsByChannelAndTitleAndStartEndTimes(recBLL.Entity.ChannelId,
                                                                         recBLL.Entity.ProgramName, dtDay,
                                                                         dtDay.AddDays(days));
         foreach (Program prog in programs)
@@ -528,7 +519,7 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
           {
             Schedule recNew = ScheduleFactory.Clone(recBLL.Entity);
             recNew.ScheduleType = (int)ScheduleRecordingType.Once;
-            recNew.IdChannel = prog.IdChannel;
+            recNew.ChannelId = prog.ChannelId;
             recNew.StartTime = prog.StartTime;
             recNew.EndTime = prog.EndTime;
             recNew.Series = true;
@@ -544,7 +535,7 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
       }
 
       programs = recBLL.Entity.ScheduleType == (int)ScheduleRecordingType.EveryTimeOnThisChannel
-                   ? ProgramManagement.GetProgramsByChannelAndTitleAndStartEndTimes(recBLL.Entity.IdChannel,
+                   ? ProgramManagement.GetProgramsByChannelAndTitleAndStartEndTimes(recBLL.Entity.ChannelId,
                                           recBLL.Entity.ProgramName, dtDay,
                                           dtDay.AddDays(days))
                    : ProgramManagement.GetProgramsByTitleAndStartEndTimes(recBLL.Entity.ProgramName, dtDay, dtDay.AddDays(days));
@@ -555,11 +546,11 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
         {
           Schedule recNew = ScheduleFactory.Clone(recBLL.Entity);
           recNew.ScheduleType = (int)ScheduleRecordingType.Once;
-          recNew.IdChannel = prog.IdChannel;
+          recNew.ChannelId = prog.ChannelId;
           recNew.StartTime = prog.StartTime;
           recNew.EndTime = prog.EndTime;
           recNew.Series = true;
-          if (recBLL.IsSerieIsCanceled(recBLL.GetSchedStartTimeForProg(prog), prog.IdChannel))
+          if (recBLL.IsSerieIsCanceled(recBLL.GetSchedStartTimeForProg(prog), prog.ChannelId))
           {
             recNew.Canceled = recNew.StartTime;
           }
@@ -585,43 +576,43 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
 
     public static void DeleteOrphanedOnceSchedules()
     {
-      using (IScheduleRepository scheduleRepository = new ScheduleRepository(true))
+      using (TvEngineDbContext context = new TvEngineDbContext())
       {
-        IList<Schedule> schedules =
-          scheduleRepository.GetQuery<Schedule>(
+        IList<Schedule> schedules = context.Schedules.Where(
             s => s.ScheduleType == (int)ScheduleRecordingType.Once && s.EndTime < DateTime.Now).ToList();
 
         if (schedules.Count > 0)
         {
           Log.Debug("DeleteOrphanedOnceSchedules: Orphaned once schedule(s) found  - removing");
 
-          foreach (var schedule in schedules)
+          //foreach (var schedule in schedules)
+          //{
+          //  SetRelatedRecordingsToNull(schedule.ScheduleId, scheduleRepository);
+          //}
+          foreach (Schedule schedule in schedules)
           {
-            SetRelatedRecordingsToNull(schedule.IdSchedule, scheduleRepository);
+            context.Schedules.Remove(schedule);
           }
-
-          scheduleRepository.DeleteList(schedules);
-          scheduleRepository.UnitOfWork.SaveChanges();
+          context.SaveChanges();
         }
       }
     }
 
     public static Schedule RetrieveOnce(int idChannel, string title, DateTime startTime, DateTime endTime)
     {
-      using (IScheduleRepository scheduleRepository = new ScheduleRepository())
+      using (TvEngineDbContext context = new TvEngineDbContext())
       {
-        Schedule onceSchedule =
-          scheduleRepository.FindOne<Schedule>(s => s.ScheduleType == (int)ScheduleRecordingType.Once
-            && s.IdChannel == idChannel && s.ProgramName == title && s.EndTime == endTime);
+        Schedule onceSchedule = context.Schedules.FirstOrDefault(s => s.ScheduleType == (int)ScheduleRecordingType.Once
+                                                                          && s.ChannelId == idChannel && s.ProgramName == title && s.EndTime == endTime);
         return onceSchedule;
       }
     }
 
     public static IList<ScheduleRulesTemplate> ListAllScheduleRules()
     {
-      using (IScheduleRepository scheduleRepository = new ScheduleRepository())
+      using (TvEngineDbContext context = new TvEngineDbContext())
       {
-        IQueryable<ScheduleRulesTemplate> listAllScheduleRules = scheduleRepository.GetAll<ScheduleRulesTemplate>();
+        IQueryable<ScheduleRulesTemplate> listAllScheduleRules = context.ScheduleRulesTemplates;
         //listAllScheduleRules = scheduleRepository.IncludeAllRelations(listAllScheduleRules);
         return listAllScheduleRules.ToList();
       }
@@ -629,9 +620,9 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
 
     public static IList<ScheduleRulesTemplate> ListAllScheduleRulesTemplates()
     {
-      using (IScheduleRepository scheduleRepository = new ScheduleRepository())
+      using (TvEngineDbContext context = new TvEngineDbContext())
       {
-        IQueryable<ScheduleRulesTemplate> listAllScheduleRulesTemplates = scheduleRepository.GetAll<ScheduleRulesTemplate>();
+        IQueryable<ScheduleRulesTemplate> listAllScheduleRulesTemplates = context.ScheduleRulesTemplates;
         //listAllScheduleRules = scheduleRepository.IncludeAllRelations(listAllScheduleRules);
         return listAllScheduleRulesTemplates.ToList();
       }
@@ -639,12 +630,10 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
 
     public static RuleBasedSchedule SaveRuleBasedSchedule(RuleBasedSchedule schedule)
     {
-      using (IScheduleRepository scheduleRepository = new ScheduleRepository())
+      using (TvEngineDbContext context = new TvEngineDbContext())
       {
-        scheduleRepository.AttachEntityIfChangeTrackingDisabled(scheduleRepository.ObjectContext.RuleBasedSchedules, schedule);
-        scheduleRepository.ApplyChanges(scheduleRepository.ObjectContext.RuleBasedSchedules, schedule);
-        scheduleRepository.UnitOfWork.SaveChanges();
-        schedule.AcceptChanges();
+        context.RuleBasedSchedules.Add(schedule);
+        context.SaveChanges();
         return schedule;
       }
     }

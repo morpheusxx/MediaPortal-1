@@ -44,7 +44,7 @@ namespace Mediaportal.TV.Server.TVDatabase.Entities.Factories
       // as also the relation to ProgramCategory will be tracked.
       if (category != null)
       {
-        program.IdProgramCategory = category.ProgramCategoryId;
+        program.ProgramCategoryId = category.ProgramCategoryId;
       }
       return program;
     }

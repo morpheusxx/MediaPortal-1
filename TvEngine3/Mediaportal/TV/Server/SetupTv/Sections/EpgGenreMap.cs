@@ -50,7 +50,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
 
     public override void LoadSettings()
     {
-      base.LoadSettings();      
+      base.LoadSettings();
 
       // Load the list of all EPG provided program genres.
       //_allProgramGenres = (List<string>)layer.GetProgramGenres();
@@ -76,7 +76,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
     }
 
     public override void SaveSettings()
-    {      
+    {
       //layer.SaveMpGenres(_mpGenres);
       base.SaveSettings();
     }
@@ -125,12 +125,12 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
       listViewMappedGenres.Items.Clear();
 
       // Find the selected mp genre.
-      int selectedGenreId = (listViewGuideGenres.SelectedItems[0].Tag as TvGuideCategory).IdTvGuideCategory;
-      TvGuideCategory selectedMpGenre = _mpGenres.Find(x => x.IdTvGuideCategory == selectedGenreId);
+      int selectedGenreId = (listViewGuideGenres.SelectedItems[0].Tag as TvGuideCategory).TvGuideCategoryId;
+      TvGuideCategory selectedMpGenre = _mpGenres.Find(x => x.TvGuideCategoryId == selectedGenreId);
 
       if (selectedMpGenre != null)
       {
-        
+
       }
 
       // Populate the list of mapped genres.
@@ -178,7 +178,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
     {
       // Find the selected mp genre.
       TvGuideCategory programCategory = listViewGuideGenres.SelectedItems[0].Tag as TvGuideCategory;
-      TvGuideCategory selectedMpGenre = ((List<TvGuideCategory>)_mpGenres).Find(x => x.IdTvGuideCategory == programCategory.IdTvGuideCategory);
+      TvGuideCategory selectedMpGenre = ((List<TvGuideCategory>)_mpGenres).Find(x => x.TvGuideCategoryId == programCategory.TvGuideCategoryId);
 
       listViewMappedGenres.BeginUpdate();
       listViewProgramGenres.BeginUpdate();
@@ -202,7 +202,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
         bool hasProgramCategoryAlready = false;
         foreach (ProgramCategory category in selectedMpGenre.ProgramCategories)
         {
-          if (category.IdProgramCategory == programCategoryItem.IdProgramCategory)
+          if (category.ProgramCategoryId == programCategoryItem.ProgramCategoryId)
           {
             hasProgramCategoryAlready = true;
             break;
@@ -210,8 +210,8 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
         }
         if (!hasProgramCategoryAlready)
         {
-          selectedMpGenre.ProgramCategories.Add(programCategoryItem);          
-        }        
+          selectedMpGenre.ProgramCategories.Add(programCategoryItem);
+        }
       }
 
       listViewMappedGenres.EndUpdate();
@@ -222,7 +222,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
     {
       // Find the selected mp genre.
       TvGuideCategory programCategory = listViewGuideGenres.SelectedItems[0].Tag as TvGuideCategory;
-      TvGuideCategory selectedMpGenre = ((List<TvGuideCategory>)_mpGenres).Find(x => x.IdTvGuideCategory == programCategory.IdTvGuideCategory);
+      TvGuideCategory selectedMpGenre = ((List<TvGuideCategory>)_mpGenres).Find(x => x.TvGuideCategoryId == programCategory.TvGuideCategoryId);
 
       listViewMappedGenres.BeginUpdate();
       listViewProgramGenres.BeginUpdate();
@@ -238,7 +238,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
 
         foreach (ProgramCategory category in selectedMpGenre.ProgramCategories)
         {
-          if (category.IdTvGuideCategory == programCategory.IdTvGuideCategory)
+          if (category.TvGuideCategoryId == programCategory.TvGuideCategoryId)
           {
             categoryFoundToDelete = category;
             break;
@@ -280,19 +280,19 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
 
       // Find the edited mp genre.
       // Find the selected mp genre.      
-      TvGuideCategory programCategory = listViewGuideGenres.SelectedItems[0].Tag as TvGuideCategory;      
-      TvGuideCategory editedMpGenre = ((List<TvGuideCategory>)_mpGenres).Find(x => x.IdTvGuideCategory == programCategory.IdTvGuideCategory);
+      TvGuideCategory programCategory = listViewGuideGenres.SelectedItems[0].Tag as TvGuideCategory;
+      TvGuideCategory editedMpGenre = ((List<TvGuideCategory>)_mpGenres).Find(x => x.TvGuideCategoryId == programCategory.TvGuideCategoryId);
 
       // Check for and disallow duplicate genre names.
       TvGuideCategory testMpGenre = _mpGenres.Find(x => x.Name == e.Label);
 
-      if (testMpGenre != null && testMpGenre.IdTvGuideCategory != editedMpGenre.IdTvGuideCategory)
+      if (testMpGenre != null && testMpGenre.TvGuideCategoryId != editedMpGenre.TvGuideCategoryId)
       {
         if (e.Label.Equals(testMpGenre.Name))
         {
-        e.CancelEdit = true;
-        MessageBox.Show("Duplicate genre name not allowed.", "EPG Genre Map", MessageBoxButtons.OK, MessageBoxIcon.Information);
-        return;
+          e.CancelEdit = true;
+          MessageBox.Show("Duplicate genre name not allowed.", "EPG Genre Map", MessageBoxButtons.OK, MessageBoxIcon.Information);
+          return;
         }
       }
 
@@ -328,7 +328,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
     {
       int selectedGenreId = listViewGuideGenres.SelectedItems[0].Index;
       TvGuideCategory programCategory = listViewGuideGenres.SelectedItems[0].Tag as TvGuideCategory;
-      TvGuideCategory selectedMpGenre = _mpGenres.Find(x => x.IdTvGuideCategory == programCategory.IdTvGuideCategory);
+      TvGuideCategory selectedMpGenre = _mpGenres.Find(x => x.TvGuideCategoryId == programCategory.TvGuideCategoryId);
 
       // Set the only selected mp genre as the movie genre.  Toggle current value.
       bool oldValue = selectedMpGenre.IsMovie;
@@ -358,7 +358,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
       // Toggle the state.
       int selectedGenreId = listViewGuideGenres.SelectedItems[0].Index;
       TvGuideCategory programCategory = listViewGuideGenres.SelectedItems[0].Tag as TvGuideCategory;
-      TvGuideCategory selectedMpGenre = _mpGenres.Find(x => x.IdTvGuideCategory == programCategory.IdTvGuideCategory);
+      TvGuideCategory selectedMpGenre = _mpGenres.Find(x => x.TvGuideCategoryId == programCategory.TvGuideCategoryId);
       selectedMpGenre.IsEnabled = !selectedMpGenre.IsEnabled;
 
       if ("".Equals(listViewGuideGenres.Items[selectedGenreId].SubItems[2].Text))
@@ -397,26 +397,26 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
 
         // "Enabled" column
         case 2:
-            if ("x".Equals(e.SubItem.Text))
+          if ("x".Equals(e.SubItem.Text))
+          {
+            /*
+            if (e.Item.Selected)
             {
-              /*
-              if (e.Item.Selected)
-              {
-                e.SubItem.BackColor = System.Drawing.Color.FromArgb(51, 153, 255);
-                e.SubItem.ForeColor = System.Drawing.Color.FromArgb(255, 255, 255);
-              }
-               */
-              e.Graphics.DrawImage(imageList1.Images[1],
-                new System.Drawing.Point(e.SubItem.Bounds.X + (e.SubItem.Bounds.Width / 2) - (imageList1.Images[1].Width / 2), e.SubItem.Bounds.Top));
+              e.SubItem.BackColor = System.Drawing.Color.FromArgb(51, 153, 255);
+              e.SubItem.ForeColor = System.Drawing.Color.FromArgb(255, 255, 255);
             }
-            else
-            {
-              e.Graphics.DrawImage(imageList1.Images[2],
-                new System.Drawing.Point(e.SubItem.Bounds.X + (e.SubItem.Bounds.Width / 2) - (imageList1.Images[2].Width / 2), e.SubItem.Bounds.Top));
-            }
+             */
+            e.Graphics.DrawImage(imageList1.Images[1],
+              new System.Drawing.Point(e.SubItem.Bounds.X + (e.SubItem.Bounds.Width / 2) - (imageList1.Images[1].Width / 2), e.SubItem.Bounds.Top));
+          }
+          else
+          {
+            e.Graphics.DrawImage(imageList1.Images[2],
+              new System.Drawing.Point(e.SubItem.Bounds.X + (e.SubItem.Bounds.Width / 2) - (imageList1.Images[2].Width / 2), e.SubItem.Bounds.Top));
+          }
           break;
         default:
-              e.DrawDefault = true;
+          e.DrawDefault = true;
           break;
       }
     }

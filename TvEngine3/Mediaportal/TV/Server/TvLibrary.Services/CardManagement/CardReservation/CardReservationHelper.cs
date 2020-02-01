@@ -239,7 +239,7 @@ namespace Mediaportal.TV.Server.TVLibrary.CardManagement.CardReservation
       bool isUserOnSameCurrentChannel = false;
       foreach (var subchannel in user.SubChannels.Values)
       {
-        isUserOnSameCurrentChannel = (subchannel.IdChannel == currentChannelId);
+        isUserOnSameCurrentChannel = (subchannel.ChannelId == currentChannelId);
         if (isUserOnSameCurrentChannel)
         {
           break;
@@ -259,7 +259,7 @@ namespace Mediaportal.TV.Server.TVLibrary.CardManagement.CardReservation
         {
           TuningDetail currentDVBtuningDetail = ChannelManagement.GetTuningDetail(currentDVBchannel);
           TuningDetail userDVBtuningDetail = ChannelManagement.GetTuningDetail(userDVBchannel);
-          isUserOnSameChannel = (currentDVBtuningDetail != null && currentDVBtuningDetail.IdChannel == userDVBtuningDetail.IdChannel);
+          isUserOnSameChannel = (currentDVBtuningDetail != null && currentDVBtuningDetail.ChannelId == userDVBtuningDetail.ChannelId);
         }        
       }
       return isUserOnSameChannel;
@@ -411,7 +411,7 @@ namespace Mediaportal.TV.Server.TVLibrary.CardManagement.CardReservation
     public static ICardTuneReservationTicket RequestCardReservation(IUser user, CardDetail cardDetail, ICardReservation cardResImpl, int idChannel)
     {
       ICardTuneReservationTicket ticket = null;      
-      int idCard = cardDetail.Card.IdCard;
+      int idCard = cardDetail.Card.CardId;
       IUser userCopy = user.Clone() as User;
       if (userCopy != null)
       {
@@ -432,7 +432,7 @@ namespace Mediaportal.TV.Server.TVLibrary.CardManagement.CardReservation
       foreach (CardDetail cardDetail in availCardsForReservation)
       {
         ICardTuneReservationTicket ticket = null;
-        int idCard = cardDetail.Card.IdCard;
+        int idCard = cardDetail.Card.CardId;
         bool cardAlreadyHasTicket = cardIds.Contains(idCard);
         if (!cardAlreadyHasTicket)
         {
@@ -530,7 +530,7 @@ namespace Mediaportal.TV.Server.TVLibrary.CardManagement.CardReservation
       {
         if (isStopPending && ticketFound)
         {
-          Log.Info("Stop cardid={0}, ticket={1}, tunestate={2}, stopstate={3}", tvcard.DataBaseCard.IdCard, ticket.Id, tvcard.Tuner.CardTuneState, tvcard.Tuner.CardStopState);
+          Log.Info("Stop cardid={0}, ticket={1}, tunestate={2}, stopstate={3}", tvcard.DataBaseCard.CardId, ticket.Id, tvcard.Tuner.CardTuneState, tvcard.Tuner.CardStopState);
 
           result = tvcard.TimeShifter.Stop(ref user, idChannel);
 

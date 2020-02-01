@@ -53,7 +53,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
 
     private Dictionary<int, CardType> _cards = null;
     private IList<Channel> _allChannels = null;
-    
+
 
     public Channels(string name, MediaTypeEnum mediaType)
       : base(name)
@@ -110,7 +110,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
         TabPage page = new TabPage(group.GroupName);
         page.SuspendLayout();
 
-        ChannelsInGroupControl channelsInRadioGroupControl = new ChannelsInGroupControl(_mediaType);        
+        ChannelsInGroupControl channelsInRadioGroupControl = new ChannelsInGroupControl(_mediaType);
         channelsInRadioGroupControl.Location = new System.Drawing.Point(9, 9);
         channelsInRadioGroupControl.Anchor = ((AnchorStyles.Top | AnchorStyles.Bottom)
                                               | AnchorStyles.Left)
@@ -161,7 +161,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
       _cards = new Dictionary<int, CardType>();
       foreach (Card card in dbsCards)
       {
-        _cards[card.IdCard] = ServiceAgents.Instance.ControllerServiceAgent.Type(card.IdCard);
+        _cards[card.CardId] = ServiceAgents.Instance.ControllerServiceAgent.Type(card.CardId);
       }
 
       //ChannelIncludeRelationEnum include = ChannelIncludeRelationEnum.None;
@@ -200,7 +200,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
         {
           return;
         }
-        group = new ChannelGroup {GroupName = dlg.GroupName, SortOrder = 9999, MediaType = (int)_mediaType};
+        group = new ChannelGroup { GroupName = dlg.GroupName, SortOrder = 9999, MediaType = (int)_mediaType };
         group = ServiceAgents.Instance.ChannelGroupServiceAgent.SaveGroup(group);
         group.AcceptChanges();
 
@@ -235,11 +235,11 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
       }
 
       mpListView1.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
-      
+
       RefreshTabs();
     }
 
-    
+
 
     private void mpButtonClear_Click(object sender, EventArgs e)
     {
@@ -261,11 +261,11 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
         if (channel.MediaType == (int)_mediaType)
         {
           //Broker.Execute("delete from TvMovieMappings WHERE idChannel=" + channel.idChannel);
-          ServiceAgents.Instance.ChannelServiceAgent.DeleteChannel(channel.IdChannel);
+          ServiceAgents.Instance.ChannelServiceAgent.DeleteChannel(channel.ChannelId);
         }
       }
       dlg.Close();
-      
+
       OnSectionActivated();
     }
 
@@ -274,7 +274,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
       mpListView1.BeginUpdate();
       try
       {
-        IList<Schedule> schedules = ServiceAgents.Instance.ScheduleServiceAgent.ListAllSchedules();        
+        IList<Schedule> schedules = ServiceAgents.Instance.ScheduleServiceAgent.ListAllSchedules();
 
         //Since it takes a very long time to add channels, make sure the user really wants to delete them
         if (mpListView1.SelectedItems.Count > 0)
@@ -303,16 +303,16 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
             for (int i = schedules.Count - 1; i > -1; i--)
             {
               Schedule schedule = schedules[i];
-              if (schedule.IdChannel == channel.IdChannel)
+              if (schedule.ChannelId == channel.ChannelId)
               {
-                ServiceAgents.Instance.ControllerServiceAgent.StopRecordingSchedule(schedule.IdSchedule);
-                ServiceAgents.Instance.ScheduleServiceAgent.DeleteSchedule(schedule.IdSchedule);
+                ServiceAgents.Instance.ControllerServiceAgent.StopRecordingSchedule(schedule.ScheduleId);
+                ServiceAgents.Instance.ScheduleServiceAgent.DeleteSchedule(schedule.ScheduleId);
                 schedules.RemoveAt(i);
               }
             }
           }
 
-          ServiceAgents.Instance.ChannelServiceAgent.DeleteChannel(channel.IdChannel);
+          ServiceAgents.Instance.ChannelServiceAgent.DeleteChannel(channel.ChannelId);
           mpListView1.Items.Remove(item);
         }
 
@@ -349,8 +349,8 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
       }
       finally
       {
-        _ignoreItemCheckedEvent = false;        
-      }      
+        _ignoreItemCheckedEvent = false;
+      }
     }
 
     private void ReOrderGroups()
@@ -359,7 +359,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
       {
         ChannelGroup group = (ChannelGroup)tabControl1.TabPages[i].Tag;
         group.SortOrder = i - 1;
-        group.MediaType = (int) _mediaType;
+        group.MediaType = (int)_mediaType;
         group = ServiceAgents.Instance.ChannelGroupServiceAgent.SaveGroup(group);
         group.AcceptChanges();
       }
@@ -381,7 +381,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
     {
       if (!_ignoreItemCheckedEvent)
       {
-        Channel ch = (Channel) e.Item.Tag;
+        Channel ch = (Channel)e.Item.Tag;
         if (ch.VisibleInGuide != e.Item.Checked && !_lvChannelHandler.PopulateRunning)
         {
           ch.VisibleInGuide = e.Item.Checked;
@@ -413,7 +413,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
           txtFilterString_TextChanged(null, null);
         }
         finally
-        {          
+        {
           mpListView1.EndUpdate();
           RefreshAll();
           _ignoreItemCheckedEvent = false;
@@ -485,7 +485,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
         Dictionary<int, CardType> cards = new Dictionary<int, CardType>();
         foreach (Card card in dbsCards)
         {
-          cards[card.IdCard] = ServiceAgents.Instance.ControllerServiceAgent.Type(card.IdCard);
+          cards[card.CardId] = ServiceAgents.Instance.ControllerServiceAgent.Type(card.CardId);
         }
         mpListView1.BeginUpdate();
         try
@@ -549,7 +549,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
         }
         if (!hasFTA)
         {
-          ServiceAgents.Instance.ChannelServiceAgent.DeleteChannel(channel.IdChannel);
+          ServiceAgents.Instance.ChannelServiceAgent.DeleteChannel(channel.ChannelId);
           itemsToRemove.Add(item);
         }
       }
@@ -595,7 +595,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
       dlg.WaitForDisplay();
 
       // Create tunning objects Server, User and Card
-     
+
       IUser _user = new User();
 
       foreach (ListViewItem item in mpListView1.Items)
@@ -610,7 +610,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
                         _channel.DisplayName, item.Index + 1, mpListView1.Items.Count));
         Application.DoEvents();
         IVirtualCard _card;
-        TvResult result = ServiceAgents.Instance.ControllerServiceAgent.StartTimeShifting(_user.Name, _channel.IdChannel, out _card, out _user);
+        TvResult result = ServiceAgents.Instance.ControllerServiceAgent.StartTimeShifting(_user.Name, _channel.ChannelId, out _card, out _user);
         if (result == TvResult.Succeeded)
         {
           _card.StopTimeShifting();
@@ -695,7 +695,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
         return;
       }
 
-      var group = new ChannelGroup { GroupName = dlg.GroupName, SortOrder = 9999, MediaType = (int)_mediaType};
+      var group = new ChannelGroup { GroupName = dlg.GroupName, SortOrder = 9999, MediaType = (int)_mediaType };
 
       group = ServiceAgents.Instance.ChannelGroupServiceAgent.SaveGroup(group);
       group.AcceptChanges();
@@ -709,7 +709,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
       GroupSelectionForm dlgGrpSel = new GroupSelectionForm();
       dlgGrpSel.Selection = GroupSelectionForm.SelectionType.ForRenaming;
 
-      if (dlgGrpSel.ShowDialog(typeof (ChannelGroup), this) != DialogResult.OK)
+      if (dlgGrpSel.ShowDialog(typeof(ChannelGroup), this) != DialogResult.OK)
       {
         return;
       }
@@ -727,7 +727,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
       }
 
       group.GroupName = dlgGrpName.GroupName;
-      group.MediaType = (int) _mediaType;
+      group.MediaType = (int)_mediaType;
       group = ServiceAgents.Instance.ChannelGroupServiceAgent.SaveGroup(group);
       group.AcceptChanges();
 
@@ -746,7 +746,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
     {
       GroupSelectionForm dlgGrpSel = new GroupSelectionForm();
 
-      if (dlgGrpSel.ShowDialog(typeof (ChannelGroup), this) != DialogResult.OK)
+      if (dlgGrpSel.ShowDialog(typeof(ChannelGroup), this) != DialogResult.OK)
       {
         return;
       }
@@ -767,8 +767,8 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
 
       bool isGroupEmpty = (group.GroupMaps.Count <= 0);
 
-      ServiceAgents.Instance.ChannelGroupServiceAgent.DeleteChannelGroup(group.IdGroup);      
-            
+      ServiceAgents.Instance.ChannelGroupServiceAgent.DeleteChannelGroup(group.ChannelGroupId);
+
 
       if (!isGroupEmpty)
       {
@@ -813,7 +813,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
     private void tabControl1_DragOver(object sender, DragEventArgs e)
     {
       //means a channel group assignment is going to be performed
-      if (e.Data.GetData(typeof (MPListView)) != null)
+      if (e.Data.GetData(typeof(MPListView)) != null)
       {
         for (int i = 0; i < tabControl1.TabPages.Count; i++)
         {
@@ -833,7 +833,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
 
     private void tabControl1_DragDrop(object sender, DragEventArgs e)
     {
-      TabPage droppedTabPage = e.Data.GetData(typeof (TabPage)) as TabPage;
+      TabPage droppedTabPage = e.Data.GetData(typeof(TabPage)) as TabPage;
       if (droppedTabPage == null)
       {
         return;
@@ -1014,7 +1014,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
 
       bool groupIsEmpty = (group.GroupMaps.Count <= 0);
 
-      ServiceAgents.Instance.ChannelGroupServiceAgent.DeleteChannelGroup(group.IdGroup);      
+      ServiceAgents.Instance.ChannelGroupServiceAgent.DeleteChannelGroup(group.ChannelGroupId);
       tabControl1.TabPages.Remove(tab);
 
       if (!groupIsEmpty && tabControl1.SelectedIndex == 0)

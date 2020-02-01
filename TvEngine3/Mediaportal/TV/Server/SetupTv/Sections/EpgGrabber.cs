@@ -36,7 +36,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
     private bool _loaded;
     private readonly MPListViewStringColumnSorter lvwColumnSorter;
     private readonly string languagesSettingsKey;
-    private readonly string storeOnlySelectedSettingsKey;    
+    private readonly string storeOnlySelectedSettingsKey;
 
     private EpgGrabber() { }
 
@@ -89,7 +89,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
     }
 
     public override void OnSectionDeActivated()
-    {      
+    {
       ServiceAgents.Instance.SettingServiceAgent.SaveValue(storeOnlySelectedSettingsKey, mpCheckBoxStoreOnlySelected.Checked);
       base.OnSectionDeActivated();
       SaveSettings();
@@ -111,7 +111,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
         IList<Card> dbsCards = ServiceAgents.Instance.CardServiceAgent.ListAllCards(CardIncludeRelationEnum.None);
         foreach (Card card in dbsCards)
         {
-          cards[card.IdCard] = ServiceAgents.Instance.ControllerServiceAgent.Type(card.IdCard);
+          cards[card.CardId] = ServiceAgents.Instance.ControllerServiceAgent.Type(card.CardId);
         }
         base.OnSectionActivated();
         mpListView1.Items.Clear();
@@ -133,7 +133,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
           if (ch.IsWebstream())
             continue;
 
-          IList<TuningDetail> tuningDetails = ch.TuningDetails;
+          var tuningDetails = ch.TuningDetails;
           foreach (TuningDetail detail in tuningDetails)
           {
             if (detail.FreeToAir)
@@ -155,7 +155,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
           {
             imageName = "radio_";
           }
-          
+
           if (hasFta && hasScrambled)
           {
             imageName += "scrambled_and_fta.png";
@@ -172,9 +172,9 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
           ListViewItem item = mpListView1.Items.Add(ch.DisplayName, imageName);
           foreach (ChannelMap map in ch.ChannelMaps)
           {
-            if (cards.ContainsKey(map.IdCard))
+            if (cards.ContainsKey(map.CardId))
             {
-              CardType type = cards[map.IdCard];
+              CardType type = cards[map.CardId];
               switch (type)
               {
                 case CardType.Analog:
@@ -291,7 +291,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
           return;
         channel.GrabEpg = e.Item.Checked;
         ServiceAgents.Instance.ChannelServiceAgent.SaveChannel(channel);
-      }      
+      }
     }
 
     private void linkLabelAll_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)

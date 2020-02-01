@@ -159,7 +159,7 @@ namespace Mediaportal.TV.Server.Plugins.XmlTvImport
         IEnumerable<ChannelGroup> channelGroups = _channelGroupServiceAgent.ListAllChannelGroups();
         foreach (ChannelGroup cg in channelGroups)
         {
-          comboBoxGroup.Items.Add(new CBChannelGroup(cg.GroupName, cg.IdGroup));
+          comboBoxGroup.Items.Add(new CBChannelGroup(cg.GroupName, cg.ChannelGroupId));
         }
       }
       catch (Exception e)
@@ -225,15 +225,15 @@ namespace Mediaportal.TV.Server.Plugins.XmlTvImport
 
         IList<Channel> channels;
 
-        bool loadRadio = checkBoxLoadRadio.Checked;               
+        bool loadRadio = checkBoxLoadRadio.Checked;
         if (loadRadio)
         {
           channels = _channelServiceAgent.GetAllChannelsByGroupId(chGroup.idGroup).ToList();
         }
         else
         {
-          channels = _channelServiceAgent.GetAllChannelsByGroupIdAndMediaType(chGroup.idGroup, MediaTypeEnum.TV).ToList();          
-        }        
+          channels = _channelServiceAgent.GetAllChannelsByGroupIdAndMediaType(chGroup.idGroup, MediaTypeEnum.TV).ToList();
+        }
 
         progressBar1.Minimum = 0;
         progressBar1.Maximum = channels.Count;
@@ -268,7 +268,7 @@ namespace Mediaportal.TV.Server.Plugins.XmlTvImport
           DataGridViewCheckBoxCell showInGuideCell = (DataGridViewCheckBoxCell)gridRow.Cells["ShowInGuide"];
 
           channelCell.Value = ch.DisplayName;
-          idCell.Value = ch.IdChannel;
+          idCell.Value = ch.ChannelId;
           showInGuideCell.Value = ch.VisibleInGuide;
 
           DataGridViewComboBoxCell guideChannelComboBox = (DataGridViewComboBoxCell)gridRow.Cells["guideChannel"];
@@ -408,7 +408,7 @@ namespace Mediaportal.TV.Server.Plugins.XmlTvImport
       }
       catch (Exception ex)
       {
-        this.LogError(ex, "Failed loading channels/mappings : channel {0}", name);        
+        this.LogError(ex, "Failed loading channels/mappings : channel {0}", name);
         textBoxAction.Text = "Error";
       }
     }
@@ -549,7 +549,7 @@ namespace Mediaportal.TV.Server.Plugins.XmlTvImport
               if (streamIn != null)
                 streamIn.Close();
             }
-            catch (Exception) {}
+            catch (Exception) { }
           }
         }
       }
@@ -603,7 +603,7 @@ namespace Mediaportal.TV.Server.Plugins.XmlTvImport
                         displayNames.Add(xmlChannel.ReadString());
                         //else xmlChannel.Skip();
                         break;
-                        // could read more stuff here, like icon...
+                      // could read more stuff here, like icon...
                       default:
                         // unknown, skip entire node
                         xmlChannel.Skip();
@@ -617,7 +617,7 @@ namespace Mediaportal.TV.Server.Plugins.XmlTvImport
                 {
                   if (displayName != null)
                   {
-                    Channel channel = new Channel {ExternalId = id, DisplayName = displayName};
+                    Channel channel = new Channel { ExternalId = id, DisplayName = displayName };
                     channels.Add(channel);
                   }
                 }
@@ -627,7 +627,7 @@ namespace Mediaportal.TV.Server.Plugins.XmlTvImport
           }
         }
       }
-      catch {}
+      catch { }
       finally
       {
         if (xmlReader != null)
@@ -647,7 +647,7 @@ namespace Mediaportal.TV.Server.Plugins.XmlTvImport
         // loading all Channels is much faster then loading them one by one
         // for each mapping
         IEnumerable<Channel> allChanels = _channelServiceAgent.ListAllChannels();
-        Dictionary<int, Channel> dAllChannels = allChanels.ToDictionary(ch => ch.IdChannel);
+        Dictionary<int, Channel> dAllChannels = allChanels.ToDictionary(ch => ch.ChannelId);
 
         progressBar1.Value = 0;
         progressBar1.Minimum = 0;
@@ -680,7 +680,7 @@ namespace Mediaportal.TV.Server.Plugins.XmlTvImport
       catch (Exception ex)
       {
         textBoxAction.Text = "Save failed";
-        this.LogError(ex, "Error while saving channelmappings");        
+        this.LogError(ex, "Error while saving channelmappings");
       }
     }
 

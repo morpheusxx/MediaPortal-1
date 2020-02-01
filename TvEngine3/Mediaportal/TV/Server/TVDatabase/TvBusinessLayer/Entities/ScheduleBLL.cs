@@ -10,12 +10,12 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer.Entities
 {
   public class ScheduleBLL
   {
- 
 
-    private Schedule _entity;    
+
+    private Schedule _entity;
     public ScheduleBLL(Schedule entity)
-    {      
-      _entity = entity;      
+    {
+      _entity = entity;
     }
 
     public Schedule Entity
@@ -100,7 +100,7 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer.Entities
       {
         case ScheduleRecordingType.Once:
           {
-            if (program.StartTime == _entity.StartTime && program.EndTime == _entity.EndTime && program.IdChannel == _entity.IdChannel)
+            if (program.StartTime == _entity.StartTime && program.EndTime == _entity.EndTime && program.ChannelId == _entity.ChannelId)
             {
               if (filterCanceledRecordings)
               {
@@ -116,7 +116,7 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer.Entities
         case ScheduleRecordingType.EveryTimeOnEveryChannel:
           if (program.Title == _entity.ProgramName)
           {
-            if (filterCanceledRecordings && IsSerieIsCanceled(GetSchedStartTimeForProg(program), program.IdChannel))
+            if (filterCanceledRecordings && IsSerieIsCanceled(GetSchedStartTimeForProg(program), program.ChannelId))
             {
               return false;
             }
@@ -124,9 +124,9 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer.Entities
           }
           break;
         case ScheduleRecordingType.EveryTimeOnThisChannel:
-          if (program.Title == _entity.ProgramName && program.IdChannel == _entity.IdChannel)
+          if (program.Title == _entity.ProgramName && program.ChannelId == _entity.ChannelId)
           {
-            if (filterCanceledRecordings && IsSerieIsCanceled(GetSchedStartTimeForProg(program), program.IdChannel))
+            if (filterCanceledRecordings && IsSerieIsCanceled(GetSchedStartTimeForProg(program), program.ChannelId))
             {
               return false;
             }
@@ -134,7 +134,7 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer.Entities
           }
           break;
         case ScheduleRecordingType.WeeklyEveryTimeOnThisChannel:
-          if (program.Title == _entity.ProgramName && program.IdChannel == _entity.IdChannel &&
+          if (program.Title == _entity.ProgramName && program.ChannelId == _entity.ChannelId &&
               _entity.StartTime.DayOfWeek == program.StartTime.DayOfWeek)
           {
             if (filterCanceledRecordings && IsSerieIsCanceled(program.StartTime))
@@ -145,7 +145,7 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer.Entities
           }
           break;
         case ScheduleRecordingType.Daily:
-          if (program.IdChannel == _entity.IdChannel)
+          if (program.ChannelId == _entity.ChannelId)
           {
             return IsRecordingProgramWithinTimeRange(program, filterCanceledRecordings);
           }
@@ -153,7 +153,7 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer.Entities
         case ScheduleRecordingType.WorkingDays:
           if (WeekEndTool.IsWorkingDay(program.StartTime.DayOfWeek))
           {
-            if (program.IdChannel == _entity.IdChannel)
+            if (program.ChannelId == _entity.ChannelId)
             {
               return IsRecordingProgramWithinTimeRange(program, filterCanceledRecordings);
             }
@@ -163,7 +163,7 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer.Entities
         case ScheduleRecordingType.Weekends:
           if (WeekEndTool.IsWeekend(program.StartTime.DayOfWeek))
           {
-            if (program.IdChannel == _entity.IdChannel)
+            if (program.ChannelId == _entity.ChannelId)
             {
               return IsRecordingProgramWithinTimeRange(program, filterCanceledRecordings);
             }
@@ -171,7 +171,7 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer.Entities
           break;
 
         case ScheduleRecordingType.Weekly:
-          if (program.IdChannel == _entity.IdChannel)
+          if (program.ChannelId == _entity.ChannelId)
           {
             return (_entity.StartTime.DayOfWeek == program.StartTime.DayOfWeek &&
                     IsRecordingProgramWithinTimeRange(program, filterCanceledRecordings));
@@ -214,8 +214,8 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer.Entities
     /// <returns>True if a common transponder exists</returns>
     public bool IsSameTransponder(Schedule schedule)
     {
-      IList<TuningDetail> tuningList1 = _entity.Channel.TuningDetails;
-      IList<TuningDetail> tuningList2 = schedule.Channel.TuningDetails;
+      var tuningList1 = _entity.Channel.TuningDetails;
+      var tuningList2 = schedule.Channel.TuningDetails;
       foreach (TuningDetail tun1 in tuningList1)
       {
         foreach (TuningDetail tun2 in tuningList2)
@@ -256,7 +256,7 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer.Entities
 
     public bool IsSerieIsCanceled(DateTime startTimeParam, int idChannel)
     {
-      return _entity.CanceledSchedules.Any(schedule => schedule.CancelDateTime == startTimeParam && schedule.IdChannel == idChannel);
+      return _entity.CanceledSchedules.Any(schedule => schedule.CancelDateTime == startTimeParam && schedule.ChannelId == idChannel);
     }
 
     /// <summary>
@@ -335,6 +335,6 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer.Entities
         isSerieNotCanceled = !(filterCanceledRecordings && IsSerieIsCanceled(scheduleStartTime));
       }
       return isSerieNotCanceled;
-    }   
+    }
   }
 }

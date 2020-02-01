@@ -2,8 +2,9 @@
 using System.Linq;
 using Mediaportal.TV.Server.TVDatabase.Entities;
 using Mediaportal.TV.Server.TVDatabase.Entities.Enums;
-using Mediaportal.TV.Server.TVDatabase.EntityModel.Interfaces;
-using Mediaportal.TV.Server.TVDatabase.EntityModel.Repositories;
+using Mediaportal.TV.Server.TVDatabase.EntityModel.Context;
+using Mediaportal.TV.Server.TVDatabase.EntityModel.Extensions;
+using Microsoft.EntityFrameworkCore;
 
 namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
 {
@@ -12,155 +13,150 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
     public static Recording GetRecording(int idRecording)
     {
       //lazy loading verified ok
-      using (IRecordingRepository recordingRepository = new RecordingRepository())
+      using (TvEngineDbContext context = new TvEngineDbContext())
       {
-        Recording recording = recordingRepository.GetRecording(idRecording);
+        Recording recording = context.Recordings.Include(r => r.Channel)
+          .Include(r => r.RecordingCredits)
+          .Include(r => r.Schedule)
+          .Include(r => r.ProgramCategory)
+          .FirstOrDefault(r => r.RecordingId == idRecording);
         return recording;
       }
     }
 
     public static void DeleteRecording(int idRecording)
     {
-      using (IRecordingRepository recordingRepository = new RecordingRepository(true))
+      using (TvEngineDbContext context = new TvEngineDbContext())
       {
-        recordingRepository.Delete<Recording>(s => s.IdRecording == idRecording);
-        recordingRepository.UnitOfWork.SaveChanges();
+        Recording recording = context.Recordings.FirstOrDefault(r => r.RecordingId == idRecording);
+        if (recording != null)
+        {
+          context.Recordings.Remove(recording);
+          context.SaveChanges();
+        }
       }
     }
 
     public static IList<Recording> ListAllRecordingsByMediaType(MediaTypeEnum mediaType)
     {
       //lazy loading verified ok
-      using (IRecordingRepository recordingRepository = new RecordingRepository())
+      using (TvEngineDbContext context = new TvEngineDbContext())
       {
-        return recordingRepository.ListAllRecordingsByMediaType(mediaType).ToList();
+        return context.Recordings
+          .Include(r => r.Channel)
+          .Include(r => r.RecordingCredits)
+          .Include(c => c.Schedule)
+          .Include(r => r.ProgramCategory)
+          .Where(r => r.MediaType == (int)mediaType)
+          .ToList();
       }
     }
 
     public static Recording SaveRecording(Recording recording)
     {
-      using (var recordingRepository = new RecordingRepository())
+      using (TvEngineDbContext context = new TvEngineDbContext())
       {
-        recordingRepository.AttachEntityIfChangeTrackingDisabled(recordingRepository.ObjectContext.Recordings, recording);                        
-        recordingRepository.ApplyChanges(recordingRepository.ObjectContext.Recordings, recording);
-        recordingRepository.UnitOfWork.SaveChanges();
-        recording.AcceptChanges();
+        context.Recordings.Add(recording);
+        context.SaveChanges();
         return recording;
-      }      
+      }
     }
 
     public static Recording GetRecordingByFileName(string filename)
     {
       //lazy loading verified ok
-      using (var recordingRepository = new RecordingRepository())
+      using (TvEngineDbContext context = new TvEngineDbContext())
       {
-        IQueryable<Recording> recordingsByFileName = recordingRepository.GetQuery<Recording>(r => r.FileName == filename);
-        Recording recordingByFileName = recordingRepository.IncludeAllRelations(recordingsByFileName).FirstOrDefault();
-        return recordingByFileName;
+        return context.Recordings.IncludeAllRelations().FirstOrDefault(r => r.FileName == filename);
       }
     }
 
     public static Recording GetActiveRecording(int idSchedule)
     {
       //lazy loading verified ok
-      using (IRecordingRepository recordingRepository = new RecordingRepository())
+      using (TvEngineDbContext context = new TvEngineDbContext())
       {
-        IQueryable<Recording> recordings =
-          recordingRepository.GetQuery<Recording>(r => r.IsRecording && r.IdSchedule == idSchedule);
-        Recording activeRecording = recordingRepository.IncludeAllRelations(recordings).FirstOrDefault();
-        return activeRecording;
+        return context.Recordings.IncludeAllRelations().FirstOrDefault(r => r.IsRecording && r.ScheduleId == idSchedule);
       }
     }
 
     public static Recording GetActiveRecordingByTitleAndChannel(string title, int idChannel)
     {
       //lazy loading verified ok
-      using (IRecordingRepository recordingRepository = new RecordingRepository())
+      using (TvEngineDbContext context = new TvEngineDbContext())
       {
-        IQueryable<Recording> recordings =
-          recordingRepository.GetQuery<Recording>(r => r.IsRecording && r.IdChannel == idChannel && r.Title == title);
-        Recording activeRecordingByTitleAndChannel =
-          recordingRepository.IncludeAllRelations(recordings).FirstOrDefault();
-        return activeRecordingByTitleAndChannel;
+        return context.Recordings.IncludeAllRelations().FirstOrDefault(r => r.IsRecording && r.ChannelId == idChannel && r.Title == title);
       }
     }
 
     public static IList<Recording> ListAllActiveRecordingsByMediaType(MediaTypeEnum mediaType)
     {
       //lazy loading verified ok
-      using (IRecordingRepository recordingRepository = new RecordingRepository())
+      using (TvEngineDbContext context = new TvEngineDbContext())
       {
-        IQueryable<Recording> allActiveRecordingsByMediaType =
-          recordingRepository.GetQuery<Recording>(c => c.MediaType == (int) mediaType && c.IsRecording);
-        allActiveRecordingsByMediaType = recordingRepository.IncludeAllRelations(allActiveRecordingsByMediaType);
-        return allActiveRecordingsByMediaType.ToList();
+        return context.Recordings.IncludeAllRelations().Where(c => c.MediaType == (int)mediaType && c.IsRecording).ToList();
       }
     }
 
     public static bool HasRecordingPendingDeletion(string filename)
     {
       bool hasRecordingPendingDeletion;
-      using (IRecordingRepository recordingRepository = new RecordingRepository())
+      using (TvEngineDbContext context = new TvEngineDbContext())
       {
-        hasRecordingPendingDeletion =
-          recordingRepository.Count<PendingDeletion>(c => c.FileName == filename) > 0;      
+        hasRecordingPendingDeletion = context.PendingDeletions.Any(c => c.FileName == filename);
       }
       return hasRecordingPendingDeletion;
     }
 
     public static PendingDeletion SaveRecordingPendingDeletion(PendingDeletion pendingDeletion)
     {
-      using (var recordingRepository = new RecordingRepository())
+      using (TvEngineDbContext context = new TvEngineDbContext())
       {
-        recordingRepository.AttachEntityIfChangeTrackingDisabled(recordingRepository.ObjectContext.PendingDeletions, pendingDeletion);        
-        recordingRepository.ApplyChanges(recordingRepository.ObjectContext.PendingDeletions, pendingDeletion);        
-        recordingRepository.UnitOfWork.SaveChanges();
-        pendingDeletion.AcceptChanges();
+        context.PendingDeletions.Add(pendingDeletion);
+        context.SaveChanges();
         return pendingDeletion;
-      }      
+      }
     }
 
     public static void DeletePendingRecordingDeletion(int idPendingDeletion)
     {
-      using (IRecordingRepository recordingRepository = new RecordingRepository(true))
+      using (TvEngineDbContext context = new TvEngineDbContext())
       {
-        recordingRepository.Delete<PendingDeletion>(s => s.IdPendingDeletion == idPendingDeletion);
-        recordingRepository.UnitOfWork.SaveChanges();
+        var pendingDeletion = context.PendingDeletions.FirstOrDefault(s => s.PendingDeletionId == idPendingDeletion);
+        if (pendingDeletion != null)
+        {
+          context.PendingDeletions.Remove(pendingDeletion);
+          context.SaveChanges();
+        }
       }
     }
 
     public static PendingDeletion GetPendingRecordingDeletion(int idPendingDeletion)
     {
-      using (IRecordingRepository recordingRepository = new RecordingRepository())
+      using (TvEngineDbContext context = new TvEngineDbContext())
       {
-        PendingDeletion pendingDeletion = recordingRepository.FindOne<PendingDeletion>(p => p.IdPendingDeletion == idPendingDeletion);
-        return pendingDeletion;
+        return context.PendingDeletions.FirstOrDefault(p => p.PendingDeletionId == idPendingDeletion);
       }
     }
 
     public static IList<PendingDeletion> ListAllPendingRecordingDeletions()
     {
-      using (IRecordingRepository recordingRepository = new RecordingRepository())
+      using (TvEngineDbContext context = new TvEngineDbContext())
       {
-        var listAllPendingRecordingDeletions = recordingRepository.GetAll<PendingDeletion>().ToList();
-        return listAllPendingRecordingDeletions;
+        return context.PendingDeletions.ToList();
       }
     }
 
     public static void ResetActiveRecordings()
     {
-      using (IRecordingRepository recordingRepository = new RecordingRepository())
+      using (TvEngineDbContext context = new TvEngineDbContext())
       {
-        IQueryable<Recording> activeRecordings = recordingRepository.GetAll<Recording>();
-        foreach (Recording rec in activeRecordings)
+        foreach (Recording rec in context.Recordings)
         {
-          rec.IsRecording = false;          
+          rec.IsRecording = false;
         }
-
-        recordingRepository.ApplyChanges(recordingRepository.ObjectContext.Recordings, activeRecordings);
-        //recordingRepository.UpdateList(activeRecordings);
-        recordingRepository.UnitOfWork.SaveChanges();
-      }            
+        context.SaveChanges();
+      }
     }
   }
 }

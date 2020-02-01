@@ -62,7 +62,7 @@ namespace Mediaportal.TV.Server.TVLibrary.DiskManagement
                   recording.FileName,
                   recording.StartTime.ToShortDateString());
         recordings.Remove(recording);        
-        TVDatabase.TVBusinessLayer.RecordingManagement.DeleteRecording(recording.IdRecording);
+        TVDatabase.TVBusinessLayer.RecordingManagement.DeleteRecording(recording.RecordingId);
         break;
       }
     }

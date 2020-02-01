@@ -21,6 +21,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Xml.Serialization;
 using Mediaportal.TV.Server.TVDatabase.Entities;
 using Mediaportal.TV.Server.TVDatabase.TVBusinessLayer;
@@ -283,7 +284,7 @@ namespace WebEPG
         IList<Channel> epgChannels = ChannelManagement.GetChannelsByName(displayName);
         if (epgChannels.Count > 0)
         {
-          _dbPrograms = epgChannels[0].Programs;
+          _dbPrograms = epgChannels.First().Programs.ToList();
         }
       }
       catch (Exception)

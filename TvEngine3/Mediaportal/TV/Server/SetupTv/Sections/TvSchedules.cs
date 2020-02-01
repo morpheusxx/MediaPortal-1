@@ -68,8 +68,8 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
       }
       finally
       {
-        _ignoreRefreshEPG = false;        
-      }      
+        _ignoreRefreshEPG = false;
+      }
     }
 
     private void SetupScheduleTemplatesMenuItems()
@@ -81,8 +81,8 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
         toolStripItem.Tag = template;
         toolStripItem.Text = template.ToString();
         toolStripItem.Click += new EventHandler(toolStripItem_Click);
-        addScheduleByTemplateToolStripMenuItem.DropDown.Items.Add(toolStripItem); 
-      }      
+        addScheduleByTemplateToolStripMenuItem.DropDown.Items.Add(toolStripItem);
+      }
     }
 
     private void toolStripItem_Click(object sender, EventArgs e)
@@ -108,7 +108,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
       IList<ChannelGroup> groups = ServiceAgents.Instance.ChannelGroupServiceAgent.ListAllChannelGroups(ChannelGroupIncludeRelationEnum.None);
       foreach (ChannelGroup group in groups)
       {
-        comboBoxGroups.Items.Add(new ComboBoxExItem(group.GroupName, -1, group.IdGroup));
+        comboBoxGroups.Items.Add(new ComboBoxExItem(group.GroupName, -1, group.ChannelGroupId));
       }
       if (comboBoxGroups.Items.Count == 0)
       {
@@ -194,11 +194,11 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
         }
         listView1.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
       }
-      finally 
+      finally
       {
         listView1.EndUpdate();
       }
-      
+
     }
 
     private void listView1_ColumnClick(object sender, ColumnClickEventArgs e)
@@ -230,8 +230,8 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
       foreach (ListViewItem item in listView1.SelectedItems)
       {
         Schedule schedule = (Schedule)item.Tag;
-        ServiceAgents.Instance.ControllerServiceAgent.StopRecordingSchedule(schedule.IdSchedule);
-        ServiceAgents.Instance.ScheduleServiceAgent.DeleteSchedule(schedule.IdSchedule);
+        ServiceAgents.Instance.ControllerServiceAgent.StopRecordingSchedule(schedule.ScheduleId);
+        ServiceAgents.Instance.ScheduleServiceAgent.DeleteSchedule(schedule.ScheduleId);
 
         listView1.Items.Remove(item);
       }
@@ -241,7 +241,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
     private void dateTimePicker1_ValueChanged(object sender, EventArgs e)
     {
       RefreshEPG();
-  }
+    }
 
     private void RefreshTemplates()
     {
@@ -281,7 +281,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
         }
         finally
         {
-          listViewTemplates.EndUpdate();          
+          listViewTemplates.EndUpdate();
         }
       }
     }
@@ -340,8 +340,8 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
             item.SubItems.Add(prg.EpisodeNum);
             if (prg.ProgramCategory != null)
             {
-              item.SubItems.Add(prg.ProgramCategory.Category); 
-            }            
+              item.SubItems.Add(prg.ProgramCategory.Category);
+            }
             item.SubItems.Add(prg.OriginalAirDate.GetValueOrDefault(DateTime.MinValue).ToString("HH:mm:ss", mmddFormat));
             item.SubItems.Add(prg.Classification);
             item.SubItems.Add(Convert.ToString(prg.StarRating));
@@ -383,10 +383,10 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
         IList<Channel> channels = ServiceAgents.Instance.ChannelServiceAgent.ListAllChannels(ChannelIncludeRelationEnum.TuningDetails);
         foreach (Channel ch in channels)
         {
-          if (ch.MediaType != (decimal) MediaTypeEnum.TV) continue;
+          if (ch.MediaType != (decimal)MediaTypeEnum.TV) continue;
           bool hasFta = false;
           bool hasScrambled = false;
-          IList<TuningDetail> tuningDetails = ch.TuningDetails;
+          var tuningDetails = ch.TuningDetails;
           foreach (TuningDetail detail in tuningDetails)
           {
             if (detail.FreeToAir)
@@ -412,7 +412,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
           {
             imageIndex = 3;
           }
-          ComboBoxExItem item = new ComboBoxExItem(ch.DisplayName, imageIndex, ch.IdChannel);
+          ComboBoxExItem item = new ComboBoxExItem(ch.DisplayName, imageIndex, ch.ChannelId);
 
           comboBoxChannels.Items.Add(item);
         }
@@ -420,15 +420,15 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
       else
       {
         ChannelGroup group = ServiceAgents.Instance.ChannelGroupServiceAgent.GetChannelGroup(idItem.Id);
-        IList<GroupMap> maps = group.GroupMaps;
+        var maps = group.GroupMaps;
         bool hasScrambled = false;
         foreach (GroupMap map in maps)
         {
           Channel ch = map.Channel;
           bool hasFta = false;
-          if (ch.MediaType != (decimal) MediaTypeEnum.TV)          
-          hasScrambled = false;
-          IList<TuningDetail> tuningDetails = ch.TuningDetails;
+          if (ch.MediaType != (decimal)MediaTypeEnum.TV)
+            hasScrambled = false;
+          var tuningDetails = ch.TuningDetails;
           foreach (TuningDetail detail in tuningDetails)
           {
             if (detail.FreeToAir)
@@ -454,7 +454,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
           {
             imageIndex = 3;
           }
-          ComboBoxExItem item = new ComboBoxExItem(ch.DisplayName, imageIndex, ch.IdChannel);
+          ComboBoxExItem item = new ComboBoxExItem(ch.DisplayName, imageIndex, ch.ChannelId);
           comboBoxChannels.Items.Add(item);
         }
       }
@@ -472,8 +472,8 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
       contextMenuStrip1.Items[0].Visible = (e.TabPageIndex == 0);
       contextMenuStrip1.Items[1].Visible = (e.TabPageIndex == 1);
       contextMenuStrip1.Items[2].Visible = (e.TabPageIndex == 1);
-      contextMenuStrip1.Items[3].Visible = (e.TabPageIndex == 2);   
-    }    
+      contextMenuStrip1.Items[3].Visible = (e.TabPageIndex == 2);
+    }
 
     private void addScheduleToolStripMenuItem_Click(object sender, EventArgs e)
     {
@@ -490,7 +490,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
 
     private static void ShowEditScheduleDialogue(Program program, Schedule schedule, ScheduleRulesTemplate template)
     {
-      var dlg = new FormEditSchedule {Schedule = schedule, Program = program, ScheduleRulesTemplate = template};
+      var dlg = new FormEditSchedule { Schedule = schedule, Program = program, ScheduleRulesTemplate = template };
       dlg.ShowDialog();
     }
 

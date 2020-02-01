@@ -116,7 +116,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
           MessageBox.Show(this, "Tuner is disabled. Please enable the tuner before scanning.");
           return;
         }
-        else if (!ServiceAgents.Instance.ControllerServiceAgent.IsCardPresent(card.IdCard))
+        else if (!ServiceAgents.Instance.ControllerServiceAgent.IsCardPresent(card.CardId))
         {
           MessageBox.Show(this, "Tuner is not found. Please make sure the tuner is present before scanning.");
           return;
@@ -288,12 +288,12 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
             }
             if (currentDetail == null)
             {
-              ServiceAgents.Instance.ChannelServiceAgent.AddTuningDetail(dbChannel.IdChannel, channel);
+              ServiceAgents.Instance.ChannelServiceAgent.AddTuningDetail(dbChannel.ChannelId, channel);
             }
             else
             {
               //update tuning details...
-              ServiceAgents.Instance.ChannelServiceAgent.UpdateTuningDetail(dbChannel.IdChannel, currentDetail.IdTuning, channel);            
+              ServiceAgents.Instance.ChannelServiceAgent.UpdateTuningDetail(dbChannel.ChannelId, currentDetail.TuningDetailId, channel);            
             }
 
             if (channel.MediaType == MediaTypeEnum.TV)

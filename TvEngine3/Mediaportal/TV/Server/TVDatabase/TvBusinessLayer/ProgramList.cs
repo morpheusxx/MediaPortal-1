@@ -35,13 +35,13 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
   /// </summary>
   public struct ProgramListPartition
   {
-    public int IdChannel;
+    public int ChannelId;
     public DateTime Start;
     public DateTime End;
 
     public ProgramListPartition(int idChannel, DateTime start, DateTime end)
     {
-      IdChannel = idChannel;
+      ChannelId = idChannel;
       Start = start;
       End = end;
     }
@@ -224,7 +224,7 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
       {
         Program prog = this[i];
         Program existProg = existingPrograms[j];
-        if (prog.IdChannel == existProg.IdChannel)
+        if (prog.ChannelId == existProg.ChannelId)
         {
           if (prog.EndTime <= existProg.StartTime)
           {
@@ -315,7 +315,7 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
         {
           //correct the times of the current program using the times of the next one
           Program progNext = this[i + 1];
-          if (prog.IdChannel == progNext.IdChannel)
+          if (prog.ChannelId == progNext.ChannelId)
           {
             if (prog.StartTime >= prog.EndTime)
             {
@@ -343,18 +343,18 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
       if (Count != 0)
       {
         SortIfNeeded();
-        ProgramListPartition partition = new ProgramListPartition(this[0].IdChannel, this[0].StartTime, this[0].EndTime);
+        ProgramListPartition partition = new ProgramListPartition(this[0].ChannelId, this[0].StartTime, this[0].EndTime);
         for (int i = 1; i < Count; i++)
         {
           Program currProg = this[i];
-          if (partition.IdChannel.Equals(currProg.IdChannel) && partition.End.Equals(currProg.StartTime))
+          if (partition.ChannelId.Equals(currProg.ChannelId) && partition.End.Equals(currProg.StartTime))
           {
             partition.End = currProg.EndTime;
           }
           else
           {
             partitions.Add(partition);
-            partition = new ProgramListPartition(currProg.IdChannel, currProg.StartTime, currProg.EndTime);
+            partition = new ProgramListPartition(currProg.ChannelId, currProg.StartTime, currProg.EndTime);
           }
         }
         partitions.Add(partition);
@@ -372,14 +372,14 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
       if (Count != 0)
       {
         SortIfNeeded();
-        int lastChannelId = this[0].IdChannel;
+        int lastChannelId = this[0].ChannelId;
         channelIds.Add(lastChannelId);
         for (int i = 1; i < Count; i++)
         {
           Program currProg = this[i];
-          if (lastChannelId != currProg.IdChannel)
+          if (lastChannelId != currProg.ChannelId)
           {
-            lastChannelId = currProg.IdChannel;
+            lastChannelId = currProg.ChannelId;
             channelIds.Add(lastChannelId);
           }
         }
@@ -443,12 +443,12 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
       if (x == null) return -1;
       if (y == null) return -1;
 
-      if (x.IdChannel != y.IdChannel)
+      if (x.ChannelId != y.ChannelId)
       {
         int res = String.Compare(x.Channel.DisplayName, y.Channel.DisplayName, true);
         if (res == 0)
         {
-          if (x.IdChannel > y.IdChannel)
+          if (x.ChannelId > y.ChannelId)
           {
             return 1;
           }

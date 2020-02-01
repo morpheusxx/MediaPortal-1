@@ -59,13 +59,13 @@ namespace Mediaportal.TV.Server.TVService.Interfaces.Services
     /// <value>The card id.</value>
     [DataMember]
     int CardId { get; set; }
-  
+
     /// <summary>
     /// Gets or sets the name.
     /// </summary>
     /// <value>The name.</value>
     [DataMember]
-    string Name { get; set; }    
+    string Name { get; set; }
 
     /// <summary>
     /// Gets or sets the history.
@@ -80,7 +80,7 @@ namespace Mediaportal.TV.Server.TVService.Interfaces.Services
     [DataMember]
     TvStoppedReason TvStoppedReason { get; set; }
 
-    
+
 
     /// <summary>
     /// Creates a new object that is a copy of the current instance.
@@ -91,6 +91,6 @@ namespace Mediaportal.TV.Server.TVService.Interfaces.Services
     object Clone();
 
     [DataMember]
-    IDictionary<int, ISubChannel> SubChannels { get; set; }        
+    IDictionary<int, ISubChannel> SubChannels { get; set; }
   }
 }

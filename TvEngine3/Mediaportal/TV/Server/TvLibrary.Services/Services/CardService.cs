@@ -75,12 +75,12 @@ namespace Mediaportal.TV.Server.TVLibrary.Services
 
     public IList<SoftwareEncoder> ListAllSofwareEncodersVideo()
     {
-      return TVDatabase.TVBusinessLayer.CardManagement.ListAllSofwareEncodersVideo();
+      return TVDatabase.TVBusinessLayer.CardManagement.ListAllSoftwareEncodersVideo();
     }
 
     public IList<SoftwareEncoder> ListAllSofwareEncodersAudio()
     {
-      return TVDatabase.TVBusinessLayer.CardManagement.ListAllSofwareEncodersAudio();
+      return TVDatabase.TVBusinessLayer.CardManagement.ListAllSoftwareEncodersAudio();
     }
 
     public IList<Satellite> ListAllSatellites()

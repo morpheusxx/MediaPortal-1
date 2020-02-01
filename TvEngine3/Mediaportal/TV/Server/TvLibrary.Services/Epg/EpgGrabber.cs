@@ -141,7 +141,7 @@ namespace Mediaportal.TV.Server.TVLibrary.Epg
         try
         {
           RemoteControl.HostName = SettingsManagement.GetSetting(Consts.SETTINGS_KEY_HOSTNAME).Value;
-          if (!ServiceManager.Instance.InternalControllerService.IsCardPresent(card.IdCard))
+          if (!ServiceManager.Instance.InternalControllerService.IsCardPresent(card.CardId))
           {
             continue;
           }
@@ -272,7 +272,7 @@ namespace Mediaportal.TV.Server.TVLibrary.Epg
     /// <param name="epgCard">The epg card.</param>
     private void GrabEpgOnCard(EpgCard epgCard)
     {
-      CardType type = ServiceManager.Instance.InternalControllerService.Type(epgCard.Card.IdCard);
+      CardType type = ServiceManager.Instance.InternalControllerService.Type(epgCard.Card.CardId);
       //skip analog cards 
       if (type == CardType.Analog)
         return;
@@ -310,10 +310,10 @@ namespace Mediaportal.TV.Server.TVLibrary.Epg
             continue; // less then 2 hrs ago
           }
 
-          if (TVDatabase.TVBusinessLayer.CardManagement.CanTuneTvChannel(epgCard.Card, ch.IdChannel))
+          if (TVDatabase.TVBusinessLayer.CardManagement.CanTuneTvChannel(epgCard.Card, ch.ChannelId))
           {
             this.LogInfo("Grab for card:#{0} transponder #{1}/{2} channel: {3}",
-                    epgCard.Card.IdCard, TransponderList.Instance.CurrentIndex + 1, TransponderList.Instance.Count,
+                    epgCard.Card.CardId, TransponderList.Instance.CurrentIndex + 1, TransponderList.Instance.Count,
                     ch.DisplayName);
             //start grabbing
             epgCard.GrabEpg();

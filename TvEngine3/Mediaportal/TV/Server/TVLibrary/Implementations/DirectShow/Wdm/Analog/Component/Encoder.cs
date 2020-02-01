@@ -680,11 +680,11 @@ namespace Mediaportal.TV.Server.TVLibrary.Implementations.DirectShow.Wdm.Analog.
         this.LogDebug("WDM analog encoder:   software encoder required");
         if (isVideo)
         {
-          AddAndConnectSoftwareEncoder(graph, FilterCategory.VideoCompressorCategory, AnalogManagement.GetSofwareEncodersVideo(), pin, out filter, out deviceCompressor);
+          AddAndConnectSoftwareEncoder(graph, FilterCategory.VideoCompressorCategory, AnalogManagement.GetSoftwareEncodersVideo(), pin, out filter, out deviceCompressor);
         }
         else
         {
-          AddAndConnectSoftwareEncoder(graph, FilterCategory.AudioCompressorCategory, AnalogManagement.GetSofwareEncodersAudio(), pin, out filter, out deviceCompressor);
+          AddAndConnectSoftwareEncoder(graph, FilterCategory.AudioCompressorCategory, AnalogManagement.GetSoftwareEncodersAudio(), pin, out filter, out deviceCompressor);
         }
         if (filter == null)
         {

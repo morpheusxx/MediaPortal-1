@@ -181,14 +181,14 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer.EPG
       int iInserted = 0;
       bool hasGaps = false;
 
-      ProgramManagement.DeleteOldPrograms(dbChannel.IdChannel);
+      ProgramManagement.DeleteOldPrograms(dbChannel.ChannelId);
 
       EpgHoleCollection holes = new EpgHoleCollection();
       if ((dbChannel.EpgHasGaps || AlwaysFillHoles) && !AlwaysReplace)
       {
         this.LogDebug("{0}: {1} is marked to have epg gaps. Calculating them...", _grabberName, dbChannel.DisplayName);
 
-        IList<Program> infos = ProgramManagement.GetPrograms(dbChannel.IdChannel, DateTime.Now);
+        IList<Program> infos = ProgramManagement.GetPrograms(dbChannel.ChannelId, DateTime.Now);
         if (infos.Count > 1)
         {
           for (int i = 1; i < infos.Count; i++)
@@ -204,7 +204,7 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer.EPG
         }
         this.LogDebug("{0}: {1} Found {2} epg holes.", _grabberName, dbChannel.DisplayName, holes.Count);
       }
-      DateTime dbLastProgram = ProgramManagement.GetNewestProgramForChannel(dbChannel.IdChannel);
+      DateTime dbLastProgram = ProgramManagement.GetNewestProgramForChannel(dbChannel.ChannelId);
       EpgProgram lastProgram = null;
       IList<Program> programs = new List<Program>();
 
@@ -245,7 +245,7 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer.EPG
         {
           try
           {
-            IList<Program> epgs = ProgramManagement.GetProgramExists(dbChannel.IdChannel, epgProgram.StartTime, epgProgram.EndTime);
+            IList<Program> epgs = ProgramManagement.GetProgramExists(dbChannel.ChannelId, epgProgram.StartTime, epgProgram.EndTime);
 
             if (epgs.Count > 0)
             {
@@ -259,7 +259,7 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer.EPG
               {
                 try
                 {
-                  ProgramManagement.DeleteProgram(epgs[idx].IdProgram);
+                  ProgramManagement.DeleteProgram(epgs[idx].ProgramId);
                   this.LogDebug("- Deleted the epg entry {0} ({1} - {2})", epgs[idx].Title, epgs[idx].StartTime, epgs[idx].EndTime);
                 }
                 catch (Exception ex)
@@ -498,7 +498,7 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer.EPG
 
       if (dbProg == null)
       {
-        dbProg = ProgramFactory.CreateProgram(dbChannel.IdChannel, ep.StartTime, ep.EndTime, title, description,
+        dbProg = ProgramFactory.CreateProgram(dbChannel.ChannelId, ep.StartTime, ep.EndTime, title, description,
                                               programCategory,
                                               ProgramState.None,
                                               SqlDateTime.MinValue.Value, string.Empty, string.Empty, string.Empty,
@@ -529,7 +529,7 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer.EPG
         // as also the relation to ProgramCategory will be tracked.
         if (programCategory != null)
         {
-          prgBLL.Entity.IdProgramCategory = programCategory.IdProgramCategory;
+          prgBLL.Entity.ProgramCategoryId = programCategory.IdProgramCategory;
         } 
         prgBLL.Entity.StarRating = starRating;
         prgBLL.Entity.Classification = classification;

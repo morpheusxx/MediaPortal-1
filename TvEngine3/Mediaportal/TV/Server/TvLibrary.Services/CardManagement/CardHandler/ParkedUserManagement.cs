@@ -182,7 +182,7 @@ namespace Mediaportal.TV.Server.TVLibrary.CardManagement.CardHandler
                 bool parkedDurationFound = parkedUser.ParkedDurations.TryGetValue(subchannel.Id, out durationFound);
                 if (parkedDurationFound && durationFound.Equals(duration))
                 {
-                  if (subchannel.IdChannel == idChannel && subchannel.TvUsage == TvUsage.Parked)
+                  if (subchannel.ChannelId == idChannel && subchannel.TvUsage == TvUsage.Parked)
                   {
                     hasParkedUser = true;
                     IUser userUpdated = _cardHandler.UserManagement.GetUserCopy(user.Name);
@@ -257,7 +257,7 @@ namespace Mediaportal.TV.Server.TVLibrary.CardManagement.CardHandler
     {
       ISubChannel subch;
       bool foundsubch = userUpdated.SubChannels.TryGetValue(subchannel.Id, out subch);
-      if (foundsubch && subch.IdChannel == idChannel && subch.TvUsage == TvUsage.Parked)
+      if (foundsubch && subch.ChannelId == idChannel && subch.TvUsage == TvUsage.Parked)
       {
         userUpdated.SubChannels.Remove(subchannel.Id);
         CancelParkedUserByChannelId(userName, idChannel);
@@ -341,7 +341,7 @@ namespace Mediaportal.TV.Server.TVLibrary.CardManagement.CardHandler
         {
           CancelParkedTimeoutEvent(subchannelId, user);
           //var userCopy = user.Clone() as IUser;
-          //_cardHandler.TimeShifter.Stop(ref userCopy, subch.IdChannel);
+          //_cardHandler.TimeShifter.Stop(ref userCopy, subch.ChannelId);
         }        
       }      
     }
@@ -371,7 +371,7 @@ namespace Mediaportal.TV.Server.TVLibrary.CardManagement.CardHandler
       {
         if (subch.TvUsage == TvUsage.Parked)
         {
-          _cardHandler.TimeShifter.Stop(ref user, subch.IdChannel);
+          _cardHandler.TimeShifter.Stop(ref user, subch.ChannelId);
         }
       }
     }
@@ -415,7 +415,7 @@ namespace Mediaportal.TV.Server.TVLibrary.CardManagement.CardHandler
       ISubChannel subChannel = null;
       foreach (ISubChannel subch in subChannels)
       {
-        if (subch.IdChannel == idChannel && subch.TvUsage == TvUsage.Parked)
+        if (subch.ChannelId == idChannel && subch.TvUsage == TvUsage.Parked)
         {
           subChannel = subch;
           break;

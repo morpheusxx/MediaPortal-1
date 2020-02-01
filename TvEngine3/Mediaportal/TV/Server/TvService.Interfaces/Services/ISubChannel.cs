@@ -6,7 +6,7 @@ namespace Mediaportal.TV.Server.TVService.Interfaces.Services
   public interface ISubChannel
   {
     [DataMember]
-    int IdChannel { get; set; }
+    int ChannelId { get; set; }
 
     [DataMember]
     int Id { get; set; }

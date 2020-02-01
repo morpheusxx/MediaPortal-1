@@ -135,14 +135,14 @@ namespace Mediaportal.TV.Server.TVLibrary.CardManagement.CardReservation.Impleme
       {
         if (isTuningPending && ticketFound)
         {
-          this.LogDebug("CardReservationBase: tvcard={0}, user={1}, dbChannel={2}, ticket={3}, tunestate={4}, stopstate={5}", tvcard.DataBaseCard.IdCard, user.Name, dbChannel.IdChannel, ticket.Id, tvcard.Tuner.CardTuneState, tvcard.Tuner.CardStopState);
+          this.LogDebug("CardReservationBase: tvcard={0}, user={1}, dbChannel={2}, ticket={3}, tunestate={4}, stopstate={5}", tvcard.DataBaseCard.CardId, user.Name, dbChannel.ChannelId, ticket.Id, tvcard.Tuner.CardTuneState, tvcard.Tuner.CardStopState);
           tvResult = tvcard.Tuner.CardTune(ref user, channel, dbChannel);
 
           if (tvResult == TvResult.Succeeded)
           {
             if (OnStartCardTune != null)
             {
-              var subChannelByChannelId = tvcard.UserManagement.GetSubChannelIdByChannelId(user.Name, dbChannel.IdChannel);
+              var subChannelByChannelId = tvcard.UserManagement.GetSubChannelIdByChannelId(user.Name, dbChannel.ChannelId);
               if (!ServiceManager.Instance.InternalControllerService.IsTimeShifting(user.Name))
               {
                 CleanTimeShiftFiles(tvcard.DataBaseCard.TimeshiftingFolder,
@@ -152,7 +152,7 @@ namespace Mediaportal.TV.Server.TVLibrary.CardManagement.CardReservation.Impleme
               string timeshiftFileName = String.Format(@"{0}\live{1}-{2}.ts", tvcard.DataBaseCard.TimeshiftingFolder,
                                                        user.CardId,
                                                        subChannelByChannelId);
-              tvResult = OnStartCardTune(ref user, ref timeshiftFileName, dbChannel.IdChannel);
+              tvResult = OnStartCardTune(ref user, ref timeshiftFileName, dbChannel.ChannelId);
             }
           }
 
@@ -259,7 +259,7 @@ namespace Mediaportal.TV.Server.TVLibrary.CardManagement.CardReservation.Impleme
             foreach (ISubChannel subchannel in actualUser.SubChannels.Values)
             {
               bool isParked = subchannel != null && subchannel.TvUsage == TvUsage.Parked;
-              IChannel userChannel = tvcard.CurrentChannel(actualUser.Name, subchannel.IdChannel);
+              IChannel userChannel = tvcard.CurrentChannel(actualUser.Name, subchannel.ChannelId);
               var userDVBchannel = userChannel as DVBBaseChannel;
 
               if (!isCurrentUser || (isCurrentUser && isParked))
@@ -283,7 +283,7 @@ namespace Mediaportal.TV.Server.TVLibrary.CardManagement.CardReservation.Impleme
                 {
                   if (userDVBchannel != null)
                   {
-                    subchannel.IdChannel = ChannelManagement.GetTuningDetail(userDVBchannel).IdChannel;
+                    subchannel.ChannelId = ChannelManagement.GetTuningDetail(userDVBchannel).ChannelId;
                   }
 
                   bool isDiffTS = tuningDetail.IsDifferentTransponder(userChannel);
@@ -336,7 +336,7 @@ namespace Mediaportal.TV.Server.TVLibrary.CardManagement.CardReservation.Impleme
               users, 
               ownerSubchannel, 
               isOwner, 
-              tvcard.DataBaseCard.IdCard, 
+              tvcard.DataBaseCard.CardId, 
               tvcard.NumberOfChannelsDecrypting, 
               isFreeToAir, 
               numberOfOtherUsersOnCurrentCard, 

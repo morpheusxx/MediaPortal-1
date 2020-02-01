@@ -48,7 +48,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
 {
   public partial class CardDvbS : SectionSettings
   {
- 
+
     #region private classes
 
     private class SatelliteContext : IComparable<SatelliteContext>
@@ -193,10 +193,10 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
     #region ctors
 
     public CardDvbS()
-      : this("DVBS") {}
+      : this("DVBS") { }
 
     public CardDvbS(string name)
-      : base(name) {}
+      : base(name) { }
 
     public CardDvbS(string name, int cardNumber)
       : base(name)
@@ -243,7 +243,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
       List<Transponder> transponders = new List<Transponder>();
       try
       {
-        string[,] contextDownload = new string[2,2];
+        string[,] contextDownload = new string[2, 2];
         contextDownload[0, 0] = context.FileName;
         //        contextDownload[1, 0] = context.FileName.Replace(".ini", "-S2.ini");
         contextDownload[0, 1] = context.Url;
@@ -285,7 +285,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
                         continue;
                       try
                       {
-                        String[] tpdata = line.Split(new char[] {','});
+                        String[] tpdata = line.Split(new char[] { ',' });
                         if (tpdata.Length >= 3)
                         {
                           if (tpdata[0].IndexOf("=") >= 0)
@@ -398,7 +398,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
                           transponders.Add(transponder);
                         }
                       }
-                      catch {} // ignore parsing errors in single line (i.e. 19,2 Astra reading fails due split & parse)
+                      catch { } // ignore parsing errors in single line (i.e. 19,2 Astra reading fails due split & parse)
                     }
                   }
                 } while (line != null);
@@ -433,7 +433,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
         if (transponders.Count > 0)
         {
           System.IO.TextWriter parFileXML = System.IO.File.CreateText(newPath);
-          XmlSerializer xmlSerializer = new XmlSerializer(typeof (List<Transponder>));
+          XmlSerializer xmlSerializer = new XmlSerializer(typeof(List<Transponder>));
           xmlSerializer.Serialize(parFileXML, transponders);
           parFileXML.Close();
         }
@@ -459,7 +459,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
       try
       {
         XmlReader parFileXML = XmlReader.Create(fileName);
-        XmlSerializer xmlSerializer = new XmlSerializer(typeof (List<Transponder>));
+        XmlSerializer xmlSerializer = new XmlSerializer(typeof(List<Transponder>));
         _transponders = (List<Transponder>)xmlSerializer.Deserialize(parFileXML);
         parFileXML.Close();
         _transponders.Sort();
@@ -506,7 +506,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
           satellites.Add(ts);
         }
       }
-      IList<Satellite> dbSats = ServiceAgents.Instance.CardServiceAgent.ListAllSatellites(); 
+      IList<Satellite> dbSats = ServiceAgents.Instance.CardServiceAgent.ListAllSatellites();
       foreach (SatelliteContext ts in satellites)
       {
         foreach (Satellite dbSat in dbSats)
@@ -531,7 +531,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
             if (ts.SatelliteName[i] >= (char)32 && ts.SatelliteName[i] < (char)127)
               name += ts.SatelliteName[i];
           }
-          
+
           ts.Satellite = new Satellite { SatelliteName = name, TransponderFileName = ts.FileName };
           ServiceAgents.Instance.CardServiceAgent.SaveSatellite(ts.Satellite);
         }
@@ -650,10 +650,10 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
       LnbType[] lnbTypes = new LnbType[tempLnbTypes.Count];
       tempLnbTypes.CopyTo(lnbTypes, 0);
 
-      MPComboBox[] mpTrans = new MPComboBox[] {mpTransponder1, mpTransponder2, mpTransponder3, mpTransponder4};
-      MPComboBox[] mpComboDiseqc = new MPComboBox[] {mpComboDiseqc1, mpComboDiseqc2, mpComboDiseqc3, mpComboDiseqc4};
-      MPComboBox[] mpComboLnbType = new MPComboBox[] {mpComboLnbType1, mpComboLnbType2, mpComboLnbType3, mpComboLnbType4};
-      MPCheckBox[] mpLNBs = new MPCheckBox[] {mpLNB1, mpLNB2, mpLNB3, mpLNB4};
+      MPComboBox[] mpTrans = new MPComboBox[] { mpTransponder1, mpTransponder2, mpTransponder3, mpTransponder4 };
+      MPComboBox[] mpComboDiseqc = new MPComboBox[] { mpComboDiseqc1, mpComboDiseqc2, mpComboDiseqc3, mpComboDiseqc4 };
+      MPComboBox[] mpComboLnbType = new MPComboBox[] { mpComboLnbType1, mpComboLnbType2, mpComboLnbType3, mpComboLnbType4 };
+      MPCheckBox[] mpLNBs = new MPCheckBox[] { mpLNB1, mpLNB2, mpLNB3, mpLNB4 };
       MPComboBox curBox;
       MPCheckBox curCheck;
       for (int ctlIndex = 0; ctlIndex < 4; ctlIndex++)
@@ -714,7 +714,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
           curBox.SelectedIndex = ServiceAgents.Instance.SettingServiceAgent.GetValue(String.Format("dvbs{0}band{1}", _cardNumber, idx), 0);
         }
 
-        curCheck = mpLNBs[ctlIndex];        
+        curCheck = mpLNBs[ctlIndex];
         curCheck.Checked = ServiceAgents.Instance.SettingServiceAgent.GetValue(String.Format("dvbs{0}LNB{1}", _cardNumber, idx), false);
       }
 
@@ -813,15 +813,15 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
           return;
 
         case ScanState.Initialized:
-         SaveSettings();
-          
+          SaveSettings();
+
           Card card = ServiceAgents.Instance.CardServiceAgent.GetCard(_cardNumber);
           if (card.Enabled == false)
           {
             MessageBox.Show(this, "Tuner is disabled. Please enable the tuner before scanning.");
             return;
           }
-          if (!ServiceAgents.Instance.ControllerServiceAgent.IsCardPresent(card.IdCard))
+          if (!ServiceAgents.Instance.ControllerServiceAgent.IsCardPresent(card.CardId))
           {
             MessageBox.Show(this, "Tuner is not found. Please make sure the tuner is present before scanning.");
             return;
@@ -931,7 +931,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
       {
         foreach (DisEqcMotor motor in card.DisEqcMotors)
         {
-          if (motor.IdSatellite == context.Satellite.IdSatellite)
+          if (motor.SatelliteId == context.Satellite.SatelliteId)
           {
             position = motor.Position;
             break;
@@ -951,7 +951,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
           }
           break;
 
-          // scan Network Information Table for transponder info
+        // scan Network Information Table for transponder info
         case ScanTypes.NIT:
           _transponders.Clear();
           DVBSChannel tuneChannel = GetManualTuning();
@@ -983,7 +983,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
           lastItem.EnsureVisible();
           break;
 
-          // scan only single TP
+        // scan only single TP
         case ScanTypes.SingleTransponder:
           _channels.Add(GetManualTuning());
           break;
@@ -1154,15 +1154,15 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
 
           if (currentDetail == null)
           {
-            channel.SatelliteIndex = position; // context.Satellite.IdSatellite;
-            ServiceAgents.Instance.ChannelServiceAgent.AddTuningDetail(dbChannel.IdChannel, channel);
+            channel.SatelliteIndex = position; // context.Satellite.SatelliteId;
+            ServiceAgents.Instance.ChannelServiceAgent.AddTuningDetail(dbChannel.ChannelId, channel);
           }
           else
           {
             //update tuning details...
-            channel.SatelliteIndex = position; // context.Satellite.IdSatellite;
-            currentDetail.SatIndex = position; //context.Satellite.IdSatellite;
-            ServiceAgents.Instance.ChannelServiceAgent.UpdateTuningDetail(dbChannel.IdChannel, currentDetail.IdTuning, channel);
+            channel.SatelliteIndex = position; // context.Satellite.SatelliteId;
+            currentDetail.SatIndex = position; //context.Satellite.SatelliteId;
+            ServiceAgents.Instance.ChannelServiceAgent.UpdateTuningDetail(dbChannel.ChannelId, currentDetail.TuningDetailId, channel);
           }
           if (channel.MediaType == MediaTypeEnum.TV)
           {
@@ -1199,7 +1199,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
       }
     }
 
-    private void CardDvbS_Load(object sender, EventArgs e) {}
+    private void CardDvbS_Load(object sender, EventArgs e) { }
 
     #endregion
 
@@ -1273,7 +1273,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
       ServiceAgents.Instance.ControllerServiceAgent.DiSEqCSetWestLimit(_cardNumber);
     }
 
-    private void tabPage2_Click(object sender, EventArgs e) {}
+    private void tabPage2_Click(object sender, EventArgs e) { }
 
     private void button1_Click(object sender, EventArgs e)
     {
@@ -1287,10 +1287,10 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
       SatelliteContext sat = (SatelliteContext)comboBoxSat.Items[comboBoxSat.SelectedIndex];
 
       Card card = ServiceAgents.Instance.CardServiceAgent.GetCard(_cardNumber);
-      IList<DisEqcMotor> motorSettings = card.DisEqcMotors;
+      var motorSettings = card.DisEqcMotors;
       foreach (DisEqcMotor motor in motorSettings)
       {
-        if (motor.IdSatellite == sat.Satellite.IdSatellite)
+        if (motor.SatelliteId == sat.Satellite.SatelliteId)
         {
           ServiceAgents.Instance.ControllerServiceAgent.DiSEqCGotoPosition(_cardNumber, (byte)motor.Position);
           MessageBox.Show("Satellite moving to position:" + motor.Position, "Info", MessageBoxButtons.OK,
@@ -1313,10 +1313,10 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
       int index = -1;
       SatelliteContext sat = (SatelliteContext)comboBoxSat.SelectedItem;
       Card card = ServiceAgents.Instance.CardServiceAgent.GetCard(_cardNumber);
-      IList<DisEqcMotor> motorSettings = card.DisEqcMotors;
+      var motorSettings = card.DisEqcMotors;
       foreach (DisEqcMotor motor in motorSettings)
       {
-        if (motor.IdSatellite == sat.Satellite.IdSatellite)
+        if (motor.SatelliteId == sat.Satellite.SatelliteId)
         {
           index = motor.Position;
           break;
@@ -1326,8 +1326,8 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
       {
         index = motorSettings.Count + 1;
         DisEqcMotor motor = new DisEqcMotor();
-        motor.IdCard = card.IdCard;
-        motor.IdSatellite = sat.Satellite.IdSatellite;
+        motor.CardId = card.CardId;
+        motor.SatelliteId = sat.Satellite.SatelliteId;
         motor.Position = index;
         ServiceAgents.Instance.CardServiceAgent.SaveDisEqcMotor(motor);
 
@@ -1666,7 +1666,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
       _ignoreCheckBoxCreateGroupsClickEvent = false;
     }
 
-    private void mpButtonManualScan_Click(object sender, EventArgs e) {}
+    private void mpButtonManualScan_Click(object sender, EventArgs e) { }
 
     #region GUI handling
 
@@ -1840,7 +1840,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
       String filePath = String.Format(@"{0}\TuningParameters\dvbs\Manual_Scans.{1}.xml", PathManager.GetDataPath,
                                       DateTime.Now.ToString("yyyy-MM-dd"));
       System.IO.TextWriter parFileXML = System.IO.File.CreateText(filePath);
-      XmlSerializer xmlSerializer = new XmlSerializer(typeof (List<Transponder>));
+      XmlSerializer xmlSerializer = new XmlSerializer(typeof(List<Transponder>));
       xmlSerializer.Serialize(parFileXML, _transponders);
       parFileXML.Close();
       Init();

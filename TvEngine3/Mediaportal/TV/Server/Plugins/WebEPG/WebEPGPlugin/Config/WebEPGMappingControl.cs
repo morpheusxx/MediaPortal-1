@@ -119,7 +119,7 @@ namespace Mediaportal.TV.Server.Plugins.WebEPGImport.Config
           IList<ChannelGroup> channelGroups = ServiceAgents.Instance.ChannelGroupServiceAgent.ListAllChannelGroups();
           foreach (ChannelGroup cg in channelGroups)
           {
-            GroupComboBox.Items.Add(new CBChannelGroup(cg.GroupName, cg.IdGroup));
+            GroupComboBox.Items.Add(new CBChannelGroup(cg.GroupName, cg.ChannelGroupId));
           }
         }
         else
@@ -127,7 +127,7 @@ namespace Mediaportal.TV.Server.Plugins.WebEPGImport.Config
           IList<ChannelGroup> channelGroups = ServiceAgents.Instance.ChannelGroupServiceAgent.ListAllChannelGroupsByMediaType(MediaTypeEnum.Radio);
           foreach (ChannelGroup cg in channelGroups)
           {
-            GroupComboBox.Items.Add(new CBChannelGroup(cg.GroupName, cg.IdGroup));
+            GroupComboBox.Items.Add(new CBChannelGroup(cg.GroupName, cg.ChannelGroupId));
           }
         }
       }
@@ -239,7 +239,7 @@ namespace Mediaportal.TV.Server.Plugins.WebEPGImport.Config
       }
       if (chGroup != null && chGroup.idGroup != -1)
       {
-        channels = ServiceAgents.Instance.ChannelServiceAgent.GetAllChannelsByGroupIdAndMediaType(chGroup.idGroup, mediaType);          
+        channels = ServiceAgents.Instance.ChannelServiceAgent.GetAllChannelsByGroupIdAndMediaType(chGroup.idGroup, mediaType);
       }
       else
       {
@@ -250,7 +250,7 @@ namespace Mediaportal.TV.Server.Plugins.WebEPGImport.Config
       {
         if (!_channelMapping.ContainsKey(chan.DisplayName))
         {
-          var channel = new ChannelMap {displayName = chan.DisplayName};
+          var channel = new ChannelMap { displayName = chan.DisplayName };
           _channelMapping.Add(chan.DisplayName, channel);
         }
       }

@@ -20,6 +20,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Forms;
 using Mediaportal.TV.Server.SetupControls.UserInterfaceControls;
 using Mediaportal.TV.Server.SetupTV.Dialogs;
@@ -30,7 +31,7 @@ using Mediaportal.TV.Server.TVLibrary.Interfaces;
 using Mediaportal.TV.Server.TVLibrary.Interfaces.Logging;
 
 namespace Mediaportal.TV.Server.SetupTV.Sections
-{  
+{
   public partial class ChannelsInGroupControl : UserControl
   {
     private string _allChannelsGroupName = TvConstants.TvGroupNames.AllChannels;
@@ -76,11 +77,11 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
       }
     }
 
-    private void listView1_SelectedIndexChanged(object sender, EventArgs e) {}
+    private void listView1_SelectedIndexChanged(object sender, EventArgs e) { }
 
-    private void ChannelsInGroupControl_Load(object sender, EventArgs e) {}
+    private void ChannelsInGroupControl_Load(object sender, EventArgs e) { }
 
-    private bool _ignoreItemCheckedEvent = false;    
+    private bool _ignoreItemCheckedEvent = false;
 
     public void OnActivated()
     {
@@ -94,24 +95,24 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
         UpdateMenuAndTabs();
 
         listView1.Items.Clear();
-       
+
 
         ChannelIncludeRelationEnum include = ChannelIncludeRelationEnum.ChannelMaps;
         include |= ChannelIncludeRelationEnum.TuningDetails;
         include |= ChannelIncludeRelationEnum.GroupMaps;
         include |= ChannelIncludeRelationEnum.GroupMapsChannelGroup;
-        IList<Channel> channels = ServiceAgents.Instance.ChannelServiceAgent.GetAllChannelsByGroupIdAndMediaType(_channelGroup.IdGroup, _mediaType, include);
+        IList<Channel> channels = ServiceAgents.Instance.ChannelServiceAgent.GetAllChannelsByGroupIdAndMediaType(_channelGroup.ChannelGroupId, _mediaType, include);
 
         foreach (var channel in channels)
         {
           foreach (var groupMap in channel.GroupMaps)
           {
-            if (groupMap.IdGroup == _channelGroup.IdGroup)
+            if (groupMap.ChannelGroupId == _channelGroup.ChannelGroupId)
             {
               listView1.Items.Add(CreateItemForChannel(channel, groupMap));
               break;
             }
-          }          
+          }
         }
 
         bool isAllChannelsGroup = (_channelGroup.GroupName == _allChannelsGroupName);
@@ -133,7 +134,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
     {
       bool hasFta = false;
       bool hasScrambled = false;
-      IList<TuningDetail> tuningDetails = channel.TuningDetails;
+      var tuningDetails = channel.TuningDetails;
       foreach (TuningDetail detail in tuningDetails)
       {
         if (detail.FreeToAir)
@@ -165,10 +166,10 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
       item.Checked = channel.VisibleInGuide;
       item.Tag = map;
 
-      IList<TuningDetail> details = channel.TuningDetails;
+      var details = channel.TuningDetails;
       if (details.Count > 0)
       {
-        item.SubItems.Add(details[0].ChannelNumber.ToString());
+        item.SubItems.Add(details.First().ChannelNumber.ToString());
       }
       return item;
     }
@@ -229,7 +230,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
           return;
         }
 
-        group = ServiceAgents.Instance.ChannelGroupServiceAgent.GetOrCreateGroup(dlg.GroupName, _mediaType);        
+        group = ServiceAgents.Instance.ChannelGroupServiceAgent.GetOrCreateGroup(dlg.GroupName, _mediaType);
         UpdateMenuAndTabs();
       }
       else
@@ -284,7 +285,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
           listView1.Items.RemoveAt(index);
           GroupMap map = (GroupMap)item.Tag;
           Channel channel = map.Channel;
-          ServiceAgents.Instance.ChannelServiceAgent.DeleteChannel(channel.IdChannel);
+          ServiceAgents.Instance.ChannelServiceAgent.DeleteChannel(channel.ChannelId);
         }
       }
       dlg.Close();
@@ -335,13 +336,13 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
     {
       if (!_ignoreItemCheckedEvent)
       {
-        Channel ch = ((GroupMap) e.Item.Tag).Channel;
+        Channel ch = ((GroupMap)e.Item.Tag).Channel;
         if (ch.VisibleInGuide != e.Item.Checked)
         {
-          ch.VisibleInGuide = e.Item.Checked;          
+          ch.VisibleInGuide = e.Item.Checked;
           ch = ServiceAgents.Instance.ChannelServiceAgent.SaveChannel(ch);
           ch.AcceptChanges();
-          ((GroupMap) e.Item.Tag).Channel = ch;
+          ((GroupMap)e.Item.Tag).Channel = ch;
         }
       }
     }
@@ -433,7 +434,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
       dlg.Show();
       dlg.WaitForDisplay();
 
-            
+
       for (int i = indexes.Count - 1; i >= 0; i--)
       {
         int index = indexes[i];
@@ -442,8 +443,8 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
           ListViewItem item = listView1.Items[index];
           listView1.Items.RemoveAt(index);
           GroupMap map = (GroupMap)item.Tag;
-          
-          ServiceAgents.Instance.ChannelGroupServiceAgent.DeleteChannelGroupMap(map.IdMap);
+
+          ServiceAgents.Instance.ChannelGroupServiceAgent.DeleteChannelGroupMap(map.GroupMapId);
         }
       }
       dlg.Close();

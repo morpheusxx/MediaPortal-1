@@ -68,7 +68,7 @@ namespace Mediaportal.TV.Server.TVLibrary.Scheduler
     /// 
     public RecordingDetail(Schedule schedule, Channel channel, DateTime endTime, bool isSerie)
     {
-      _user = UserFactory.CreateSchedulerUser(schedule.IdSchedule);
+      _user = UserFactory.CreateSchedulerUser(schedule.ScheduleId);
       _schedule = new ScheduleBLL(schedule);
       _channel = channel;
       _endTime = endTime;
@@ -87,7 +87,7 @@ namespace Mediaportal.TV.Server.TVLibrary.Scheduler
         startTime = schedule.StartTime;
       }
 
-      Program program = ProgramManagement.GetProgramAt(startTime, schedule.Channel.IdChannel);
+      Program program = ProgramManagement.GetProgramAt(startTime, schedule.Channel.ChannelId);
       
       //no program? then treat this as a manual recording
       if (program == null)
@@ -182,7 +182,7 @@ namespace Mediaportal.TV.Server.TVLibrary.Scheduler
 
         try
         {
-          Schedule _sched = ScheduleManagement.GetSchedule(_schedule.Entity.IdSchedule); // Refresh();
+          Schedule _sched = ScheduleManagement.GetSchedule(_schedule.Entity.ScheduleId); // Refresh();
           if (_sched != null)
           {
             isRecording = (DateTime.Now < EndTime.AddMinutes(_sched.PostRecordInterval));

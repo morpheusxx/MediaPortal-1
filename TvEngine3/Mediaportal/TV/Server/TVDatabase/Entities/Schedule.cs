@@ -27,7 +27,7 @@ namespace Mediaportal.TV.Server.TVDatabase.Entities
     public int? ParentScheduleId { get; set; }
 
     public Channel Channel { get; set; }
-    //public virtual ICollection<Schedule> Schedules { get; set; }
+    public virtual ICollection<Schedule> Schedules { get; set; }
     public Schedule ParentSchedule { get; set; }
     public virtual ICollection<Recording> Recordings { get; set; }
     public virtual ICollection<CanceledSchedule> CanceledSchedules { get; set; }

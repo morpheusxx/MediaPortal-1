@@ -397,7 +397,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
           MessageBox.Show(this, "Tuner is disabled. Please enable the tuner before scanning.");
           return;
         }
-        if (!ServiceAgents.Instance.ControllerServiceAgent.IsCardPresent(card.IdCard))
+        if (!ServiceAgents.Instance.ControllerServiceAgent.IsCardPresent(card.CardId))
         {
           MessageBox.Show(this, "Tuner is not found. Please make sure the tuner is present before scanning.");
           return;
@@ -625,7 +625,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
         if (dbChannel != null)
         {
           exists = true;
-          ServiceAgents.Instance.ChannelServiceAgent.UpdateTuningDetail(dbChannel.IdChannel, tuningDetails[0].IdTuning, channel);
+          ServiceAgents.Instance.ChannelServiceAgent.UpdateTuningDetail(dbChannel.ChannelId, tuningDetails[0].TuningDetailId, channel);
         }
         else
         {
@@ -637,7 +637,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
       dbChannel.AcceptChanges();
       if (!exists)
       {
-        ServiceAgents.Instance.ChannelServiceAgent.AddTuningDetail(dbChannel.IdChannel, channel);
+        ServiceAgents.Instance.ChannelServiceAgent.AddTuningDetail(dbChannel.ChannelId, channel);
       }
       MappingHelper.AddChannelToCard(dbChannel, card, false);
 
@@ -675,7 +675,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
           MessageBox.Show(this, "Tuner is disabled. Please enable the tuner before scanning.");
           return;
         }
-        if (!ServiceAgents.Instance.ControllerServiceAgent.IsCardPresent(card.IdCard))
+        if (!ServiceAgents.Instance.ControllerServiceAgent.IsCardPresent(card.CardId))
         {
           MessageBox.Show(this, "Tuner is not found. Please make sure the tuner is present before scanning.");
           return;
@@ -892,7 +892,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
         MessageBox.Show(this, "Tuner is disabled. Please enable the tuner before checking for quality control support.");
         return;
       }
-      if (!ServiceAgents.Instance.ControllerServiceAgent.IsCardPresent(card.IdCard))
+      if (!ServiceAgents.Instance.ControllerServiceAgent.IsCardPresent(card.CardId))
       {
         MessageBox.Show(this, "Tuner is not found. Please make sure the tuner is present before checking for quality control support.");
         return;

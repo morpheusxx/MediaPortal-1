@@ -28,7 +28,7 @@ namespace Mediaportal.TV.Server.TVLibrary.CardManagement.CardAllocation
         ()=>
           {
             IList<Card> cards = TVDatabase.TVBusinessLayer.CardManagement.ListAllCards(CardIncludeRelationEnum.None);
-            allCardIds.AddRange(cards.Select(card => card.IdCard));
+            allCardIds.AddRange(cards.Select(card => card.CardId));
           },
           ()=>
             {
@@ -47,21 +47,21 @@ namespace Mediaportal.TV.Server.TVLibrary.CardManagement.CardAllocation
           foreach (Channel channel in channels)
           {            
             IList<IChannel> tuningDetails = ChannelManagement.GetTuningChannelsByDbChannel(channel);
-            _tuningChannelMapping[channel.IdChannel] = tuningDetails;
+            _tuningChannelMapping[channel.ChannelId] = tuningDetails;
 
             IDictionary<int, bool> mapDict = new Dictionary<int, bool>();
             var copyAllCardIds = new List<int>(allCardIds);
             foreach (ChannelMap map in channel.ChannelMaps)
             {
-              mapDict[map.IdCard] =  true;
-              copyAllCardIds.Remove(map.IdCard);
+              mapDict[map.CardId] =  true;
+              copyAllCardIds.Remove(map.CardId);
             }
 
             foreach (int cardIdNotMapped in copyAllCardIds)
             {
               mapDict[cardIdNotMapped] = false;
             }
-            _channelMapping.Add(channel.IdChannel, mapDict);
+            _channelMapping.Add(channel.ChannelId, mapDict);
           }
         }        
       }
@@ -72,20 +72,20 @@ namespace Mediaportal.TV.Server.TVLibrary.CardManagement.CardAllocation
     {      
       if (state == ObjectState.Deleted)
       {
-        UpdateCacheWithChannelMapForChannel(map.IdChannel, map.IdCard, false);
+        UpdateCacheWithChannelMapForChannel(map.ChannelId, map.CardId, false);
       }
       else if (state == ObjectState.Added)
       {
-        UpdateCacheWithChannelMapForChannel(map.IdChannel, map.IdCard, true);
+        UpdateCacheWithChannelMapForChannel(map.ChannelId, map.CardId, true);
       }
     }
 
 
     private static void ChannelManagement_OnStateChangedTuningDetailEvent(TuningDetail tuningDetail, ObjectState state)
     {
-      if (tuningDetail.IdChannel > 0)
+      if (tuningDetail.ChannelId > 0)
       {
-        Channel channel = ChannelManagement.GetChannel(tuningDetail.IdChannel);
+        Channel channel = ChannelManagement.GetChannel(tuningDetail.ChannelId);
         UpdateCacheWithTuningDetailsForChannel(channel);
       }
     }
@@ -99,7 +99,7 @@ namespace Mediaportal.TV.Server.TVLibrary.CardManagement.CardAllocation
         {
           lock (_tuningChannelMappingLock)
           {
-            _tuningChannelMapping[channel.IdChannel] = tuningDetails;
+            _tuningChannelMapping[channel.ChannelId] = tuningDetails;
           }
         }
       }
@@ -113,7 +113,7 @@ namespace Mediaportal.TV.Server.TVLibrary.CardManagement.CardAllocation
 
       lock (_tuningChannelMappingLock)
       {
-        tuningChannelMappingFound = _tuningChannelMapping.TryGetValue(channel.IdChannel, out tuningDetails);
+        tuningChannelMappingFound = _tuningChannelMapping.TryGetValue(channel.ChannelId, out tuningDetails);
       }
 
       if (!tuningChannelMappingFound)

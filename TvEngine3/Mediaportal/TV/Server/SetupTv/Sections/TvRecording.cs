@@ -185,7 +185,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
     #region Constructors
 
     public TvRecording()
-      : this("Recording") {}
+      : this("Recording") { }
 
     public TvRecording(string name)
       : base(name)
@@ -201,7 +201,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
     {
       numericUpDownPreRec.Value = 5;
       numericUpDownPostRec.Value = 5;
-      
+
 
       numericUpDownMaxFreeCardsToTry.Value = ValueSanityCheck(ServiceAgents.Instance.SettingServiceAgent.GetValue("recordMaxFreeCardsToTry", 0), 0, 100);
 
@@ -232,7 +232,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
       _formatString[1][3] = @"%title% - %channel%\%title% - %date% - %start%";
       _formatString[1][4] = @"[User custom value]"; // Must be the last one in the array list
 
-      _formatIndex[0]= ServiceAgents.Instance.SettingServiceAgent.GetValue("moviesformatindex", 0);
+      _formatIndex[0] = ServiceAgents.Instance.SettingServiceAgent.GetValue("moviesformatindex", 0);
       _formatIndex[1] = ServiceAgents.Instance.SettingServiceAgent.GetValue("seriesformatindex", 0);
 
       _customFormat[0] = ServiceAgents.Instance.SettingServiceAgent.GetValue("moviesformat", "");
@@ -279,9 +279,9 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
       s.SaveValue("moviesformat", _formatIndex[0] == (_formatString[0].Length - 1)
                         ? _customFormat[0]
                         : _formatString[0][_formatIndex[0]]);
-      
-      s.SaveValue("moviesformatindex",_formatIndex[0]);
-      
+
+      s.SaveValue("moviesformatindex", _formatIndex[0]);
+
       s.SaveValue("seriesformat", _formatIndex[1] == (_formatString[1].Length - 1)
                         ? _customFormat[1]
                         : _formatString[1][_formatIndex[1]]);
@@ -291,7 +291,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
       s.SaveValue("autodeletewatchedrecordings", checkBoxAutoDelete.Checked);
       s.SaveValue("PreventDuplicates", checkBoxPreventDupes.Checked);
       s.SaveValue("EpisodeKey", comboBoxEpisodeKey.SelectedIndex);
-      s.SaveValue("recordMaxFreeCardsToTry", (int) numericUpDownMaxFreeCardsToTry.Value);      
+      s.SaveValue("recordMaxFreeCardsToTry", (int)numericUpDownMaxFreeCardsToTry.Value);
 
       UpdateDriveInfo(true);
 
@@ -379,7 +379,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
           break;
       }
       */
-    }   
+    }
 
     // Browse Recording folder
     private void buttonBrowse_Click(object sender, EventArgs e)
@@ -480,7 +480,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
     {
       enableDiskQuotaControls();
 
-      ServiceAgents.Instance.SettingServiceAgent.SaveValue("diskQuotaEnabled", ((MPCheckBox)sender).Checked.ToString());      
+      ServiceAgents.Instance.SettingServiceAgent.SaveValue("diskQuotaEnabled", ((MPCheckBox)sender).Checked.ToString());
     }
 
     private void tabControl1_SelectedIndexChanged(object sender, EventArgs e)
@@ -659,7 +659,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
         {
           result = string.Compare(tx.Text, ty.Text, StringComparison.CurrentCulture);
         }
-        catch (Exception) {}
+        catch (Exception) { }
 
         return result;
       }
@@ -806,9 +806,9 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
     {
       try
       {
-        Invoke(new MethodTreeViewTags(AddTagFiles), new object[] {FoundTags});
+        Invoke(new MethodTreeViewTags(AddTagFiles), new object[] { FoundTags });
       }
-      catch (Exception) {}
+      catch (Exception) { }
     }
 
     /// <summary>
@@ -848,7 +848,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
                 // only add those tags which specify a still valid filename
                 if (File.Exists(TagRec.FileName))
                 {
-                  if (TagRec.IdChannel == -1)
+                  if (TagRec.ChannelId == -1)
                   {
                     TagNode.ForeColor = SystemColors.GrayText;
                     TagNode.Checked = false;
@@ -901,10 +901,10 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
           if (lookupChannel != null)
           {
             channelName = lookupChannel.DisplayName;
-            lookupChannel.IdChannel.ToString();
+            lookupChannel.ChannelId.ToString();
           }
         }
-        catch (Exception) {}
+        catch (Exception) { }
 
         //TreeNode[] subitems = new TreeNode[] { 
         //                                       new TreeNode("Channel name: " + channelName), 
@@ -951,7 +951,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
           e.Node.Checked = e.Node.IsSelected;
         }
       }
-      catch (Exception) {}
+      catch (Exception) { }
     }
 
     #endregion
@@ -973,14 +973,14 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
           aTag.endTime = GetRecordingEndTime(physicalFile);
         }
 
-        ProgramCategory category =  ServiceAgents.Instance.ProgramServiceAgent.GetProgramCategoryByName(aTag.genre);
+        ProgramCategory category = ServiceAgents.Instance.ProgramServiceAgent.GetProgramCategoryByName(aTag.genre);
 
         Channel channel = GetChannelByDisplayName(aTag.channelName);
         int channelId = -1;
 
         if (channel != null)
         {
-          channelId = channel.IdChannel;
+          channelId = channel.ChannelId;
         }
 
         tagRec = RecordingFactory.CreateRecording(channelId,
@@ -994,11 +994,11 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
                                physicalFile,
                                0,
                                SqlDateTime.MaxValue.Value,
-                               0,                               
+                               0,
                                aTag.episodeName,
                                aTag.seriesNum,
                                aTag.episodeNum,
-                               aTag.episodePart);                               
+                               aTag.episodePart);
 
         tagRec.MediaType = Convert.ToInt32(aTag.mediaType);
         tagRec.Channel = channel;
@@ -1042,7 +1042,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
       string recordingFile = Path.ChangeExtension(aTagFilename, ".ts");
       try
       {
-        string[] validExtensions = new string[] {".ts", ".mpg"};
+        string[] validExtensions = new string[] { ".ts", ".mpg" };
         foreach (string ext in validExtensions)
         {
           string[] lookupFiles = Directory.GetFiles(Path.GetDirectoryName(aTagFilename),
@@ -1056,7 +1056,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
           }
         }
       }
-      catch (Exception) {}
+      catch (Exception) { }
       return recordingFile;
     }
 
@@ -1068,8 +1068,8 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
         return channel;
       }
       try
-      {       
-        channel = ServiceAgents.Instance.ChannelServiceAgent.GetChannelByName(aChannelName, ChannelIncludeRelationEnum.None);        
+      {
+        channel = ServiceAgents.Instance.ChannelServiceAgent.GetChannelByName(aChannelName, ChannelIncludeRelationEnum.None);
       }
       catch (Exception ex)
       {
@@ -1107,7 +1107,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
               {
                 try
                 {
-                  currentTagRec.IdChannel = newId;                  
+                  currentTagRec.ChannelId = newId;
                   ServiceAgents.Instance.RecordingServiceAgent.SaveRecording(currentTagRec);
                 }
                 catch (Exception ex)
@@ -1141,12 +1141,12 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
         if (tagRec.Checked) // only import the recordings which the user has selected
         {
           Recording currentTagRec = tagRec.Tag as Recording;
-          if (currentTagRec != null && currentTagRec.IdChannel != -1)
+          if (currentTagRec != null && currentTagRec.ChannelId != -1)
           {
             //if (MessageBox.Show(this, string.Format("Import {0} now? \n{1}", currentTagRec.title, currentTagRec.FileName), "Recording not found in DB", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2) == DialogResult.Yes)
             //{
             try
-            {              
+            {
               ServiceAgents.Instance.RecordingServiceAgent.SaveRecording(currentTagRec);
             }
             catch (Exception ex)
@@ -1184,7 +1184,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
             {
               try
               {
-                ServiceAgents.Instance.RecordingServiceAgent.DeleteRecording(currentDbRec.IdRecording);                
+                ServiceAgents.Instance.RecordingServiceAgent.DeleteRecording(currentDbRec.RecordingId);
               }
               catch (Exception ex)
               {

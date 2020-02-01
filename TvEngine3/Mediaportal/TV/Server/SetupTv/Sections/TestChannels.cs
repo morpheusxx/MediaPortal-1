@@ -45,7 +45,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
 {
   public partial class TestChannels : SectionSettings
   {
- 
+
 
     private DateTime _lastTune;
     private readonly Dictionary<string, bool> _users = new Dictionary<string, bool>();
@@ -69,7 +69,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
     private bool _rndPrio;
 
     public TestChannels()
-      : this("TestChannels") {}
+      : this("TestChannels") { }
 
     public TestChannels(string name)
       : base(name)
@@ -92,7 +92,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
       comboBoxGroups.Items.Clear();
       IList<ChannelGroup> groups = ServiceAgents.Instance.ChannelGroupServiceAgent.ListAllChannelGroups(ChannelGroupIncludeRelationEnum.None);
       foreach (ChannelGroup group in groups)
-        comboBoxGroups.Items.Add(new ComboBoxExItem(group.GroupName, -1, group.IdGroup));
+        comboBoxGroups.Items.Add(new ComboBoxExItem(group.GroupName, -1, group.ChannelGroupId));
       if (comboBoxGroups.Items.Count == 0)
         comboBoxGroups.Items.Add(new ComboBoxExItem("(no groups defined)", -1, -1));
       comboBoxGroups.SelectedIndex = 0;
@@ -106,7 +106,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
       IList<Channel> channels = ServiceAgents.Instance.ChannelServiceAgent.ListAllChannels(ChannelIncludeRelationEnum.None);
       foreach (Channel ch in channels)
       {
-        _channelNames.Add(ch.IdChannel, ch.DisplayName);
+        _channelNames.Add(ch.ChannelId, ch.DisplayName);
       }
 
       _rndFrom = txtRndFrom.Value;
@@ -191,7 +191,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
               channelsForUser = channelsForUser.Randomize();
 
               int priority = GetUserPriority();
-              string name = "stress-" + Convert.ToString(rnd.Next(1, 500)) + " [" + priority + "]";              
+              string name = "stress-" + Convert.ToString(rnd.Next(1, 500)) + " [" + priority + "]";
               IUser user = UserFactory.CreateBasicUser(name, priority);
 
               while (_users.ContainsKey(user.Name))
@@ -247,7 +247,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
       }
       else
       {
-        rndPrio = UserFactory.USER_PRIORITY;  
+        rndPrio = UserFactory.USER_PRIORITY;
       }
       return rndPrio;
     }
@@ -276,7 +276,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
         ComboBoxExItem idItem = (ComboBoxExItem)comboBoxGroups.Items[comboBoxGroups.SelectedIndex];
 
         ChannelGroup group = ServiceAgents.Instance.ChannelGroupServiceAgent.GetChannelGroup(idItem.Id);
-        IList<GroupMap> maps = group.GroupMaps;
+        var maps = group.GroupMaps;
 
         List<Channel> channelsO = null;
         Thread channelTestThread = new Thread(new ParameterizedThreadStart(delegate { ChannelTestThread(channelsO); }));
@@ -325,7 +325,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
             ServiceAgents.Instance.ControllerServiceAgent.StopTimeShifting(user.Name, out user);
           }
         }
-        catch (Exception) {}
+        catch (Exception) { }
         if (user != null)
         {
           _users[user.Name] = false;
@@ -445,7 +445,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
             _total++;
           }
           UpdateCounters();
-          
+
           Thread.Sleep(rnd.Next(_rndFrom, _rndTo));
         }
       }
@@ -458,12 +458,12 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
       UpdateDiscontinuityCounter(user, nextRowIndexForDiscUpdate);
       if (user.Priority.HasValue)
       {
-        result = ServiceAgents.Instance.ControllerServiceAgent.StartTimeShifting(user.Name, user.Priority.GetValueOrDefault(), channel.IdChannel, out card, out user); 
+        result = ServiceAgents.Instance.ControllerServiceAgent.StartTimeShifting(user.Name, user.Priority.GetValueOrDefault(), channel.ChannelId, out card, out user);
       }
       else
       {
-        result = ServiceAgents.Instance.ControllerServiceAgent.StartTimeShifting(user.Name, channel.IdChannel, out card, out user); 
-      }      
+        result = ServiceAgents.Instance.ControllerServiceAgent.StartTimeShifting(user.Name, channel.ChannelId, out card, out user);
+      }
       mSecsElapsed = sw.ElapsedMilliseconds;
       _avg += mSecsElapsed;
       return user;
@@ -533,7 +533,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
         if (InvokeRequired)
         {
           Invoke(new UpdateDiscontinuityCounterDelegate(UpdateDiscontinuityCounter),
-                 new object[] {user, nextRowIndexForDiscUpdate});
+                 new object[] { user, nextRowIndexForDiscUpdate });
           return;
         }
       }
@@ -564,7 +564,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
       {
         if (InvokeRequired)
         {
-          return (int)Invoke(new Add2LogDelegate(Add2Log), new object[] {state, channel, msec, name, card, details});
+          return (int)Invoke(new Add2LogDelegate(Add2Log), new object[] { state, channel, msec, name, card, details });
         }
 
         lock (_listViewLock)
@@ -635,7 +635,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
         return;
       }
 
-      Utils.UpdateCardStatus(mpListView1);      
+      Utils.UpdateCardStatus(mpListView1);
     }
 
     private void ColorLine(Card card, ListViewItem item)
@@ -643,11 +643,11 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
       Color lineColor = Color.White;
       int subchannels = 0;
       IUser user;
-      bool cardInUse = ServiceAgents.Instance.ControllerServiceAgent.IsCardInUse(card.IdCard, out user);
+      bool cardInUse = ServiceAgents.Instance.ControllerServiceAgent.IsCardInUse(card.CardId, out user);
 
       if (!cardInUse)
       {
-        subchannels = ServiceAgents.Instance.ControllerServiceAgent.GetSubChannels(card.IdCard);
+        subchannels = ServiceAgents.Instance.ControllerServiceAgent.GetSubChannels(card.CardId);
         if (subchannels > 0)
         {
           lineColor = Color.Red;
@@ -815,28 +815,28 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
     private void chkRndPrio_CheckedChanged(object sender, EventArgs e)
     {
       _rndPrio = chkRndPrio.Checked;
-  }
+    }
 
     private void btnCustom_Click(object sender, EventArgs e)
     {
-      IVirtualCard card;      
+      IVirtualCard card;
 
       Channel dr1 = ServiceAgents.Instance.ChannelServiceAgent.GetChannel(1);
       Channel dr2 = ServiceAgents.Instance.ChannelServiceAgent.GetChannel(2);
 
-      
+
 
       IUser low = UserFactory.CreateBasicUser("dr1", 1);
       IUser low2 = UserFactory.CreateBasicUser("dr2", 1);
 
-      TvResult tvresult = ServiceAgents.Instance.ControllerServiceAgent.StartTimeShifting(low.Name, dr1.IdChannel, out card, out low);
+      TvResult tvresult = ServiceAgents.Instance.ControllerServiceAgent.StartTimeShifting(low.Name, dr1.ChannelId, out card, out low);
       low.CardId = card.Id;
       Thread.Sleep(2000);
 
-      bool result = ServiceAgents.Instance.ControllerServiceAgent.ParkTimeShifting(low.Name, 0, dr1.IdChannel, out low);      
+      bool result = ServiceAgents.Instance.ControllerServiceAgent.ParkTimeShifting(low.Name, 0, dr1.ChannelId, out low);
 
       Thread.Sleep(1000);
-      tvresult = ServiceAgents.Instance.ControllerServiceAgent.StartTimeShifting(low.Name, dr2.IdChannel, out card, out low);
+      tvresult = ServiceAgents.Instance.ControllerServiceAgent.StartTimeShifting(low.Name, dr2.ChannelId, out card, out low);
       low.CardId = card.Id;
 
       //StartTimeshifting(tv3, low, 0, out mSecsElapsed, out result, out card);      

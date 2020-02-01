@@ -209,7 +209,7 @@ namespace Mediaportal.TV.Server.TVLibrary.DiskManagement
           bool result = RecordingFileHandler.DeleteRecordingOnDisk(fi.record.FileName);
           if (result)
           {
-            TVDatabase.TVBusinessLayer.RecordingManagement.DeleteRecording(fi.record.IdRecording);            
+            TVDatabase.TVBusinessLayer.RecordingManagement.DeleteRecording(fi.record.RecordingId);            
           }
         }
         recordings.RemoveAt(0);

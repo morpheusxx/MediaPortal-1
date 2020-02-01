@@ -661,8 +661,8 @@ namespace Mediaportal.TV.Server.TVLibrary.Implementations
           this.LogInfo("    detected existing tuner group with matching information, name = {0}...", group.Name);
           group.Add(tuner);
           CardGroupMap map = new CardGroupMap();
-          map.IdCard = tuner.TunerId;
-          map.IdCardGroup = group.TunerGroupId;
+          map.CardId = tuner.TunerId;
+          map.CardGroupId = group.TunerGroupId;
           CardManagement.SaveCardGroupMap(map);
           return group;
         }
@@ -705,8 +705,8 @@ namespace Mediaportal.TV.Server.TVLibrary.Implementations
                 this.LogInfo("    detected existing tuner group containing all related tuners, name = {0}...", group.Name);
                 group.Add(tuner);
                 CardGroupMap map = new CardGroupMap();
-                map.IdCard = tuner.TunerId;
-                map.IdCardGroup = group.TunerGroupId;
+                map.CardId = tuner.TunerId;
+                map.CardGroupId = group.TunerGroupId;
                 CardManagement.SaveCardGroupMap(map);
                 return group;
               }
@@ -738,8 +738,8 @@ namespace Mediaportal.TV.Server.TVLibrary.Implementations
       {
         ITVCard relatedTuner = _tuners[relatedTunerExternalId];
         CardGroupMap map = new CardGroupMap();
-        map.IdCard = relatedTuner.TunerId;
-        map.IdCardGroup = group.TunerGroupId;
+        map.CardId = relatedTuner.TunerId;
+        map.CardGroupId = group.TunerGroupId;
         CardManagement.SaveCardGroupMap(map);
         group.Add(relatedTuner);
       }
@@ -752,15 +752,15 @@ namespace Mediaportal.TV.Server.TVLibrary.Implementations
       IList<CardGroup> dbGroups = CardManagement.ListAllCardGroups();
       foreach (CardGroup dbGroup in dbGroups)
       {
-        TrackableCollection<CardGroupMap> groupMaps = dbGroup.CardGroupMaps;
+        var groupMaps = dbGroup.CardGroupMaps;
         foreach (CardGroupMap map in groupMaps)
         {
           // Does the tuner belong to this group?
-          if (map.IdCard == tuner.TunerId)
+          if (map.CardId == tuner.TunerId)
           {
             // Find and update our local group info.
             TunerGroup group;
-            if (!_configuredTunerGroups.TryGetValue(dbGroup.IdCardGroup, out group))
+            if (!_configuredTunerGroups.TryGetValue(dbGroup.CardGroupId, out group))
             {
               group = new TunerGroup(dbGroup);
               group.ProductInstanceId = tuner.ProductInstanceId;

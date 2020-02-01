@@ -44,7 +44,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
 
     private class IpAddressOption
     {
-   
+
       public string DisplayString;
       public string HostName;
 
@@ -59,22 +59,22 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
         return DisplayString;
       }
     }
-    
+
 
     public StreamingServer()
-      : this("Streaming Server") {}
+      : this("Streaming Server") { }
 
     public StreamingServer(string name)
       : base(name)
     {
       InitializeComponent();
 
-      
+
     }
 
     public override void OnSectionActivated()
     {
-      timer1.Enabled = true;      
+      timer1.Enabled = true;
 
       try
       {
@@ -99,7 +99,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
         counter++;
       }
       IpAddressComboBox.SelectedIndex = selected;
-      
+
       if (_rtspPort >= PortNoNumericUpDown.Minimum && _rtspPort <= PortNoNumericUpDown.Maximum)
       {
         PortNoNumericUpDown.Value = _rtspPort;
@@ -128,7 +128,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
         _rtspPort = newRtspPort;
         needRestart = true;
       }
-     
+
       if (needRestart)
       {
 
@@ -207,23 +207,23 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
         {
           if (!card.Enabled)
             continue;
-          if (!ServiceAgents.Instance.ControllerServiceAgent.IsCardPresent(card.IdCard))
+          if (!ServiceAgents.Instance.ControllerServiceAgent.IsCardPresent(card.CardId))
             continue;
 
-          IDictionary<string, IUser> users = ServiceAgents.Instance.ControllerServiceAgent.GetUsersForCard(card.IdCard);
+          IDictionary<string, IUser> users = ServiceAgents.Instance.ControllerServiceAgent.GetUsersForCard(card.CardId);
           foreach (KeyValuePair<string, IUser> u in users)
           {
             if (u.Value.Name == user.Name || u.Value.Name == "setuptv")
             {
-              foreach(var subchannel in u.Value.SubChannels.Values)
+              foreach (var subchannel in u.Value.SubChannels.Values)
               {
-                Channel ch = ServiceAgents.Instance.ChannelServiceAgent.GetChannel(subchannel.IdChannel);
+                Channel ch = ServiceAgents.Instance.ChannelServiceAgent.GetChannel(subchannel.ChannelId);
                 if (ch.DisplayName == client.Description)
                 {
-                  user.CardId = card.IdCard;
+                  user.CardId = card.CardId;
                   break;
-                } 
-              }              
+                }
+              }
             }
           }
           if (user.CardId > -1)

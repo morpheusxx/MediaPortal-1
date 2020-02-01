@@ -911,7 +911,7 @@ namespace Mediaportal.TV.Server.TVLibrary.Implementations
         Card t = CardManagement.GetCardByDevicePath(ExternalId, CardIncludeRelationEnum.None);
         if (t != null)
         {
-          _tunerId = t.IdCard;
+          _tunerId = t.CardId;
           _name = t.Name;   // We prefer to use the name that can be set via configuration for more readable logs...
           _idleMode = (IdleMode)t.IdleMode;
           _pidFilterMode = (PidFilterMode)t.PidFilterMode;

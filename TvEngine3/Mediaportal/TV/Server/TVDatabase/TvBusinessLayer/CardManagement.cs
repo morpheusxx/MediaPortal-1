@@ -2,21 +2,19 @@
 using System.Linq;
 using Mediaportal.TV.Server.TVDatabase.Entities;
 using Mediaportal.TV.Server.TVDatabase.Entities.Enums;
-using Mediaportal.TV.Server.TVDatabase.EntityModel.Interfaces;
-using Mediaportal.TV.Server.TVDatabase.EntityModel.Repositories;
+using Mediaportal.TV.Server.TVDatabase.EntityModel.Context;
+using Mediaportal.TV.Server.TVDatabase.EntityModel.Extensions;
 
 namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
 {
   public static class CardManagement
-  {   
+  {
     public static IList<Card> ListAllCards()
     {
-      using (ICardRepository cardRepository = new CardRepository())
+      using (TvEngineDbContext context = new TvEngineDbContext())
       {
-        IQueryable<Card> query = cardRepository.GetAll<Card>();
-        query = cardRepository.IncludeAllRelations(query);
-        return query.ToList(); 
-      }      
+        return context.Cards.IncludeAllRelations().ToList();
+      }
     }
 
     /// <summary>
@@ -27,8 +25,8 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
     /// <returns>true/false</returns>
     public static bool CanViewTvChannel(Card card, int channelId)
     {
-      IList<ChannelMap> cardChannels = card.ChannelMaps;
-      return cardChannels.Any(cmap => channelId == cmap.IdChannel && !cmap.EpgOnly);
+      var cardChannels = card.ChannelMaps;
+      return cardChannels.Any(cmap => channelId == cmap.ChannelId && !cmap.EpgOnly);
     }
 
     /// <summary>
@@ -39,205 +37,188 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
     /// <returns>true/false</returns>
     public static bool CanTuneTvChannel(Card card, int channelId)
     {
-      IList<ChannelMap> cardChannels = card.ChannelMaps;
-      return cardChannels.Any(cmap => channelId == cmap.IdChannel);
+      var cardChannels = card.ChannelMaps;
+      return cardChannels.Any(cmap => channelId == cmap.ChannelId);
     }
 
     public static Card GetCardByDevicePath(string devicePath)
     {
-      using (ICardRepository cardRepository = new CardRepository())
+      using (TvEngineDbContext context = new TvEngineDbContext())
       {
-        var query = cardRepository.GetQuery<Card>(c => c.DevicePath == devicePath);
-        query = cardRepository.IncludeAllRelations(query);
-        Card card = query.ToList().FirstOrDefault(); 
-        return card;
-      }            
+        return context.Cards.IncludeAllRelations().FirstOrDefault(c => c.DevicePath == devicePath);
+      }
     }
 
 
     public static Card GetCardByDevicePath(string devicePath, CardIncludeRelationEnum includeRelations)
     {
-      using (ICardRepository cardRepository = new CardRepository())
+      using (TvEngineDbContext context = new TvEngineDbContext())
       {
-        var query = cardRepository.GetQuery<Card>(c => c.DevicePath == devicePath);
-        query = cardRepository.IncludeAllRelations(query, includeRelations);
-        Card card = query.ToList().FirstOrDefault();
-        return card;
+        return context.Cards.IncludeAllRelations(includeRelations).FirstOrDefault(c => c.DevicePath == devicePath);
       }
     }
 
     public static Card SaveCard(Card card)
     {
-      using (ICardRepository cardRepository = new CardRepository())
+      using (TvEngineDbContext context = new TvEngineDbContext())
       {
-        cardRepository.AttachEntityIfChangeTrackingDisabled(cardRepository.ObjectContext.Cards, card);
-        cardRepository.ApplyChanges(cardRepository.ObjectContext.Cards, card);
-        cardRepository.UnitOfWork.SaveChanges();
-        card.AcceptChanges();
+        context.Cards.Add(card);
+        context.SaveChanges();
         return card;
-      }    
+      }
     }
 
     public static void DeleteCard(int idCard)
     {
-      using (ICardRepository cardRepository = new CardRepository(true))
+      using (TvEngineDbContext context = new TvEngineDbContext())
       {
-        cardRepository.Delete<Card>(p => p.IdCard == idCard);
-        cardRepository.UnitOfWork.SaveChanges();
+        var card = context.Cards.FirstOrDefault(p => p.CardId == idCard);
+        if (card != null)
+        {
+          context.Cards.Remove(card);
+          context.SaveChanges();
+        }
       }
     }
 
     public static IList<CardGroup> ListAllCardGroups()
     {
-      using (ICardRepository cardRepository = new CardRepository())
+      using (TvEngineDbContext context = new TvEngineDbContext())
       {
-        var listAllCardGroups = cardRepository.GetAll<CardGroup>().ToList();
-        return listAllCardGroups;
+        return context.CardGroups.ToList();
       }
     }
 
     public static DisEqcMotor SaveDisEqcMotor(DisEqcMotor motor)
     {
-      using (ICardRepository cardRepository = new CardRepository())
+      using (TvEngineDbContext context = new TvEngineDbContext())
       {
-        cardRepository.AttachEntityIfChangeTrackingDisabled(cardRepository.ObjectContext.DisEqcMotors, motor);
-        cardRepository.ApplyChanges(cardRepository.ObjectContext.DisEqcMotors, motor);
-        cardRepository.UnitOfWork.SaveChanges();
-        motor.AcceptChanges();
+        context.DisEqcMotors.Add(motor);
+        context.SaveChanges();
         return motor;
-      }  
+      }
     }
 
     public static Card GetCard(int idCard)
     {
-      using (ICardRepository cardRepository = new CardRepository())
+      using (TvEngineDbContext context = new TvEngineDbContext())
       {
-        IQueryable<Card> query = cardRepository.GetQuery<Card>(c => c.IdCard == idCard);
-        query = cardRepository.IncludeAllRelations(query);
-        Card card = query.ToList().FirstOrDefault();
-        return card;
-      }  
+        return context.Cards.IncludeAllRelations().FirstOrDefault(c => c.CardId == idCard);
+      }
     }
 
     public static Card GetCard(int idCard, CardIncludeRelationEnum includeRelations)
     {
-      using (ICardRepository cardRepository = new CardRepository())
+      using (TvEngineDbContext context = new TvEngineDbContext())
       {
-        IQueryable<Card> query = cardRepository.GetQuery<Card>(c => c.IdCard == idCard);
-        query = cardRepository.IncludeAllRelations(query, includeRelations);
-        Card card = query.ToList().FirstOrDefault();
-        return card;
+        return context.Cards.IncludeAllRelations(includeRelations).FirstOrDefault(c => c.CardId == idCard);
       }
     }
 
     public static CardGroup SaveCardGroup(CardGroup @group)
     {
-      using (ICardRepository cardRepository = new CardRepository())
+      using (TvEngineDbContext context = new TvEngineDbContext())
       {
-        cardRepository.AttachEntityIfChangeTrackingDisabled(cardRepository.ObjectContext.CardGroups, @group);
-        cardRepository.ApplyChanges(cardRepository.ObjectContext.CardGroups, @group);
-        cardRepository.UnitOfWork.SaveChanges();
-        @group.AcceptChanges();
+        context.CardGroups.Add(@group);
+        context.SaveChanges();
         return @group;
-      }  
+      }
     }
 
     public static void DeleteCardGroup(int idCardGroup)
     {
-      using (ICardRepository cardRepository = new CardRepository(true))
+      using (TvEngineDbContext context = new TvEngineDbContext())
       {
-        cardRepository.Delete<CardGroup>(p => p.IdCardGroup == idCardGroup);
-        cardRepository.UnitOfWork.SaveChanges();
+        var cardGroup = context.CardGroups.FirstOrDefault(p => p.CardGroupId == idCardGroup);
+        if (cardGroup != null)
+        {
+          context.CardGroups.Remove(cardGroup);
+          context.SaveChanges();
+        }
       }
     }
 
-    public static IList<SoftwareEncoder> ListAllSofwareEncodersVideo()
+    public static IList<SoftwareEncoder> ListAllSoftwareEncodersVideo()
     {
-      using (ICardRepository cardRepository = new CardRepository())
+      using (TvEngineDbContext context = new TvEngineDbContext())
       {
-        return cardRepository.GetQuery<SoftwareEncoder>(s=>s.Type == 0).OrderBy(s=>s.Priority).ToList();                
+        return context.SoftwareEncoders.Where(s => s.Type == 0).OrderBy(s => s.Priority).ToList();
       }
     }
 
-    public static IList<SoftwareEncoder> ListAllSofwareEncodersAudio()
+    public static IList<SoftwareEncoder> ListAllSoftwareEncodersAudio()
     {
-      using (ICardRepository cardRepository = new CardRepository())
+      using (TvEngineDbContext context = new TvEngineDbContext())
       {
-        return cardRepository.GetQuery<SoftwareEncoder>(s => s.Type == 1).OrderBy(s => s.Priority).ToList();
+        return context.SoftwareEncoders.Where(s => s.Type == 1).OrderBy(s => s.Priority).ToList();
       }
     }
 
     public static IList<Satellite> ListAllSatellites()
     {
-      using (ICardRepository cardRepository = new CardRepository())
+      using (TvEngineDbContext context = new TvEngineDbContext())
       {
-        return cardRepository.GetAll<Satellite>().ToList();
+        return context.Satellites.ToList();
       }
     }
 
     public static Satellite SaveSatellite(Satellite satellite)
     {
-      using (ICardRepository cardRepository = new CardRepository())
+      using (TvEngineDbContext context = new TvEngineDbContext())
       {
-        cardRepository.AttachEntityIfChangeTrackingDisabled(cardRepository.ObjectContext.Satellites, satellite);
-        cardRepository.ApplyChanges(cardRepository.ObjectContext.Satellites, satellite);
-        cardRepository.UnitOfWork.SaveChanges();
-        satellite.AcceptChanges();
+        context.Satellites.Add(satellite);
+        context.SaveChanges();
         return satellite;
-      }  
+      }
     }
 
     public static SoftwareEncoder SaveSoftwareEncoder(SoftwareEncoder encoder)
     {
-      using (ICardRepository cardRepository = new CardRepository())
+      using (TvEngineDbContext context = new TvEngineDbContext())
       {
-        cardRepository.AttachEntityIfChangeTrackingDisabled(cardRepository.ObjectContext.SoftwareEncoders, encoder);
-        cardRepository.ApplyChanges(cardRepository.ObjectContext.SoftwareEncoders, encoder);
-        cardRepository.UnitOfWork.SaveChanges();
-        encoder.AcceptChanges();
+        context.SoftwareEncoders.Add(encoder);
+        context.SaveChanges();
         return encoder;
-      }  
+      }
     }
 
     public static void DeleteGroupMap(int idMap)
     {
-      using (ICardRepository cardRepository = new CardRepository(true))
+      using (TvEngineDbContext context = new TvEngineDbContext())
       {
-        cardRepository.Delete<CardGroupMap>(p => p.IdMapping == idMap);
-        cardRepository.UnitOfWork.SaveChanges();
+        var map = context.CardGroupMaps.FirstOrDefault(p => p.CardGroupMapId == idMap);
+        if (map != null)
+        {
+          context.CardGroupMaps.Remove(map);
+          context.SaveChanges();
+        }
       }
     }
 
     public static CardGroupMap SaveCardGroupMap(CardGroupMap map)
     {
-      using (ICardRepository cardRepository = new CardRepository())
+      using (TvEngineDbContext context = new TvEngineDbContext())
       {
-        cardRepository.AttachEntityIfChangeTrackingDisabled(cardRepository.ObjectContext.CardGroupMaps, map);
-        cardRepository.ApplyChanges(cardRepository.ObjectContext.CardGroupMaps, map);
-        cardRepository.UnitOfWork.SaveChanges();
-        map.AcceptChanges();
+        context.CardGroupMaps.Add(map);
+        context.SaveChanges();
         return map;
-      }  
+      }
     }
 
     public static IList<Card> ListAllCards(CardIncludeRelationEnum includeRelations)
     {
-      using (ICardRepository cardRepository = new CardRepository())
+      using (TvEngineDbContext context = new TvEngineDbContext())
       {
-        IQueryable<Card> query = cardRepository.GetAll<Card>();
-        query = cardRepository.IncludeAllRelations(query, includeRelations);
-        return query.ToList();
+        return context.Cards.IncludeAllRelations(includeRelations).ToList();
       }
     }
 
     public static IList<Card> SaveCards(IEnumerable<Card> cards)
     {
-      using (ICardRepository cardRepository = new CardRepository())
+      using (TvEngineDbContext context = new TvEngineDbContext())
       {
-        cardRepository.AttachEntityIfChangeTrackingDisabled(cardRepository.ObjectContext.Cards, cards);
-        cardRepository.ApplyChanges(cardRepository.ObjectContext.Cards, cards);
-        cardRepository.UnitOfWork.SaveChanges();
-        cardRepository.ObjectContext.AcceptAllChanges();
+        context.Cards.AddRange(cards);
+        context.SaveChanges();
         return cards.ToList();
       }
     }

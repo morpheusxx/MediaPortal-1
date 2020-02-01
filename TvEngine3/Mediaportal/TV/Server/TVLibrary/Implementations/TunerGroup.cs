@@ -87,7 +87,7 @@ namespace Mediaportal.TV.Server.TVLibrary.Implementations
     {
       get
       {
-        return _databaseTunerGroup.IdCardGroup;
+        return _databaseTunerGroup.CardGroupId;
       }
     }
 

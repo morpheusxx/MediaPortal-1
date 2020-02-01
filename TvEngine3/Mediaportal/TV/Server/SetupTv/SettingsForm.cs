@@ -110,7 +110,7 @@ namespace Mediaportal.TV.Server.SetupTV
           try
           {
             Card c = cards.First();
-            ServiceAgents.Instance.ControllerServiceAgent.Type(c.IdCard);
+            ServiceAgents.Instance.ControllerServiceAgent.Type(c.CardId);
             connected = true;
           }
           catch (Exception ex)
@@ -226,40 +226,40 @@ namespace Mediaportal.TV.Server.SetupTV
         IList<Card> cards = ServiceAgents.Instance.CardServiceAgent.ListAllCards(CardIncludeRelationEnum.None);
         foreach (Card dbsCard in cards)
         {
-          if (dbsCard.Enabled && ServiceAgents.Instance.ControllerServiceAgent.IsCardPresent(dbsCard.IdCard))
+          if (dbsCard.Enabled && ServiceAgents.Instance.ControllerServiceAgent.IsCardPresent(dbsCard.CardId))
           {
-            CardType type = ServiceAgents.Instance.ControllerServiceAgent.Type(dbsCard.IdCard);
-            int cardId = dbsCard.IdCard;
+            CardType type = ServiceAgents.Instance.ControllerServiceAgent.Type(dbsCard.CardId);
+            int cardId = dbsCard.CardId;
             string cardName = dbsCard.Name;
             switch (type)
             {
               case CardType.Analog:
                 cardName = String.Format("{0} Analog {1}", cardId, cardName);
-                AddChildSection(cardPage, new CardAnalog(cardName, dbsCard.IdCard), 1);
+                AddChildSection(cardPage, new CardAnalog(cardName, dbsCard.CardId), 1);
                 break;
               case CardType.DvbT:
                 cardName = String.Format("{0} DVB-T {1}", cardId, cardName);
-                AddChildSection(cardPage, new CardDvbT(cardName, dbsCard.IdCard), 1);
+                AddChildSection(cardPage, new CardDvbT(cardName, dbsCard.CardId), 1);
                 break;
               case CardType.DvbC:
                 cardName = String.Format("{0} DVB-C {1}", cardId, cardName);
-                AddChildSection(cardPage, new CardDvbC(cardName, dbsCard.IdCard), 1);
+                AddChildSection(cardPage, new CardDvbC(cardName, dbsCard.CardId), 1);
                 break;
               case CardType.DvbS:
                 cardName = String.Format("{0} DVB-S {1}", cardId, cardName);
-                AddChildSection(cardPage, new CardDvbS(cardName, dbsCard.IdCard), 1);
+                AddChildSection(cardPage, new CardDvbS(cardName, dbsCard.CardId), 1);
                 break;
               case CardType.Atsc:
                 cardName = String.Format("{0} ATSC {1}", cardId, cardName);
-                AddChildSection(cardPage, new CardAtsc(cardName, dbsCard.IdCard), 1);
+                AddChildSection(cardPage, new CardAtsc(cardName, dbsCard.CardId), 1);
                 break;
               case CardType.DvbIP:
                 cardName = String.Format("{0} DVB-IP {1}", cardId, cardName);
-                AddChildSection(cardPage, new CardDvbIP(cardName, dbsCard.IdCard), 1);
+                AddChildSection(cardPage, new CardDvbIP(cardName, dbsCard.CardId), 1);
                 break;
               case CardType.Unknown:
                 cardName = String.Format("{0} Unknown {1}", cardId, cardName);
-                AddChildSection(cardPage, new CardAnalog(cardName, dbsCard.IdCard), 1);
+                AddChildSection(cardPage, new CardAnalog(cardName, dbsCard.CardId), 1);
                 break;
             }
           }

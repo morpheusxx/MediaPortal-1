@@ -99,7 +99,7 @@ namespace Mediaportal.TV.Server.TVLibrary.DiskManagement
         bool result = RecordingFileHandler.DeleteRecordingOnDisk(oldestEpisode.FileName);
         if (result)
         {
-          TVDatabase.TVBusinessLayer.RecordingManagement.DeleteRecording(oldestEpisode.IdRecording);
+          TVDatabase.TVBusinessLayer.RecordingManagement.DeleteRecording(oldestEpisode.RecordingId);
         }
       }
     }

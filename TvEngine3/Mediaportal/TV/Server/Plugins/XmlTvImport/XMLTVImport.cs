@@ -41,7 +41,7 @@ namespace Mediaportal.TV.Server.Plugins.XmlTvImport
     private readonly IDictionary<string, ProgramCategory> _categories = new ConcurrentDictionary<string, ProgramCategory>();
 
     private readonly ProgramManagement _programManagement = new ProgramManagement();
-    
+
     public delegate void ShowProgressHandler(Stats stats);
 
     public event ShowProgressHandler ShowProgress;
@@ -52,7 +52,7 @@ namespace Mediaportal.TV.Server.Plugins.XmlTvImport
       public string externalId;
       //public ArrayList programs = new ArrayList();
       public readonly ProgramList programs = new ProgramList();
-    } ;
+    };
 
     public class Stats
     {
@@ -91,17 +91,17 @@ namespace Mediaportal.TV.Server.Plugins.XmlTvImport
         get { return _endTime; }
         set { _endTime = value; }
       }
-    } ;
+    };
 
     private string _errorMessage = "";
     private Stats _status = new Stats();
     private int _backgroundDelay = 0;
-    
+
 
     private static bool _isImporting = false;
 
     public XMLTVImport()
-      : this(0) {}
+      : this(0) { }
 
     public XMLTVImport(int backgroundDelay)
     {
@@ -197,8 +197,8 @@ namespace Mediaportal.TV.Server.Plugins.XmlTvImport
       try
       {
         //layer.RemoveOldPrograms();        
-        ProgramManagement.DeleteOldPrograms();        
-        this.LogDebug("xmltv import {0}", fileName);        
+        ProgramManagement.DeleteOldPrograms();
+        this.LogDebug("xmltv import {0}", fileName);
         //
         // Make sure the file exists before we try to do any processing
         //
@@ -250,7 +250,7 @@ namespace Mediaportal.TV.Server.Plugins.XmlTvImport
                           if (displayName == null) displayName = xmlChannel.ReadString();
                           else xmlChannel.Skip();
                           break;
-                          // could read more stuff here, like icon...
+                        // could read more stuff here, like icon...
                         default:
                           // unknown, skip entire node
                           xmlChannel.Skip();
@@ -295,11 +295,11 @@ namespace Mediaportal.TV.Server.Plugins.XmlTvImport
                       Programs.Add(newProgChan);
 
                       this.LogDebug("  channel#{0} xmlid:{1} name:{2} dbsid:{3}", iChannel, chan.ExternalId,
-                                    chan.DisplayName, chan.IdChannel);
-                      if (!guideChannels.ContainsKey(chan.IdChannel))
+                                    chan.DisplayName, chan.ChannelId);
+                      if (!guideChannels.ContainsKey(chan.ChannelId))
                       {
-                        guideChannels.Add(chan.IdChannel, chan);
-                        dChannelPrograms.Add(chan.IdChannel, newProgChan);
+                        guideChannels.Add(chan.ChannelId, chan);
+                        dChannelPrograms.Add(chan.ChannelId, newProgChan);
                       }
                     }
 
@@ -317,7 +317,7 @@ namespace Mediaportal.TV.Server.Plugins.XmlTvImport
 
           #endregion
 
-          allChannels = ChannelManagement.GetAllChannelsWithExternalId().ToList();          
+          allChannels = ChannelManagement.GetAllChannelsWithExternalId().ToList();
           if (allChannels.Count == 0)
           {
             _isImporting = false;
@@ -495,7 +495,7 @@ namespace Mediaportal.TV.Server.Plugins.XmlTvImport
                 if (nodeStart != null && nodeChannel != null && nodeTitle != null &&
                     nodeStart.Length > 0 && nodeChannel.Length > 0 && nodeTitle.Length > 0)
                 {
-                  
+
                   string description = "";
                   string category = "-";
                   string serEpNum = "";
@@ -643,7 +643,7 @@ namespace Mediaportal.TV.Server.Plugins.XmlTvImport
                       }
                     }
                     else
-                      // fixing mantis bug 1486: XMLTV import doesn't take episode number from TVGuide.xml made by WebEPG 
+                    // fixing mantis bug 1486: XMLTV import doesn't take episode number from TVGuide.xml made by WebEPG 
                     {
                       // example: '5' like WebEPG is creating
                       serEpNum = ConvertHTMLToAnsi(nodeEpisodeNum.Replace(" ", ""));
@@ -656,7 +656,7 @@ namespace Mediaportal.TV.Server.Plugins.XmlTvImport
                     date = nodeDate;
                   }
 
-                  repeat = (nodeRepeat != null);                  
+                  repeat = (nodeRepeat != null);
 
                   if (nodeStarRating != null)
                   {
@@ -685,9 +685,9 @@ namespace Mediaportal.TV.Server.Plugins.XmlTvImport
                       foreach (Channel chan in mappedChannels)
                       {
                         // get the channel program
-                        channelPrograms = dChannelPrograms[chan.IdChannel];
+                        channelPrograms = dChannelPrograms[chan.ChannelId];
 
-                        if (chan.IdChannel < 0)
+                        if (chan.ChannelId < 0)
                         {
                           continue;
                         }
@@ -709,13 +709,13 @@ namespace Mediaportal.TV.Server.Plugins.XmlTvImport
                         episodeName = episodeName.Replace("\r", " ");
                         episodeName = episodeName.Replace("\n", " ");
                         episodeName = episodeName.Replace("  ", " ");
-                    
+
                         var prg = new Program();
-                        prg.IdChannel = chan.IdChannel;
+                        prg.ChannelId = chan.ChannelId;
                         prg.StartTime = longtodate(startDate);
                         prg.EndTime = longtodate(stopDate);
                         prg.Title = title;
-                        prg.Description = description;                        
+                        prg.Description = description;
                         prg.State = (int)ProgramState.None;
                         prg.OriginalAirDate = System.Data.SqlTypes.SqlDateTime.MinValue.Value;
                         prg.SeriesNum = seriesNum;
@@ -730,25 +730,25 @@ namespace Mediaportal.TV.Server.Plugins.XmlTvImport
                         {
                           foreach (var credit in credits)
                           {
-                            prg.ProgramCredits.Add(credit);                            
-                          }                          
-                        }                        
+                            prg.ProgramCredits.Add(credit);
+                          }
+                        }
 
                         ProgramCategory programCategory;
                         bool hasCategory = _categories.TryGetValue(category, out programCategory);
                         if (!hasCategory)
                         {
-                          programCategory = new ProgramCategory {Category = category};
+                          programCategory = new ProgramCategory { Category = category };
                           ProgramCategoryManagement.AddCategory(programCategory);
                           _categories[category] = programCategory;
                         }
-                        prg.IdProgramCategory = programCategory.IdProgramCategory;
+                        prg.ProgramCategoryId = programCategory.ProgramCategoryId;
                         channelPrograms.programs.Add(prg);
-                        
+
                         //programs.Add(prg);                                              
-                        programIndex++;                      
+                        programIndex++;
                         _status.Programs++;
-                      }                      
+                      }
                     }
                   }
                 }
@@ -778,10 +778,10 @@ namespace Mediaportal.TV.Server.Plugins.XmlTvImport
                 progChan.programs.RemoveOverlappingPrograms(); // be sure that we do not have any overlapping
 
                 // get the id of the channel, just get the idChannel of the first program
-                int idChannel = progChan.programs[0].IdChannel;
+                int idChannel = progChan.programs[0].ChannelId;
 
                 if (!deleteBeforeImport)
-                {                  
+                {
                   _programManagement.DeleteAllProgramsWithChannelId(idChannel);
                   List<Program> programs = _programManagement.FindAllProgramsByChannelId(idChannel).ToList();
                   progChan.programs.RemoveOverlappingPrograms(programs, true);
@@ -857,12 +857,12 @@ namespace Mediaportal.TV.Server.Plugins.XmlTvImport
       }
       finally
       {
-        _isImporting = false;        
+        _isImporting = false;
       }
 
       Programs.Clear();
       Programs = null;
-      
+
       //      TVDatabase.SupressEvents = false;
       if (xmlReader != null)
       {
@@ -886,14 +886,14 @@ namespace Mediaportal.TV.Server.Plugins.XmlTvImport
             string creditRole = nodeCredits.Name;
             if (creditRole.Length > 50)
             {
-              creditRole = creditRole.Substring(0, 50);  
+              creditRole = creditRole.Substring(0, 50);
             }
             string creditPerson = nodeCredits.ReadString();
             if (creditPerson.Length > 200)
             {
               creditPerson = creditPerson.Substring(0, 200);
             }
-            var credit = new ProgramCredit {Role = creditRole, Person = creditPerson};
+            var credit = new ProgramCredit { Role = creditRole, Person = creditPerson };
             programcredits.Add(credit);
           }
           nodeCredits.Read();
@@ -970,7 +970,7 @@ namespace Mediaportal.TV.Server.Plugins.XmlTvImport
           if (timeZone[0] == '-') return -iOff;
           else return iOff;
         }
-        catch (Exception) {}
+        catch (Exception) { }
       }
       return 0;
     }
@@ -1132,7 +1132,7 @@ namespace Mediaportal.TV.Server.Plugins.XmlTvImport
         lRet = lRet * 100L + iSec;
         return lRet;
       }
-      catch (Exception) {}
+      catch (Exception) { }
       return 0;
     }
 
@@ -1154,7 +1154,7 @@ namespace Mediaportal.TV.Server.Plugins.XmlTvImport
         DateTime dt = new DateTime(year, month, day, hour, minute, 0, 0);
         return dt;
       }
-      catch (Exception) {}
+      catch (Exception) { }
       return DateTime.Now;
     }
 
@@ -1181,7 +1181,7 @@ namespace Mediaportal.TV.Server.Plugins.XmlTvImport
         System.Web.HttpUtility.HtmlDecode(html, writer);
         String DecodedString = writer.ToString();
         strippedHtml = DecodedString.Replace("<br>", "\n");
-      }            
+      }
     }
 
     #region Sort Members
@@ -1194,7 +1194,7 @@ namespace Mediaportal.TV.Server.Plugins.XmlTvImport
       if (item1 == null) return -1;
       if (item2 == null) return -1;
 
-      if (item1.IdChannel != item2.IdChannel)
+      if (item1.ChannelId != item2.ChannelId)
       {
         return String.Compare(item1.Channel.DisplayName, item2.Channel.DisplayName, true);
       }

@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
-using System.Data.Objects;
 using System.Linq;
 using Mediaportal.TV.Server.TVDatabase.Entities;
-using Mediaportal.TV.Server.TVDatabase.EntityModel.Repositories;
+using Mediaportal.TV.Server.TVDatabase.EntityModel.Context;
 
 namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
 {
@@ -10,22 +9,21 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
   {
     public static CanceledSchedule SaveCanceledSchedule(CanceledSchedule canceledSchedule)
     {
-      using (var canceledScheduleRepository = new GenericRepository<Model>())
+      using (TvEngineDbContext context = new TvEngineDbContext())
       {
-        canceledScheduleRepository.AttachEntityIfChangeTrackingDisabled(canceledScheduleRepository.ObjectContext.CanceledSchedules, canceledSchedule);
-        canceledScheduleRepository.ApplyChanges(canceledScheduleRepository.ObjectContext.CanceledSchedules, canceledSchedule);
-        canceledScheduleRepository.UnitOfWork.SaveChanges(SaveOptions.AcceptAllChangesAfterSave);
+        context.CanceledSchedules.Add(canceledSchedule);
+        context.SaveChanges();
       }
 
-      ProgramManagement.SynchProgramStates(canceledSchedule.IdSchedule);
+      ProgramManagement.SynchProgramStates(canceledSchedule.ScheduleId);
       return canceledSchedule;
     }
 
     public static IList<CanceledSchedule> ListAllCanceledSchedules()
     {
-      using (var canceledScheduleRepository = new GenericRepository<Model>())
+      using (TvEngineDbContext context = new TvEngineDbContext())
       {
-        return canceledScheduleRepository.GetAll<CanceledSchedule>().ToList();
+        return context.CanceledSchedules.ToList();
       }
     }
   }

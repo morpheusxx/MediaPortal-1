@@ -21,7 +21,7 @@ namespace Mediaportal.TV.Server.TVDatabase.Entities
     public string EpisodePart { get; set; }
     public int State { get; set; }
     public bool PreviouslyShown { get; set; }
-    public int? IdProgramCategory { get; set; }
+    public int? ProgramCategoryId { get; set; }
     public short StartTimeDayOfWeek { get; set; }
     public short EndTimeDayOfWeek { get; set; }
     public DateTime EndTimeOffset { get; set; }

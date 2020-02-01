@@ -111,9 +111,9 @@ namespace Mediaportal.TV.Server.TVLibrary.CardManagement.CardHandler
         RemoveChannelFromUser(user, subChannelId);
         foreach (ISubChannel subchannel in user.SubChannels.Values)
         {
-          if (subchannel.IdChannel == idChannel)
+          if (subchannel.ChannelId == idChannel)
           {
-            this.LogDebug("usermanagement.RemoveUser: {0}, subch: {1}, card: {2}", user.Name, subchannel.Id, _cardHandler.DataBaseCard.IdCard);
+            this.LogDebug("usermanagement.RemoveUser: {0}, subch: {1}, card: {2}", user.Name, subchannel.Id, _cardHandler.DataBaseCard.CardId);
             if (!ContainsUsersForSubchannel(subchannel.Id))
             {
               subchannelsId.Add(subchannel.Id);
@@ -143,7 +143,7 @@ namespace Mediaportal.TV.Server.TVLibrary.CardManagement.CardHandler
           _cardHandler.Card.FreeSubChannel(subchannelId);
           var cleanTimeshiftFilesThread =
             new CleanTimeshiftFilesThread(_cardHandler.DataBaseCard.TimeshiftingFolder,
-                                          String.Format("live{0}-{1}.ts", _cardHandler.DataBaseCard.IdCard,
+                                          String.Format("live{0}-{1}.ts", _cardHandler.DataBaseCard.CardId,
                                                         usedSubChannel));
           var cleanupThread = new Thread(cleanTimeshiftFilesThread.CleanTimeshiftFiles) { IsBackground = true, Name = "TS_File_Cleanup", Priority = ThreadPriority.Lowest };
           cleanupThread.Start();
@@ -226,7 +226,7 @@ namespace Mediaportal.TV.Server.TVLibrary.CardManagement.CardHandler
           {
             if (subch.TvUsage == tvUsage)
             {
-              channelId = subch.IdChannel;
+              channelId = subch.ChannelId;
               break;
             }
           }
@@ -246,7 +246,7 @@ namespace Mediaportal.TV.Server.TVLibrary.CardManagement.CardHandler
           if (user.SubChannels.Count > 0)
           {
             KeyValuePair<int, ISubChannel> subChannel = user.SubChannels.LastOrDefault();
-            return subChannel.Value.IdChannel;
+            return subChannel.Value.ChannelId;
           }
         }
       }
@@ -295,7 +295,7 @@ namespace Mediaportal.TV.Server.TVLibrary.CardManagement.CardHandler
 
           foreach (ISubChannel subch in subchannels)
           {
-            if (subch.IdChannel == idChannel)
+            if (subch.ChannelId == idChannel)
             {
               subChannel = subch;
               break;
@@ -440,12 +440,12 @@ namespace Mediaportal.TV.Server.TVLibrary.CardManagement.CardHandler
         {
           foreach (var subchannel in user.SubChannels.Values)
           {
-            string tmpChannel = _cardHandler.CurrentChannelName(user.Name, subchannel.IdChannel);
+            string tmpChannel = _cardHandler.CurrentChannelName(user.Name, subchannel.ChannelId);
             if (string.IsNullOrEmpty(tmpChannel))
             {
               continue;
             }
-            int idChannel = subchannel.IdChannel;
+            int idChannel = subchannel.ChannelId;
             if (_cardHandler.Recorder.IsRecording(user.Name))
             {              
               result[idChannel] = ChannelState.recording;
@@ -530,7 +530,7 @@ namespace Mediaportal.TV.Server.TVLibrary.CardManagement.CardHandler
         {
           foreach (ISubChannel subchannel in aUser.SubChannels.Values)
           {
-            if (subchannel.IdChannel == currentChannelId)
+            if (subchannel.ChannelId == currentChannelId)
             {
               count++;
             }
@@ -555,7 +555,7 @@ namespace Mediaportal.TV.Server.TVLibrary.CardManagement.CardHandler
         {
           foreach (var subchannel in user.SubChannels.Values)
           {
-            IChannel currentChannel = _cardHandler.CurrentChannel(user.Name, subchannel.IdChannel);
+            IChannel currentChannel = _cardHandler.CurrentChannel(user.Name, subchannel.ChannelId);
             if (currentChannel != null && currentChannel.Equals(tuningDetail))
             {                
               isAnyUserOnTuningDetail = true;
@@ -615,7 +615,7 @@ namespace Mediaportal.TV.Server.TVLibrary.CardManagement.CardHandler
 
           foreach (ISubChannel subchannel in subchannels)
           {
-            if (subchannel.IdChannel == idChannel && subchannel.TvUsage == tvUsage)
+            if (subchannel.ChannelId == idChannel && subchannel.TvUsage == tvUsage)
             {
               subChannelId = subchannel.Id;
               break;
@@ -725,7 +725,7 @@ namespace Mediaportal.TV.Server.TVLibrary.CardManagement.CardHandler
       {
         throw new InvalidOperationException("subchannelid is invalid");
       }
-      user.CardId = _cardHandler.DataBaseCard.IdCard;
+      user.CardId = _cardHandler.DataBaseCard.CardId;
       this.LogInfo("user:{0} AddSubChannelOrUser", user.Name);
       lock (_usersLock)
       {
@@ -1193,7 +1193,7 @@ namespace Mediaportal.TV.Server.TVLibrary.CardManagement.CardHandler
           {
             var history1 = new History
             {
-              IdChannel = channel.IdChannel,
+              ChannelId = channel.ChannelId,
               StartTime = p.StartTime,
               EndTime = p.EndTime,
               Title = p.Title,

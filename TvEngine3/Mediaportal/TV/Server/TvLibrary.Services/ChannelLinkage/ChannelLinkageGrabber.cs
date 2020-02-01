@@ -73,7 +73,7 @@ namespace Mediaportal.TV.Server.TVLibrary.ChannelLinkage
                  pChannel.TransportId, pChannel.ServiceId);
         return;
       }      
-      ChannelManagement.DeleteAllChannelLinkageMaps(dbPortalChannel.IdChannel);
+      ChannelManagement.DeleteAllChannelLinkageMaps(dbPortalChannel.ChannelId);
       foreach (LinkedChannel lChannel in pChannel.LinkedChannels)
       {
         Channel dbLinkedChannnel = ChannelManagement.GetChannelByTuningDetail(lChannel.NetworkId, lChannel.TransportId,
@@ -89,8 +89,8 @@ namespace Mediaportal.TV.Server.TVLibrary.ChannelLinkage
 
         var map = new ChannelLinkageMap
                                   {
-                                    IdLinkedChannel = dbLinkedChannnel.IdChannel,
-                                    IdPortalChannel = dbPortalChannel.IdChannel,
+                                    IdLinkedChannel = dbLinkedChannnel.ChannelId,
+                                    IdPortalChannel = dbPortalChannel.ChannelId,
                                     DisplayName = lChannel.Name
                                   };
 

@@ -119,7 +119,7 @@ namespace Mediaportal.TV.Server.TVDatabase.EntityModel.Interfaces
     /// <param name="entity">The entity.</param>
     void Update<TEntity>(TEntity entity) where TEntity : class;
 
-    void UpdateList<TEntity>(IEnumerable<TEntity> entities) where TEntity : class;    
+    void UpdateList<TEntity>(IEnumerable<TEntity> entities) where TEntity : class;
 
     /// <summary>
     /// Finds entities based on provided criteria.
@@ -232,10 +232,10 @@ namespace Mediaportal.TV.Server.TVDatabase.EntityModel.Interfaces
     Expression<Func<TElement, bool>> BuildContainsExpression<TElement, TValue>(
     Expression<Func<TElement, TValue>> valueSelector, IEnumerable<TValue> values);
 
-    void ApplyChanges<TEntity>(ObjectSet<TEntity> objectSet, TEntity entity) where TEntity : class, IObjectWithChangeTracker;
-    void ApplyChanges<TEntity>(string entitySetName, TEntity entity) where TEntity : class, IObjectWithChangeTracker;
-    void ApplyChanges<TEntity>(ObjectSet<TEntity> entitySetName, IEnumerable<TEntity> entities) where TEntity : class, IObjectWithChangeTracker;
-    void AttachEntityIfChangeTrackingDisabled<TEntity>(ObjectSet<TEntity> objectSet, TEntity entity) where TEntity : class, IObjectWithChangeTracker;
-    void AttachEntityIfChangeTrackingDisabled<TEntity>(ObjectSet<TEntity> objectSet, IEnumerable<TEntity> entities) where TEntity : class, IObjectWithChangeTracker;
-  }    
+    //void ApplyChanges<TEntity>(ObjectSet<TEntity> objectSet, TEntity entity) where TEntity : class, IObjectWithChangeTracker;
+    //void ApplyChanges<TEntity>(string entitySetName, TEntity entity) where TEntity : class, IObjectWithChangeTracker;
+    //void ApplyChanges<TEntity>(ObjectSet<TEntity> entitySetName, IEnumerable<TEntity> entities) where TEntity : class, IObjectWithChangeTracker;
+    //void AttachEntityIfChangeTrackingDisabled<TEntity>(ObjectSet<TEntity> objectSet, TEntity entity) where TEntity : class, IObjectWithChangeTracker;
+    //void AttachEntityIfChangeTrackingDisabled<TEntity>(ObjectSet<TEntity> objectSet, IEnumerable<TEntity> entities) where TEntity : class, IObjectWithChangeTracker;
+  }
 }

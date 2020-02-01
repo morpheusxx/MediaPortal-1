@@ -57,7 +57,7 @@ namespace Mediaportal.TV.Server.SetupTV.Dialogs
         while (en.MoveNext())
         {
           LnbType lnbType = (LnbType)en.Current;
-          if (lnbType != null && lnbType.IdLnbType == TuningDetail.IdLnbType)
+          if (lnbType != null && lnbType.LnbTypeId == TuningDetail.LnbTypeId)
           {
             comboBoxLnbType.SelectedItem = en.Current;
             break;
@@ -118,7 +118,7 @@ namespace Mediaportal.TV.Server.SetupTV.Dialogs
       TuningDetail.FreeToAir = checkBoxDVBSfta.Checked;
       TuningDetail.DiSEqC = comboBoxDiseqc.SelectedIndex;
       // This should be safe because we've validated the selection in ValidateInput().
-      TuningDetail.IdLnbType = ((LnbType)comboBoxLnbType.SelectedItem).IdLnbType;
+      TuningDetail.LnbTypeId = ((LnbType)comboBoxLnbType.SelectedItem).LnbTypeId;
     }
 
     private bool ValidateInput()

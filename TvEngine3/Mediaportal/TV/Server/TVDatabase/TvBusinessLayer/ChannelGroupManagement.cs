@@ -2,8 +2,8 @@
 using System.Linq;
 using Mediaportal.TV.Server.TVDatabase.Entities;
 using Mediaportal.TV.Server.TVDatabase.Entities.Enums;
-using Mediaportal.TV.Server.TVDatabase.EntityModel.Interfaces;
-using Mediaportal.TV.Server.TVDatabase.EntityModel.Repositories;
+using Mediaportal.TV.Server.TVDatabase.EntityModel.Context;
+using Mediaportal.TV.Server.TVDatabase.EntityModel.Extensions;
 using Mediaportal.TV.Server.TVLibrary.Interfaces;
 
 namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
@@ -12,70 +12,54 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
   {
     public static IList<ChannelGroup> ListAllChannelGroups(ChannelGroupIncludeRelationEnum includeRelations)
     {
-      using (IChannelGroupRepository channelGroupRepository = new ChannelGroupRepository())
+      using (TvEngineDbContext context = new TvEngineDbContext())
       {
-        var query = channelGroupRepository.GetAll<ChannelGroup>();
-        var listAllChannelGroups = channelGroupRepository.IncludeAllRelations(query, includeRelations).ToList();              
-        return listAllChannelGroups;
+        return context.ChannelGroups.IncludeAllRelations(includeRelations).ToList();
       }
     }
 
     public static IList<ChannelGroup> ListAllChannelGroups()
     {
-      using (IChannelGroupRepository channelGroupRepository = new ChannelGroupRepository())
+      using (TvEngineDbContext context = new TvEngineDbContext())
       {
-        var query = channelGroupRepository.GetAll<ChannelGroup>();
-        var listAllChannelGroups = channelGroupRepository.IncludeAllRelations(query).ToList();
-        return listAllChannelGroups;
+        return context.ChannelGroups.IncludeAllRelations().ToList();
       }
-    }   
+    }
 
     public static IList<ChannelGroup> ListAllChannelGroupsByMediaType(MediaTypeEnum mediaType)
     {
-      using (IChannelGroupRepository channelGroupRepository = new ChannelGroupRepository())
+      using (TvEngineDbContext context = new TvEngineDbContext())
       {
-        var query =
-          channelGroupRepository.GetQuery<ChannelGroup>(g => g.MediaType == (int)mediaType);
-
-        var listAllChannelGroupsByMediaType = channelGroupRepository.IncludeAllRelations(query).ToList();
-        return listAllChannelGroupsByMediaType;
+        return context.ChannelGroups.Where(g => g.MediaType == (int)mediaType).IncludeAllRelations().ToList();
       }
     }
 
     public static IList<ChannelGroup> ListAllChannelGroupsByMediaType(MediaTypeEnum mediaType, ChannelGroupIncludeRelationEnum includeRelations)
     {
-      using (IChannelGroupRepository channelGroupRepository = new ChannelGroupRepository())
+      using (TvEngineDbContext context = new TvEngineDbContext())
       {
-        var query =
-          channelGroupRepository.GetQuery<ChannelGroup>(g => g.MediaType == (int)mediaType);
-
-        var listAllChannelGroupsByMediaType = channelGroupRepository.IncludeAllRelations(query, includeRelations).ToList();
-        return listAllChannelGroupsByMediaType;
+        return context.ChannelGroups.Where(g => g.MediaType == (int)mediaType).IncludeAllRelations(includeRelations).ToList();
       }
     }
 
     public static ChannelGroup GetChannelGroupByNameAndMediaType(string groupName, MediaTypeEnum mediaType)
     {
-      using (IChannelGroupRepository channelGroupRepository = new ChannelGroupRepository())
+      using (TvEngineDbContext context = new TvEngineDbContext())
       {
-        var query = channelGroupRepository.GetQuery<ChannelGroup>(
-          g => g.GroupName == groupName && g.MediaType == (int)mediaType);
-
-        ChannelGroup channelGroupByNameAndMediaType = channelGroupRepository.IncludeAllRelations(query).FirstOrDefault();
-        return channelGroupByNameAndMediaType;
+        return context.ChannelGroups.Where(g => g.GroupName == groupName && g.MediaType == (int)mediaType).IncludeAllRelations().FirstOrDefault();
       }
-    }    
-    
+    }
+
     public static ChannelGroup GetOrCreateGroup(string groupName, MediaTypeEnum mediaType)
     {
-      using (IChannelGroupRepository channelGroupRepository = new ChannelGroupRepository())
+      using (TvEngineDbContext context = new TvEngineDbContext())
       {
-        ChannelGroup group = channelGroupRepository.Single<ChannelGroup>(g => g.GroupName == groupName && g.MediaType == (int)mediaType);
+        ChannelGroup group = context.ChannelGroups.FirstOrDefault(g => g.GroupName == groupName && g.MediaType == (int)mediaType);
         if (group == null)
         {
-          group = new ChannelGroup {GroupName = groupName, SortOrder = 9999, MediaType = (int)mediaType};
-          channelGroupRepository.Add(group);
-          channelGroupRepository.UnitOfWork.SaveChanges();
+          group = new ChannelGroup { GroupName = groupName, SortOrder = 9999, MediaType = (int)mediaType };
+          context.ChannelGroups.Add(group);
+          context.SaveChanges();
         }
         return group;
       }
@@ -83,61 +67,60 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
 
     public static void DeleteChannelGroupMap(int idMap)
     {
-      using (IChannelGroupRepository channelGroupRepository = new ChannelGroupRepository(true))
+      using (TvEngineDbContext context = new TvEngineDbContext())
       {
-        channelGroupRepository.Delete<GroupMap>(g => g.IdMap == idMap);
-        channelGroupRepository.UnitOfWork.SaveChanges();
+        var group = context.GroupMaps.FirstOrDefault(g => g.GroupMapId == idMap);
+        if (group != null)
+        {
+          context.GroupMaps.Remove(group);
+          context.SaveChanges();
+        }
       }
     }
 
     public static ChannelGroup GetChannelGroup(int idGroup)
     {
-      using (IChannelGroupRepository channelGroupRepository = new ChannelGroupRepository())
-      {        
-        IQueryable<ChannelGroup> query = channelGroupRepository.GetQuery<ChannelGroup>(g => g.IdGroup == idGroup);
-        ChannelGroup group = channelGroupRepository.IncludeAllRelations(query).FirstOrDefault();
+      using (TvEngineDbContext context = new TvEngineDbContext())
+      {
+        var group = context.ChannelGroups.IncludeAllRelations().FirstOrDefault(g => g.ChannelGroupId == idGroup);
         return group;
       }
     }
 
     public static ChannelGroup SaveGroup(ChannelGroup group)
     {
-      using (IChannelGroupRepository channelGroupRepository = new ChannelGroupRepository())
+      using (TvEngineDbContext context = new TvEngineDbContext())
       {
-        channelGroupRepository.AttachEntityIfChangeTrackingDisabled(channelGroupRepository.ObjectContext.ChannelGroups, group);
-        channelGroupRepository.ApplyChanges(channelGroupRepository.ObjectContext.ChannelGroups, group);
-        channelGroupRepository.UnitOfWork.SaveChanges();
-        group.AcceptChanges();
+        context.ChannelGroups.Add(group);
+        context.SaveChanges();
         return group;
       }
     }
 
     public static void DeleteChannelGroup(int idGroup)
     {
-      using (IChannelGroupRepository channelGroupRepository = new ChannelGroupRepository(true))
+      using (TvEngineDbContext context = new TvEngineDbContext())
       {
-        IQueryable <ChannelGroup> query = channelGroupRepository.GetQuery<ChannelGroup>(g => g.IdGroup == idGroup);
-        ChannelGroup group = channelGroupRepository.IncludeAllRelations(query, ChannelGroupIncludeRelationEnum.GroupMaps).FirstOrDefault();
+        var group = context.ChannelGroups.IncludeAllRelations(ChannelGroupIncludeRelationEnum.GroupMaps).FirstOrDefault(g => g.ChannelGroupId == idGroup);
         if (group.GroupMaps.Count > 0)
         {
           foreach (GroupMap groupmap in group.GroupMaps)
           {
-            groupmap.ChangeTracker.State = ObjectState.Deleted;
+            context.GroupMaps.Remove(groupmap);
           }
-          channelGroupRepository.ApplyChanges(channelGroupRepository.ObjectContext.ChannelGroups, group);
         }
-        channelGroupRepository.Delete<ChannelGroup>(g => g.IdGroup == idGroup);
-        channelGroupRepository.UnitOfWork.SaveChanges();
+        context.ChannelGroups.Remove(group);
+        context.SaveChanges();
       }
     }
 
     public static IList<ChannelGroup> ListAllCustomChannelGroups(ChannelGroupIncludeRelationEnum includeRelations)
     {
-      using (IChannelGroupRepository channelGroupRepository = new ChannelGroupRepository(true))
+      using (TvEngineDbContext context = new TvEngineDbContext())
       {
-        var query = channelGroupRepository.GetQuery<ChannelGroup>(g => g.GroupName != TvConstants.TvGroupNames.AllChannels && g.GroupName != TvConstants.RadioGroupNames.AllChannels);
-        var listAllChannelGroups = channelGroupRepository.IncludeAllRelations(query, includeRelations).ToList();
-        return listAllChannelGroups;
+        return context.ChannelGroups.IncludeAllRelations(includeRelations)
+          .Where(g => g.GroupName != TvConstants.TvGroupNames.AllChannels && g.GroupName != TvConstants.RadioGroupNames.AllChannels)
+          .ToList();
       }
     }
   }

@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Mediaportal.TV.Server.TVDatabase.Entities;
-using Mediaportal.TV.Server.TVDatabase.EntityModel.Interfaces;
-using Mediaportal.TV.Server.TVDatabase.EntityModel.Repositories;
+using Mediaportal.TV.Server.TVDatabase.EntityModel.Context;
 
 namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
 {
@@ -10,18 +9,17 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
   {
     public static LnbType GetLnbType(int idLnbType)
     {
-      using (IRepository<Model> lnbTypeRepository = new GenericRepository<Model>())
+      using (TvEngineDbContext context = new TvEngineDbContext())
       {
-        LnbType query = lnbTypeRepository.Single<LnbType>(l => l.IdLnbType == idLnbType);
-        return query;
+        return context.LnbTypes.FirstOrDefault(l => l.LnbTypeId == idLnbType);
       }
     }
 
     public static IList<LnbType> ListAllLnbTypes()
     {
-      using (IRepository<Model> lnbTypeRepository = new GenericRepository<Model>())
+      using (TvEngineDbContext context = new TvEngineDbContext())
       {
-        return lnbTypeRepository.GetAll<LnbType>().ToList();
+        return context.LnbTypes.ToList();
       }
     }
   }

@@ -36,7 +36,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
 {
   public partial class TvCards : SectionSettings
   {
-  
+
     private bool _needRestart;
     private readonly Dictionary<string, CardType> cardTypes = new Dictionary<string, CardType>();
 
@@ -45,7 +45,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
     public event ChangedEventHandler TvCardsChanged;
 
     public TvCards()
-      : this("TV Cards") {}
+      : this("TV Cards") { }
 
     public TvCards(string name)
       : base(name)
@@ -81,7 +81,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
           return;
         }
 
-        group = new CardGroup {Name = dlg.GroupName};
+        group = new CardGroup { Name = dlg.GroupName };
         ServiceAgents.Instance.CardServiceAgent.SaveCardGroup(group);
         UpdateMenu();
       }
@@ -97,8 +97,8 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
         ListViewItem item = mpListView1.Items[indexes[i]];
         Card card = (Card)item.Tag;
         CardGroupMap map = new CardGroupMap();
-        map.IdCard = card.IdCard;        
-        map.IdCardGroup = group.IdCardGroup;
+        map.CardId = card.CardId;
+        map.CardGroupId = group.CardGroupId;
         ServiceAgents.Instance.CardServiceAgent.SaveCardGroupMap(map);
         ServiceAgents.Instance.CardServiceAgent.SaveCard(card);
       }
@@ -112,7 +112,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
 
       // DVB-IP cards
       ServiceAgents.Instance.SettingServiceAgent.SaveValue("iptvCardCount", (int)iptvUpDown.Value);
-      
+
       if (_needRestart)
       {
         _needRestart = false;
@@ -142,10 +142,10 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
         cards = ServiceAgents.Instance.CardServiceAgent.ListAllCards(CardIncludeRelationEnum.None);
         foreach (Card card in cards)
         {
-          cardTypes[card.DevicePath] = ServiceAgents.Instance.ControllerServiceAgent.Type(card.IdCard);
+          cardTypes[card.DevicePath] = ServiceAgents.Instance.ControllerServiceAgent.Type(card.CardId);
         }
       }
-      catch (Exception) {}
+      catch (Exception) { }
       try
       {
         cards = cards.OrderByDescending(c => c.Priority).ToList();
@@ -192,11 +192,11 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
             item.SubItems.Add("");
           }
 
-          item.SubItems.Add(card.IdCard.ToString());
+          item.SubItems.Add(card.CardId.ToString());
           item.SubItems.Add(card.Name);
 
           //check if card is really available before setting to enabled.
-          bool cardPresent = ServiceAgents.Instance.ControllerServiceAgent.IsCardPresent(card.IdCard);
+          bool cardPresent = ServiceAgents.Instance.ControllerServiceAgent.IsCardPresent(card.CardId);
           if (!cardPresent)
           {
             item.SubItems.Add("No");
@@ -327,7 +327,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
       if (enabled)
       {
         Card card = (Card)mpListView1.SelectedItems[0].Tag;
-        enabled = !ServiceAgents.Instance.ControllerServiceAgent.IsCardPresent(card.IdCard);
+        enabled = !ServiceAgents.Instance.ControllerServiceAgent.IsCardPresent(card.CardId);
       }
       UpdateEditButtonState();
       buttonRemove.Enabled = enabled;
@@ -347,7 +347,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
       }
     }
 
-    private void tabControl1_SelectedIndexChanged(object sender, EventArgs e) {}
+    private void tabControl1_SelectedIndexChanged(object sender, EventArgs e) { }
 
     private void UpdateHybrids()
     {
@@ -357,7 +357,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
       {
         TreeNode node = treeView1.Nodes.Add(group.Name);
         node.Tag = group;
-        IList<CardGroupMap> cards = group.CardGroupMaps;
+        var cards = group.CardGroupMaps;
         foreach (CardGroupMap map in cards)
         {
           Card card = map.Card;
@@ -377,11 +377,10 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
         return;
       CardGroup group = node.Parent.Tag as CardGroup;
       if (group != null)
-      {                
-
-        IList<CardGroupMap> cards = group.CardGroupMaps;
+      {
+        var cards = group.CardGroupMaps;
         CardGroupMap cardGroupMap2Remove = null;
-        foreach (CardGroupMap map in cards.Where(map => map.IdCard == card.IdCard))
+        foreach (CardGroupMap map in cards.Where(map => map.CardId == card.CardId))
         {
           cardGroupMap2Remove = map;
           //ServiceAgents.Instance.ChannelGroupServiceAgent.DeleteChannelGroupMap(map.idMap)          ;
@@ -392,7 +391,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
         {
           group.CardGroupMaps.Remove(cardGroupMap2Remove);
           ServiceAgents.Instance.CardServiceAgent.SaveCardGroup(group);
-        }        
+        }
       }
       UpdateHybrids();
       ServiceAgents.Instance.ControllerServiceAgent.Restart();
@@ -406,7 +405,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
       CardGroup group = node.Tag as CardGroup;
       if (group == null)
         return;
-      ServiceAgents.Instance.CardServiceAgent.DeleteCardGroup(group.IdCardGroup);
+      ServiceAgents.Instance.CardServiceAgent.DeleteCardGroup(group.CardGroupId);
       UpdateHybrids();
       ServiceAgents.Instance.ControllerServiceAgent.Restart();
     }
@@ -462,7 +461,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
           }
         }
         */
-        ServiceAgents.Instance.ControllerServiceAgent.CardRemove(card.IdCard);
+        ServiceAgents.Instance.ControllerServiceAgent.CardRemove(card.CardId);
         mpListView1.Items.Remove(mpListView1.SelectedItems[0]);
         _needRestart = true;
       }

@@ -1,10 +1,18 @@
 ﻿using System;
+using AutoMapper;
 using Mediaportal.TV.Server.TVDatabase.Entities.Enums;
 
 namespace Mediaportal.TV.Server.TVDatabase.Entities.Factories
 {
   public static class ScheduleFactory
   {
+    private static readonly Mapper _mapper;
+    static ScheduleFactory()
+    {
+      MapperConfiguration config = new MapperConfiguration(c => { c.CreateMap<Schedule, Schedule>(); });
+      _mapper = new Mapper(config);
+    }
+
     public static DateTime MinSchedule = new DateTime(2000, 1, 1);
     public static readonly int HighestPriority = Int32.MaxValue;
 
@@ -29,6 +37,11 @@ namespace Mediaportal.TV.Server.TVDatabase.Entities.Factories
         StartTime = startTime
       };
       return schedule;
+    }
+
+    public static Schedule Clone(Schedule baseSchedule)
+    {
+      return _mapper.Map<Schedule>(baseSchedule);
     }
   }
 }

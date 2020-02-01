@@ -53,11 +53,11 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
 
       public override string ToString()
       {
-        return _card.IdCard + " - " + _card.Name;
+        return _card.CardId + " - " + _card.Name;
       }
     }
 
-    
+
 
     private readonly MPListViewStringColumnSorter lvwColumnSorter1;
     private readonly MPListViewStringColumnSorter lvwColumnSorter2;
@@ -83,14 +83,14 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
     }
 
     public override void OnSectionActivated()
-    {                 
+    {
       mpComboBoxCard.Items.Clear();
       IList<Card> cards = ServiceAgents.Instance.CardServiceAgent.ListAllCards(CardIncludeRelationEnum.None);
       foreach (Card card in cards)
       {
         if (card.Enabled == false)
           continue;
-        if (!ServiceAgents.Instance.ControllerServiceAgent.IsCardPresent(card.IdCard))
+        if (!ServiceAgents.Instance.ControllerServiceAgent.IsCardPresent(card.CardId))
           continue;
         mpComboBoxCard.Items.Add(new CardInfo(card));
       }
@@ -110,11 +110,11 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
       try
       {
         ListView.SelectedListViewItemCollection selectedItems = mpListViewChannels.SelectedItems;
-        
+
         foreach (ListViewItem item in selectedItems)
         {
           Channel channel = (Channel)item.Tag;
-          ChannelMap map = MappingHelper.AddChannelToCard(channel, card, mpCheckBoxMapForEpgOnly.Checked);          
+          ChannelMap map = MappingHelper.AddChannelToCard(channel, card, mpCheckBoxMapForEpgOnly.Checked);
           mpListViewChannels.Items.Remove(item);
           string displayName = channel.DisplayName;
           if (mpCheckBoxMapForEpgOnly.Checked)
@@ -154,7 +154,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
           ListViewItem newItem = mpListViewChannels.Items.Add(referencedChannel.DisplayName, item.ImageIndex);
           newItem.Tag = referencedChannel;
 
-          ServiceAgents.Instance.ChannelServiceAgent.DeleteChannelMap(map.IdChannelMap);          
+          ServiceAgents.Instance.ChannelServiceAgent.DeleteChannelMap(map.ChannelMapId);
         }
         mpListViewChannels.Sort();
         mpListViewMapped.Sort();
@@ -181,14 +181,14 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
 
         List<Channel> channels = ServiceAgents.Instance.ChannelServiceAgent.ListAllChannelsByMediaType(_mediaTypeEnum, ChannelIncludeRelationEnum.TuningDetails).ToList();
 
-        Card card = ServiceAgents.Instance.CardServiceAgent.GetCard(((CardInfo)mpComboBoxCard.SelectedItem).Card.IdCard);        
-        IList<ChannelMap> maps = card.ChannelMaps;
+        Card card = ServiceAgents.Instance.CardServiceAgent.GetCard(((CardInfo)mpComboBoxCard.SelectedItem).Card.CardId);
+        var maps = card.ChannelMaps;
 
         // get cardtype, dvb, analogue etc.		
-        CardType cardType = ServiceAgents.Instance.ControllerServiceAgent.Type(card.IdCard);
+        CardType cardType = ServiceAgents.Instance.ControllerServiceAgent.Type(card.CardId);
         //Card card = ServiceAgents.Instance.CardServiceAgent.GetCard(card.idCard);
-        
-        bool enableDVBS2 = ServiceAgents.Instance.SettingServiceAgent.GetValue("dvbs" + card.IdCard + "enabledvbs2", false);
+
+        bool enableDVBS2 = ServiceAgents.Instance.SettingServiceAgent.GetValue("dvbs" + card.CardId + "enabledvbs2", false);
 
 
         List<ListViewItem> items = new List<ListViewItem>();
@@ -199,7 +199,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
           {
             channel = map.Channel;
           }
-          catch (Exception) {}
+          catch (Exception) { }
           if (channel == null)
             continue;
           if (channel.MediaType != (decimal)_mediaTypeEnum)
@@ -220,7 +220,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
 
             foreach (Channel ch in channels)
             {
-              if (ch.IdChannel == channel.IdChannel)
+              if (ch.ChannelId == channel.ChannelId)
               {
                 //No risk of concurrent modification so remove it directly.
                 channels.Remove(ch);
@@ -230,7 +230,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
           }
           else
           {
-            ServiceAgents.Instance.ChannelServiceAgent.DeleteChannelMap(map.IdChannelMap);            
+            ServiceAgents.Instance.ChannelServiceAgent.DeleteChannelMap(map.ChannelMapId);
           }
         }
         mpListViewMapped.Items.AddRange(items.ToArray());

@@ -159,7 +159,7 @@ namespace Mediaportal.TV.Server.TVLibrary.CardManagement.CardHandler
       {
         foreach (ISubChannel subch in user.SubChannels.Values)
         {
-          ITvSubChannel subchannel = GetSubChannel(user.Name, subch.IdChannel);
+          ITvSubChannel subchannel = GetSubChannel(user.Name, subch.ChannelId);
           if (subchannel != null && subchannel.IsTimeShifting)
             return true;
         }
@@ -210,7 +210,7 @@ namespace Mediaportal.TV.Server.TVLibrary.CardManagement.CardHandler
       {
 #if DEBUG
 
-        if (File.Exists(@"\failts_" + _cardHandler.DataBaseCard.IdCard))
+        if (File.Exists(@"\failts_" + _cardHandler.DataBaseCard.CardId))
         {
           throw new Exception("failed ts on purpose");
         }
@@ -230,7 +230,7 @@ namespace Mediaportal.TV.Server.TVLibrary.CardManagement.CardHandler
           }
           else
           {
-            this.LogDebug("card: StartTimeShifting {0} {1} ", _cardHandler.DataBaseCard.IdCard, fileName);            
+            this.LogDebug("card: StartTimeShifting {0} {1} ", _cardHandler.DataBaseCard.CardId, fileName);            
             
             _cardHandler.UserManagement.RefreshUser(ref user);
             ITvSubChannel subchannel = GetSubChannel(subChannelId);

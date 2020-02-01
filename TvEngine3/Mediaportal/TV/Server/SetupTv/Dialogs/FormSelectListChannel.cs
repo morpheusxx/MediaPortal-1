@@ -46,11 +46,11 @@ namespace Mediaportal.TV.Server.SetupTV.Dialogs
         if (listViewChannels.SelectedItems.Count == 1)
         {
           Channel selectedChannel = listViewChannels.SelectedItems[0].Tag as Channel;
-          if (selectedChannel.IdChannel > -1)
+          if (selectedChannel.ChannelId > -1)
           {
             this.LogDebug("SelectListChannel: Channel '{0}' has been selected. ID = {1}", selectedChannel.DisplayName,
-                      selectedChannel.IdChannel);
-            return selectedChannel.IdChannel;
+                      selectedChannel.ChannelId);
+            return selectedChannel.ChannelId;
           }
         }
         else

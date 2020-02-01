@@ -2,11 +2,13 @@
 using System.Linq;
 using Mediaportal.TV.Server.TVDatabase.Entities;
 using Mediaportal.TV.Server.TVDatabase.Entities.Enums;
+using Mediaportal.TV.Server.TVDatabase.EntityModel.Context;
 using Mediaportal.TV.Server.TVDatabase.EntityModel.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace Mediaportal.TV.Server.TVDatabase.EntityModel.Repositories
 {
-  public class CardRepository : GenericRepository<Model>, ICardRepository
+  public class CardRepository : GenericRepository<TvEngineDbContext>, ICardRepository
   {
     public CardRepository()
     {
@@ -17,7 +19,7 @@ namespace Mediaportal.TV.Server.TVDatabase.EntityModel.Repositories
     {
     }
 
-    public CardRepository(Model context)
+    public CardRepository(TvEngineDbContext context)
       : base(context)
     {
     }

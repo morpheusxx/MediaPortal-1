@@ -94,7 +94,7 @@ namespace Mediaportal.TV.Server.SetupTV.Dialogs
       setConditionalAccessFieldVisibility();
 
       // Devices can't be preloaded if they're part of a hybrid group.
-      IList<CardGroupMap> groupList = _card.CardGroupMaps;
+      var groupList = _card.CardGroupMaps;
       if (groupList.Count != 0)
       {
         checkBoxPreloadCard.Enabled = false;

@@ -1,48 +1,48 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Mediaportal.TV.Server.TVDatabase.Entities;
-using Mediaportal.TV.Server.TVDatabase.EntityModel.Repositories;
+using Mediaportal.TV.Server.TVDatabase.EntityModel.Context;
 
 namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
 {
   public static class ConflictManagement
   {
-
     public static IList<Conflict> ListAllConflicts()
     {
-      using (var conflictRepository = new GenericRepository<Model>())
+      using (var context = new TvEngineDbContext())
       {
-        var listAllConflicts = conflictRepository.GetAll<Conflict>();
-        return listAllConflicts.ToList();
+        return context.Conflicts.ToList();
       }
     }
 
     public static Conflict SaveConflict(Conflict conflict)
     {
-      using (var conflictRepository = new GenericRepository<Model>())
+      using (var context = new TvEngineDbContext())
       {
-        conflictRepository.AttachEntityIfChangeTrackingDisabled(conflictRepository.ObjectContext.Conflicts, conflict);
-        conflictRepository.ApplyChanges(conflictRepository.ObjectContext.Conflicts, conflict);
-        conflictRepository.UnitOfWork.SaveChanges();
-        conflict.AcceptChanges();
+        context.Conflicts.Add(conflict);
+        context.SaveChanges();
         return conflict;
-      }            
+      }
     }
 
     public static Conflict GetConflict(int idConflict)
     {
-      using (var conflictRepository = new GenericRepository<Model>())
+      using (var context = new TvEngineDbContext())
       {
-        return conflictRepository.Single<Conflict>(s => s.IdConflict == idConflict);
+        return context.Conflicts.FirstOrDefault(s => s.ConflictId == idConflict);
       }
     }
 
     public static void DeleteConflict(int idConflict)
     {
-      using (var conflictRepository = new GenericRepository<Model>(true))
+      using (var context = new TvEngineDbContext())
       {
-        conflictRepository.Delete<Conflict>(p => p.IdConflict == idConflict);
-        conflictRepository.UnitOfWork.SaveChanges();
+        var conflict = context.Conflicts.FirstOrDefault(c => c.ConflictId == idConflict);
+        if (conflict != null)
+        {
+          context.Conflicts.Remove(conflict);
+          context.SaveChanges();
+        }
       }
     }
   }

@@ -330,12 +330,12 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
             }
             if (currentDetail == null)
             {
-              ServiceAgents.Instance.ChannelServiceAgent.AddTuningDetail(dbChannel.IdChannel, channel);
+              ServiceAgents.Instance.ChannelServiceAgent.AddTuningDetail(dbChannel.ChannelId, channel);
             }
             else
             {
               //update tuning details...
-              ServiceAgents.Instance.ChannelServiceAgent.UpdateTuningDetail(dbChannel.IdChannel, currentDetail.IdTuning, channel);
+              ServiceAgents.Instance.ChannelServiceAgent.UpdateTuningDetail(dbChannel.ChannelId, currentDetail.TuningDetailId, channel);
             }
             if (channel.MediaType == MediaTypeEnum.TV)
             {

@@ -109,7 +109,7 @@ namespace Mediaportal.TV.Server.TVLibrary
           History history = existingUser.Value.History as History;
           if (history != null)
           {
-            Channel channel = ChannelManagement.GetChannel(existingUser.Value.IdChannel);
+            Channel channel = ChannelManagement.GetChannel(existingUser.Value.ChannelId);
             if (channel != null)
             {
               Program p = new ChannelBLL(channel).CurrentProgram;

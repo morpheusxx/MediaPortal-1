@@ -77,7 +77,7 @@ namespace Mediaportal.TV.Server.TVLibrary.CardManagement.CardAllocation
 
       if (LogEnabled)
       {
-        this.LogInfo("Controller:    card:{0} type:{1} users: {2}", card.DataBaseCard.IdCard, card.Type, nrOfOtherUsers);
+        this.LogInfo("Controller:    card:{0} type:{1} users: {2}", card.DataBaseCard.CardId, card.Type, nrOfOtherUsers);
       }
 
       return nrOfOtherUsers;
@@ -120,7 +120,7 @@ namespace Mediaportal.TV.Server.TVLibrary.CardManagement.CardAllocation
         List<CardDetail> cardDetails = GetAvailableCardsForChannel(cards, dbChannel, user, out cardsUnAvailable);
         foreach (CardDetail cardDetail in cardDetails)
         {
-          ITvCardHandler tvCardHandler = cards[cardDetail.Card.IdCard];
+          ITvCardHandler tvCardHandler = cards[cardDetail.Card.CardId];
           bool checkTransponder = CheckTransponder(user, tvCardHandler, cardDetail.TuningDetail);
           if (checkTransponder)
           {
@@ -233,7 +233,7 @@ namespace Mediaportal.TV.Server.TVLibrary.CardManagement.CardAllocation
           }
           foreach (ITvCardHandler cardHandler in cardHandlers)
           {
-            int cardId = cardHandler.DataBaseCard.IdCard;
+            int cardId = cardHandler.DataBaseCard.CardId;
 
             if (cardsUnAvailable.ContainsKey(cardId))
             {
@@ -293,7 +293,7 @@ namespace Mediaportal.TV.Server.TVLibrary.CardManagement.CardAllocation
     private static bool CanCardDecodeChannel(ITvCardHandler cardHandler, IChannel tuningDetail)
     {
       bool canCardDecodeChannel = true;
-      int cardId = cardHandler.DataBaseCard.IdCard;
+      int cardId = cardHandler.DataBaseCard.CardId;
       if (!tuningDetail.FreeToAir && !cardHandler.DataBaseCard.UseConditionalAccess)
       {
         Log.Info("Controller:    card:{0} type:{1} channel is encrypted but card has no CAM", cardId, cardHandler.Type);
@@ -304,7 +304,7 @@ namespace Mediaportal.TV.Server.TVLibrary.CardManagement.CardAllocation
 
     protected virtual bool CanCardTuneChannel(ITvCardHandler cardHandler, Channel dbChannel, IChannel tuningDetail)
     {
-      int cardId = cardHandler.DataBaseCard.IdCard;
+      int cardId = cardHandler.DataBaseCard.CardId;
       bool isCardEnabled = IsCardEnabled(cardHandler);
       if (!isCardEnabled)
       {
@@ -333,7 +333,7 @@ namespace Mediaportal.TV.Server.TVLibrary.CardManagement.CardAllocation
       }
 
       //check if channel is mapped to this card and that the mapping is not for "Epg Only"
-      bool isChannelMappedToCard = CardAllocationCache.IsChannelMappedToCard(dbChannel.IdChannel, cardHandler.DataBaseCard.IdCard);
+      bool isChannelMappedToCard = CardAllocationCache.IsChannelMappedToCard(dbChannel.ChannelId, cardHandler.DataBaseCard.CardId);
       if (!isChannelMappedToCard)
       {
         if (LogEnabled)

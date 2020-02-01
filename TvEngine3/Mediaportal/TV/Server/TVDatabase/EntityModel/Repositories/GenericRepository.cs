@@ -10,6 +10,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using MediaPortal.Common.Utils.ExtensionMethods;
 using Mediaportal.TV.Server.TVDatabase.Entities;
+using Mediaportal.TV.Server.TVDatabase.EntityModel.Context;
 using Mediaportal.TV.Server.TVDatabase.EntityModel.Interfaces;
 using Mediaportal.TV.Server.TVDatabase.EntityModel.ObjContext;
 using Mediaportal.TV.Server.TVDatabase.EntityModel.Specification;
@@ -20,7 +21,8 @@ namespace Mediaportal.TV.Server.TVDatabase.EntityModel.Repositories
   /// <summary>
   /// Generic repository
   /// </summary>
-  public class GenericRepository<TEntity> : IRepository<TEntity> where TEntity : ObjectContext
+  public class GenericRepository<TEntity> : IRepository<TEntity> 
+    //where TEntity : TvEngineDbContext
   {
     private IUnitOfWork _unitOfWork;
     private readonly string _connectionStringName;
@@ -145,7 +147,7 @@ namespace Mediaportal.TV.Server.TVDatabase.EntityModel.Repositories
       {
         throw new ArgumentNullException("entity");
       }
-      ObjectContext.AddObject(GetEntityName<TEntity>(), entity);
+      ObjectContext.Add(GetEntityName<TEntity>(), entity);
     }
 
     public void AddList<TEntity>(IEnumerable<TEntity> entities) where TEntity : class

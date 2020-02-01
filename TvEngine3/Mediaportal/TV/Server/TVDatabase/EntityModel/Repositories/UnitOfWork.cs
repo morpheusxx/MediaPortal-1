@@ -105,8 +105,8 @@ namespace Mediaportal.TV.Server.TVDatabase.EntityModel.Repositories
       if (_entityFrameworkEnableVerbosePersistenceLogging.HasValue && _entityFrameworkEnableVerbosePersistenceLogging.Value)
       {
         string traceString = _objectContext.ToTraceString();
-        this.LogDebug("EF SaveChanges SQL = {0}", traceString); 
-      }      
+        this.LogDebug("EF SaveChanges SQL = {0}", traceString);
+      }
 
       _objectContext.SaveChanges();
     }
@@ -120,7 +120,7 @@ namespace Mediaportal.TV.Server.TVDatabase.EntityModel.Repositories
       _objectContext.SaveChanges(saveOptions);
     }
 
-  
+
 
     /// <summary>
     /// Releases the current transaction

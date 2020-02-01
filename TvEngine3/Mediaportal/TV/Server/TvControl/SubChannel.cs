@@ -11,26 +11,26 @@ namespace Mediaportal.TV.Server.TVControl
     private int _id;
 
     [DataMember]
-    private int _idChannel;
+    private int _channelId;
 
     [DataMember]
     private TvUsage _tvUsage;
 
     public SubChannel()
-    {     
+    {
     }
 
-    public SubChannel(int id, int idChannel, TvUsage tvUsage)
+    public SubChannel(int id, int channelId, TvUsage tvUsage)
     {
       _id = id;
-      _idChannel = idChannel;
+      _channelId = channelId;
       _tvUsage = tvUsage;
     }
 
-    public int IdChannel
+    public int ChannelId
     {
-      get { return _idChannel; }
-      set { _idChannel = value; }
+      get { return _channelId; }
+      set { _channelId = value; }
     }
 
     public int Id

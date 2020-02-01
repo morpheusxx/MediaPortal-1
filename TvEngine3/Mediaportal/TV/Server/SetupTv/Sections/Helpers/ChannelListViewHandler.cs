@@ -100,7 +100,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections.Helpers
 
       if (InvokeHasTextChanged(filterText))
       {
-//After waiting for MS_SLEEP_BEFORE_FILTERING, the search text isn't valid anymore (user changed text) -> return
+        //After waiting for MS_SLEEP_BEFORE_FILTERING, the search text isn't valid anymore (user changed text) -> return
         Application.UseWaitCursor = false;
         return;
       }
@@ -108,7 +108,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections.Helpers
       try
       {
         this.LogDebug("Filter listview for " + filterText);
-        _listView.Invoke(new MethodInvoker(delegate()
+        _listView.Invoke(new MethodInvoker(delegate ()
                                              {
                                                _listView.Items.Clear();
                                                _listView.BeginUpdate();
@@ -119,7 +119,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections.Helpers
         {
           if (InvokeHasTextChanged(filterText))
           {
-//the search term changed while we were filtering
+            //the search term changed while we were filtering
             this.LogDebug("Cancel filtering for " + filterText);
             break;
           }
@@ -129,15 +129,15 @@ namespace Mediaportal.TV.Server.SetupTV.Sections.Helpers
           if (ch.DisplayName != null &&
               (filterText.Equals("") || ContainsCaseInvariant(ch.DisplayName, filterText)))
           {
-            _listView.Invoke(new MethodInvoker(delegate() { items.Add(CreateListViewItemForChannel(ch, _allCards)); }));
+            _listView.Invoke(new MethodInvoker(delegate () { items.Add(CreateListViewItemForChannel(ch, _allCards)); }));
           }
         }
 
 
         if (!InvokeHasTextChanged(filterText))
         {
-//after filtering is done the filter is still valid
-          _listView.Invoke(new MethodInvoker(delegate()
+          //after filtering is done the filter is still valid
+          _listView.Invoke(new MethodInvoker(delegate ()
                                                {
                                                  _listView.Items.Clear();
                                                  _listView.Items.AddRange(items.ToArray());
@@ -156,7 +156,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections.Helpers
       }
       finally
       {
-        _listView.Invoke(new MethodInvoker(delegate()
+        _listView.Invoke(new MethodInvoker(delegate ()
                                              {
                                                _listView.EndUpdate();
                                                Application.UseWaitCursor = false;
@@ -174,7 +174,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections.Helpers
       bool textChanged = false;
       _currentText.Invoke(
         new MethodInvoker(
-          delegate() { textChanged = !_currentText.Text.Equals(filterText, StringComparison.InvariantCultureIgnoreCase); }));
+          delegate () { textChanged = !_currentText.Text.Equals(filterText, StringComparison.InvariantCultureIgnoreCase); }));
       return textChanged;
     }
 
@@ -197,7 +197,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections.Helpers
     /// <returns>Listview item representing the channel</returns>
     internal ListViewItem CreateListViewItemForChannel(Channel ch, Dictionary<int, CardType> cards)
     {
-      if (_listViewCache.ContainsKey(ch.IdChannel)) return _listViewCache[ch.IdChannel];
+      if (_listViewCache.ContainsKey(ch.ChannelId)) return _listViewCache[ch.ChannelId];
 
       bool analog = false;
       bool dvbc = false;
@@ -214,12 +214,12 @@ namespace Mediaportal.TV.Server.SetupTV.Sections.Helpers
       }
       if (notmapped)
       {
-        IList<ChannelMap> maps = ch.ChannelMaps;
+        var maps = ch.ChannelMaps;
         foreach (ChannelMap map in maps)
         {
-          if (cards.ContainsKey(map.IdCard))
+          if (cards.ContainsKey(map.CardId))
           {
-            CardType type = cards[map.IdCard];
+            CardType type = cards[map.CardId];
             switch (type)
             {
               case CardType.Analog:
@@ -260,14 +260,14 @@ namespace Mediaportal.TV.Server.SetupTV.Sections.Helpers
         groups.Add((gm.ChannelGroup.GroupName));
       }
 
-      
+
       List<string> groupNames = new List<string>();
       foreach (string groupName in groups)
       {
         if (groupName != TvConstants.TvGroupNames.AllChannels &&
             groupName != TvConstants.RadioGroupNames.AllChannels)
         {
-//Don't add "All Channels"
+          //Don't add "All Channels"
           groupNames.Add(groupName);
         }
       }
@@ -275,7 +275,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections.Helpers
       item.SubItems.Add(group);
 
       List<string> providers = new List<string>();
-      IList<TuningDetail> tuningDetails = ch.TuningDetails;
+      var tuningDetails = ch.TuningDetails;
       bool hasFta = false;
       bool hasScrambled = false;
       foreach (TuningDetail detail in tuningDetails)
@@ -382,7 +382,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections.Helpers
       item.SubItems.Add(builder.ToString());
       item.SubItems.Add(tuningDetails.Count.ToString());
 
-      _listViewCache.Add(ch.IdChannel, item);
+      _listViewCache.Add(ch.ChannelId, item);
 
       return item;
     }
