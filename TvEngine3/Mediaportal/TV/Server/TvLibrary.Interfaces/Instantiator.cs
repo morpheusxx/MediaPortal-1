@@ -12,11 +12,11 @@ namespace Mediaportal.TV.Server.TVLibrary.Interfaces
     /// <returns></returns>
     public IWindsorContainer Container(string configFile = null)
     {
-      var container = GlobalServiceProvider.Instance.Get<IWindsorContainer>();      
+      var container = GlobalServiceProvider.Instance.Get<IWindsorContainer>();
       if (container == null)
       {
         container = string.IsNullOrEmpty(configFile) ? new WindsorContainer(new XmlInterpreter()) : new WindsorContainer(configFile);
-        GlobalServiceProvider.Instance.Add<IWindsorContainer>(container); 
+        GlobalServiceProvider.Instance.Add<IWindsorContainer>(container);
       }
       return container;
     }
