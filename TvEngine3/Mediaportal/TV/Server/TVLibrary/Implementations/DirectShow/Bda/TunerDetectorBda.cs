@@ -418,7 +418,8 @@ namespace Mediaportal.TV.Server.TVLibrary.Implementations.DirectShow.Bda
       IBaseFilter mpNp = null;
       try
       {
-        mpNp = FilterGraphTools.AddFilterFromFile(_graph, "NetworkProvider.ax", typeof(MediaPortalNetworkProvider).GUID, "MediaPortal Network Provider");
+        var filterPath = PathManager.BuildAssemblyRelativePathForArchitecture("NetworkProvider.ax");
+        mpNp = FilterGraphTools.AddFilterFromFile(_graph, filterPath, typeof(MediaPortalNetworkProvider).GUID, "MediaPortal Network Provider");
       }
       catch (Exception ex)
       {

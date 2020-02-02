@@ -205,7 +205,8 @@ namespace Mediaportal.TV.Server.TVLibrary.Implementations.DirectShow.Bda
       this.LogDebug("BDA base: using {0}", filterName);
       if (_networkProviderClsid == typeof(MediaPortalNetworkProvider).GUID)
       {
-        _filterNetworkProvider = FilterGraphTools.AddFilterFromFile(_graph, "NetworkProvider.ax", _networkProviderClsid, filterName);
+        var filterPath = PathManager.BuildAssemblyRelativePathForArchitecture("NetworkProvider.ax");
+        _filterNetworkProvider = FilterGraphTools.AddFilterFromFile(_graph, filterPath, _networkProviderClsid, filterName);
         IDvbNetworkProvider internalNpInterface = _filterNetworkProvider as IDvbNetworkProvider;
         internalNpInterface.ConfigureLogging(MediaPortalNetworkProvider.GetFileName(ExternalId), MediaPortalNetworkProvider.GetHash(ExternalId), LogLevelOption.Debug);
       }
@@ -435,7 +436,7 @@ namespace Mediaportal.TV.Server.TVLibrary.Implementations.DirectShow.Bda
       _networkProviderClsid = NetworkProviderClsid; // specific network provider
       if (tuner.NetProvider == (int)DbNetworkProvider.MediaPortal)
       {
-        if (!File.Exists(PathManager.BuildAssemblyRelativePath("NetworkProvider.ax")))
+        if (!File.Exists(PathManager.BuildAssemblyRelativePathForArchitecture("NetworkProvider.ax")))
         {
           this.LogWarn("BDA base: MediaPortal network provider is not available, try Microsoft generic network provider");
           tuner.NetProvider = (int)DbNetworkProvider.Generic;

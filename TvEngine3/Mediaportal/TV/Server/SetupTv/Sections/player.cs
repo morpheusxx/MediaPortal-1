@@ -21,6 +21,7 @@
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using DirectShowLib;
+using Mediaportal.TV.Server.TVLibrary.Interfaces;
 using Mediaportal.TV.Server.TVLibrary.Interfaces.Logging;
 using Mediaportal.TV.Server.TVLibrary.Interfaces.Implementations.Helper;
 
@@ -30,10 +31,10 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
 {
   internal class Player
   {
- 
+
 
     [ComImport, Guid("b9559486-E1BB-45D3-A2A2-9A7AFE49B23F")]
-    protected class TsReader {}
+    protected class TsReader { }
 
     protected IFilterGraph2 _graphBuilder;
     protected DsROTEntry _rotEntry;
@@ -49,7 +50,8 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
       _graphBuilder = (IFilterGraph2)new FilterGraph();
       _rotEntry = new DsROTEntry(_graphBuilder);
 
-      _tsReader = ComHelper.LoadComObjectFromFile("TsReader.ax", typeof(TsReader).GUID, typeof(IBaseFilter).GUID, true) as IBaseFilter;
+      var filterPath = PathManager.BuildAssemblyRelativePathForArchitecture("TsReader.ax");
+      _tsReader = ComHelper.LoadComObjectFromFile(filterPath, typeof(TsReader).GUID, typeof(IBaseFilter).GUID, true) as IBaseFilter;
       this.LogInfo("TSReaderPlayer:add TsReader to graph");
       _graphBuilder.AddFilter(_tsReader, "TsReader");
 

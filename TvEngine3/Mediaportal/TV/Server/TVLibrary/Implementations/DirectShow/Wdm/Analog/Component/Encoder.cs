@@ -982,7 +982,8 @@ namespace Mediaportal.TV.Server.TVLibrary.Implementations.DirectShow.Wdm.Analog.
       this.LogDebug("WDM analog encoder: add and connect TS multiplexer");
       try
       {
-        _filterTsMultiplexer = FilterGraphTools.AddFilterFromFile(graph, "TsMuxer.ax", typeof(MediaPortalTsMultiplexer).GUID, "MediaPortal TS Multiplexer");
+        var filterPath = PathManager.BuildAssemblyRelativePathForArchitecture("TsMuxer.ax");
+        _filterTsMultiplexer = FilterGraphTools.AddFilterFromFile(graph, filterPath, typeof(MediaPortalTsMultiplexer).GUID, "MediaPortal TS Multiplexer");
       }
       catch (Exception ex)
       {
