@@ -1,11 +1,17 @@
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 
 namespace Mediaportal.TV.Server.TVDatabase.Entities
 {
-  public partial class CardGroup
+  [DataContract(IsReference = true)]
+  [KnownType(typeof(CardGroupMap))]
+  public class CardGroup
   {
+    [DataMember]
     public int CardGroupId { get; set; }
+    [DataMember]
     public string Name { get; set; }
+    [DataMember]
     public virtual ICollection<CardGroupMap> CardGroupMaps { get; set; }
   }
 }

@@ -19,9 +19,11 @@
 #endregion
 
 using System;
+using System.Runtime.Serialization;
 
 namespace Mediaportal.TV.Server.TVDatabase.Entities
 {
+  [DataContract]
   public class NowAndNext
   {
     public NowAndNext(int channelId, DateTime nowStart, DateTime nowEnd, string titleNow, string titleNext,
@@ -46,20 +48,35 @@ namespace Mediaportal.TV.Server.TVDatabase.Entities
       EpisodePartNext = episodePartNext;
     }
 
+    [DataMember]
     public int ChannelId { get; set; }
+    [DataMember]
     public DateTime NowStartTime { get; set; }
+    [DataMember]
     public DateTime NowEndTime { get; set; }
+    [DataMember]
     public string TitleNow { get; set; }
+    [DataMember]
     public string TitleNext { get; set; }
+    [DataMember]
     public int ProgramNowId { get; set; }
+    [DataMember]
     public int ProgramNextId { get; set; }
+    [DataMember]
     public string EpisodeName { get; set; }
+    [DataMember]
     public string EpisodeNameNext { get; set; }
+    [DataMember]
     public string SeriesNum { get; set; }
+    [DataMember]
     public string SeriesNumNext { get; set; }
+    [DataMember]
     public string EpisodeNum { get; set; }
+    [DataMember]
     public string EpisodeNumNext { get; set; }
+    [DataMember]
     public string EpisodePart { get; set; }
+    [DataMember]
     public string EpisodePartNext { get; set; }
   }
 }
