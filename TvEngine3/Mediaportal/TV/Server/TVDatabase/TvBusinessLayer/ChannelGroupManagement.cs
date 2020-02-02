@@ -58,8 +58,8 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
         if (group == null)
         {
           group = new ChannelGroup { GroupName = groupName, SortOrder = 9999, MediaType = (int)mediaType };
-          context.ChannelGroups.Add(group);
-          context.SaveChanges();
+          context.Update(group);
+          context.SaveChanges(true);
         }
         return group;
       }
@@ -73,7 +73,7 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
         if (group != null)
         {
           context.GroupMaps.Remove(group);
-          context.SaveChanges();
+          context.SaveChanges(true);
         }
       }
     }
@@ -91,8 +91,8 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
     {
       using (TvEngineDbContext context = new TvEngineDbContext())
       {
-        context.ChannelGroups.Add(group);
-        context.SaveChanges();
+        context.Update(group);
+        context.SaveChanges(true);
         return group;
       }
     }
@@ -101,6 +101,7 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
     {
       using (TvEngineDbContext context = new TvEngineDbContext())
       {
+        // TODO: Check for cascade rule
         var group = context.ChannelGroups.IncludeAllRelations(ChannelGroupIncludeRelationEnum.GroupMaps).FirstOrDefault(g => g.ChannelGroupId == idGroup);
         if (group.GroupMaps.Count > 0)
         {
@@ -110,7 +111,7 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
           }
         }
         context.ChannelGroups.Remove(group);
-        context.SaveChanges();
+        context.SaveChanges(true);
       }
     }
 

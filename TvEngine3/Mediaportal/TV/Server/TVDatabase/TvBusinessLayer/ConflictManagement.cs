@@ -41,7 +41,7 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
         if (conflict != null)
         {
           context.Conflicts.Remove(conflict);
-          context.SaveChanges();
+          context.SaveChanges(true);
         }
       }
     }

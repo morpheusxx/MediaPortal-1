@@ -13,8 +13,8 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
     {
       using (TvEngineDbContext context = new TvEngineDbContext())
       {
-        context.ProgramCategories.Add(category);
-        context.SaveChanges();
+        context.Update(category);
+        context.SaveChanges(true);
       }
     }
 
@@ -30,8 +30,8 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
     {
       using (TvEngineDbContext context = new TvEngineDbContext())
       {
-        context.ProgramCategories.Add(category);
-        context.SaveChanges();
+        context.Update(category);
+        context.SaveChanges(true);
         return category;
       }
     }
@@ -40,8 +40,8 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
     {
       using (TvEngineDbContext context = new TvEngineDbContext())
       {
-        context.TvGuideCategories.Add(tvGuideCategorycategory);
-        context.SaveChanges();
+        context.Update(tvGuideCategorycategory);
+        context.SaveChanges(true);
         return tvGuideCategorycategory;
       }
     }

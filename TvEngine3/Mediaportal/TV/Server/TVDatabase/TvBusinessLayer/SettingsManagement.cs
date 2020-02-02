@@ -43,7 +43,7 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
           setting.Value = value;
         }
 
-        context.SaveChanges();
+        context.SaveChanges(true);
         return setting;
       }
     }
@@ -66,7 +66,7 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
         {
           setting = new Setting { Value = defaultValue, Tag = tagName };
           context.Settings.Add(setting);
-          context.SaveChanges();
+          context.SaveChanges(true);
         }
         return setting;
       }
@@ -93,7 +93,7 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
         if (setting == null)
           return;
         context.Settings.Remove(setting);
-        context.SaveChanges();
+        context.SaveChanges(true);
       }
     }
 

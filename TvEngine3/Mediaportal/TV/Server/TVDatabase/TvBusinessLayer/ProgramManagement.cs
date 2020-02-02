@@ -178,8 +178,8 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
           SynchronizeDateHelpers(program);
         }
 
-        context.Programs.AddRange(importParams.ProgramList);
-        context.SaveChanges();
+        context.UpdateRange(importParams.ProgramList);
+        context.SaveChanges(true);
         context.Database.CommitTransaction();
       }
 
@@ -218,7 +218,7 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
       {
         string sql = "Delete FROM programs";
         context.Database.ExecuteSqlRaw(sql);
-        context.SaveChanges();
+        context.SaveChanges(true);
       }
     }
 
@@ -226,8 +226,8 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
     {
       using (TvEngineDbContext context = new TvEngineDbContext())
       {
-        context.Programs.Add(prg);
-        context.SaveChanges();
+        context.Update(prg);
+        context.SaveChanges(true);
       }
     }
 
@@ -306,8 +306,8 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
     {
       using (TvEngineDbContext context = new TvEngineDbContext())
       {
-        context.Programs.AddRange(programs);
-        context.SaveChanges();
+        context.UpdateRange(programs);
+        context.SaveChanges(true);
       }
     }
 
@@ -668,8 +668,8 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
       using (TvEngineDbContext context = new TvEngineDbContext())
       {
         SynchronizeDateHelpers(program);
-        context.Programs.Add(program);
-        context.SaveChanges();
+        context.Update(program);
+        context.SaveChanges(true);
         return program;
       }
     }
@@ -816,7 +816,7 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
           // TODO check if changes by ProgramBLL are visible to EFCore change tracker
           var programBll = new ProgramBLL(program) { IsRecordingOncePending = false, IsRecordingSeriesPending = true };
           //programRepository.Update(programBll.Entity);
-          context.SaveChanges();
+          context.SaveChanges(true);
         }
       }
     }
@@ -1106,7 +1106,7 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
         if (program != null)
         {
           context.Programs.Remove(program);
-          context.SaveChanges();
+          context.SaveChanges(true);
         }
       }
     }
@@ -1120,7 +1120,7 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
         if (programs.Any())
         {
           context.Programs.RemoveRange(programs);
-          context.SaveChanges();
+          context.SaveChanges(true);
         }
       }
     }
@@ -1134,7 +1134,7 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
         if (programs.Any())
         {
           context.Programs.RemoveRange(programs);
-          context.SaveChanges();
+          context.SaveChanges(true);
         }
       }
     }
@@ -1196,8 +1196,8 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
       using (TvEngineDbContext context = new TvEngineDbContext())
       {
         SynchronizeDateHelpers(progs);
-        context.Programs.AddRange(programs);
-        context.SaveChanges();
+        context.UpdateRange(progs);
+        context.SaveChanges(true);
         //programRepository.AttachEntityIfChangeTrackingDisabled(programRepository.ObjectContext.Programs, progs);
         //programRepository.ApplyChanges(programRepository.ObjectContext.Programs, progs);
         //programRepository.UnitOfWork.SaveChanges(SaveOptions.AcceptAllChangesAfterSave);
@@ -1253,7 +1253,7 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
         if (!toRemove.Any())
           return;
         context.Programs.RemoveRange(toRemove);
-        context.SaveChanges();
+        context.SaveChanges(true);
       }
     }
 

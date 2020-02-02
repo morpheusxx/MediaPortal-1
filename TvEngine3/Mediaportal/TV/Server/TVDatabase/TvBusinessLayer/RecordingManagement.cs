@@ -32,7 +32,7 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
         if (recording != null)
         {
           context.Recordings.Remove(recording);
-          context.SaveChanges();
+          context.SaveChanges(true);
         }
       }
     }
@@ -56,8 +56,8 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
     {
       using (TvEngineDbContext context = new TvEngineDbContext())
       {
-        context.Recordings.Add(recording);
-        context.SaveChanges();
+        context.Update(recording);
+        context.SaveChanges(true);
         return recording;
       }
     }
@@ -112,8 +112,8 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
     {
       using (TvEngineDbContext context = new TvEngineDbContext())
       {
-        context.PendingDeletions.Add(pendingDeletion);
-        context.SaveChanges();
+        context.Update(pendingDeletion);
+        context.SaveChanges(true);
         return pendingDeletion;
       }
     }
@@ -126,7 +126,7 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
         if (pendingDeletion != null)
         {
           context.PendingDeletions.Remove(pendingDeletion);
-          context.SaveChanges();
+          context.SaveChanges(true);
         }
       }
     }
@@ -155,7 +155,7 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
         {
           rec.IsRecording = false;
         }
-        context.SaveChanges();
+        context.SaveChanges(true);
       }
     }
   }

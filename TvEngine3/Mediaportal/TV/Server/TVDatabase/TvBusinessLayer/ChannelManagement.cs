@@ -105,9 +105,9 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
       using (var context = new TvEngineDbContext())
       {
         var entities = channels.ToList();
-        context.Channels.AddRange(entities);
-        context.SaveChanges();
-        return entities.ToList();
+        context.UpdateRange(entities);
+        context.SaveChanges(true);
+        return entities;
       }
     }
 
@@ -163,11 +163,11 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
 
       using (var context = new TvEngineDbContext())
       {
-        context.Channels.Add(channel);
+        context.Update(channel);
 
         //channelRepository.AttachEntityIfChangeTrackingDisabled(channelRepository.ObjectContext.Channels, channel);
         //channelRepository.ApplyChanges(channelRepository.ObjectContext.Channels, channel);
-        context.SaveChanges();
+        context.SaveChanges(true);
 
         IList<Action> events = new List<Action>();
 
@@ -444,8 +444,8 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
     {
       using (TvEngineDbContext context = new TvEngineDbContext())
       {
-        context.TuningDetails.Add(tuningDetail);
-        context.SaveChanges();
+        context.Update(tuningDetail);
+        context.SaveChanges(true);
         //channelRepository.AttachEntityIfChangeTrackingDisabled(channelRepository.ObjectContext.TuningDetails, tuningDetail);
         //channelRepository.ApplyChanges(channelRepository.ObjectContext.TuningDetails, tuningDetail);
         //channelRepository.UnitOfWork.SaveChanges();
@@ -458,8 +458,8 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
     {
       using (TvEngineDbContext context = new TvEngineDbContext())
       {
-        context.ChannelLinkageMaps.Add(map);
-        context.SaveChanges();
+        context.Update(map);
+        context.SaveChanges(true);
         //channelRepository.AttachEntityIfChangeTrackingDisabled(channelRepository.ObjectContext.ChannelLinkageMaps, map);
         //channelRepository.ApplyChanges(channelRepository.ObjectContext.ChannelLinkageMaps, map);
         //channelRepository.UnitOfWork.SaveChanges();
@@ -476,7 +476,7 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
         if (toDelete.Any())
         {
           context.ChannelLinkageMaps.RemoveRange(toDelete);
-          context.SaveChanges();
+          context.SaveChanges(true);
         }
       }
     }
@@ -501,8 +501,8 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
     {
       using (TvEngineDbContext context = new TvEngineDbContext())
       {
-        context.Histories.Add(history);
-        context.SaveChanges();
+        context.Update(history);
+        context.SaveChanges(true);
         //channelRepository.AttachEntityIfChangeTrackingDisabled(channelRepository.ObjectContext.Histories, history);
         //channelRepository.ApplyChanges(channelRepository.ObjectContext.Histories, history);
         //channelRepository.UnitOfWork.SaveChanges();
@@ -517,7 +517,7 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
       {
         var channel = GetChannel(idChannel);
         context.Channels.Remove(channel);
-        context.SaveChanges();
+        context.SaveChanges(true);
         ////SetRelatedRecordingsToNull(idChannel, channelRepository);
         //// todo gibman, why do we have to delete all the related entities manually? This should be on-delete-cascade in most cases (exception: recordings).
         //Channel channel = GetChannel(idChannel);
@@ -811,8 +811,7 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
         if (toRemove != null)
         {
           context.TuningDetails.Remove(toRemove);
-          context.SaveChanges();
-
+          context.SaveChanges(true);
         }
       }
     }
@@ -821,9 +820,8 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
     {
       using (TvEngineDbContext context = new TvEngineDbContext())
       {
-        context.GroupMaps.Add(groupMap);
-        // TODO: replace all with SaveChanges(true)
-        context.SaveChanges();
+        context.Update(groupMap);
+        context.SaveChanges(true);
         //channelRepository.AttachEntityIfChangeTrackingDisabled(channelRepository.ObjectContext.GroupMaps, groupMap);
         //channelRepository.ApplyChanges(channelRepository.ObjectContext.GroupMaps, groupMap);
         //channelRepository.UnitOfWork.SaveChanges();
@@ -837,8 +835,8 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
       using (TvEngineDbContext context = new TvEngineDbContext())
       {
         var entities = groupMaps.ToList();
-        context.GroupMaps.AddRange(entities);
-        context.SaveChanges();
+        context.UpdateRange(entities);
+        context.SaveChanges(true);
         //channelRepository.AttachEntityIfChangeTrackingDisabled(channelRepository.ObjectContext.GroupMaps, groupMaps);
         //channelRepository.ApplyChanges(channelRepository.ObjectContext.GroupMaps, groupMaps);
         //channelRepository.UnitOfWork.SaveChanges();
@@ -964,7 +962,7 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
       {
         return context.Channels
           .IncludeAllRelations(includeRelations)
-          .Where(c => (c.MediaType == (int)MediaTypeEnum.TV || c.MediaType == (int)MediaTypeEnum.Radio)  && c.GrabEpg && !c.TuningDetails.Any(t => t.ChannelType == 0 || t.ChannelType == 5))
+          .Where(c => (c.MediaType == (int)MediaTypeEnum.TV || c.MediaType == (int)MediaTypeEnum.Radio) && c.GrabEpg && !c.TuningDetails.Any(t => t.ChannelType == 0 || t.ChannelType == 5))
           .OrderBy(c => c.SortOrder).ToList();
       }
     }

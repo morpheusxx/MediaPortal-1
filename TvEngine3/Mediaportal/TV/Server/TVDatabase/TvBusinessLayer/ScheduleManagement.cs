@@ -35,8 +35,8 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
     {
       using (TvEngineDbContext context = new TvEngineDbContext())
       {
-        context.Schedules.Add(schedule);
-        context.SaveChanges();
+        context.Update(schedule);
+        context.SaveChanges(true);
       }
       ProgramManagement.SynchProgramStates(schedule.ScheduleId);
       return schedule;
@@ -155,7 +155,7 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
           return;
 
         context.Schedules.Remove(scheduleToDelete);
-        context.SaveChanges();
+        context.SaveChanges(true);
       }
       ProgramManagement.SynchProgramStates(new ScheduleBLL(scheduleToDelete));
     }
@@ -239,7 +239,7 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
                                                            canceledSchedule.Schedule.ProgramName);
           }
         }
-        context.SaveChanges();
+        context.SaveChanges(true);
       }
     }
 
@@ -593,7 +593,7 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
           {
             context.Schedules.Remove(schedule);
           }
-          context.SaveChanges();
+          context.SaveChanges(true);
         }
       }
     }
@@ -632,8 +632,8 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
     {
       using (TvEngineDbContext context = new TvEngineDbContext())
       {
-        context.RuleBasedSchedules.Add(schedule);
-        context.SaveChanges();
+        context.Update(schedule);
+        context.SaveChanges(true);
         return schedule;
       }
     }

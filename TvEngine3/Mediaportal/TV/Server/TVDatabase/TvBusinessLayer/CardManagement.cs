@@ -62,8 +62,8 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
     {
       using (TvEngineDbContext context = new TvEngineDbContext())
       {
-        context.Cards.Add(card);
-        context.SaveChanges();
+        context.Update(card);
+        context.SaveChanges(true);
         return card;
       }
     }
@@ -76,7 +76,7 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
         if (card != null)
         {
           context.Cards.Remove(card);
-          context.SaveChanges();
+          context.SaveChanges(true);
         }
       }
     }
@@ -93,8 +93,8 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
     {
       using (TvEngineDbContext context = new TvEngineDbContext())
       {
-        context.DisEqcMotors.Add(motor);
-        context.SaveChanges();
+        context.Update(motor);
+        context.SaveChanges(true);
         return motor;
       }
     }
@@ -119,8 +119,8 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
     {
       using (TvEngineDbContext context = new TvEngineDbContext())
       {
-        context.CardGroups.Add(@group);
-        context.SaveChanges();
+        context.Update(@group);
+        context.SaveChanges(true);
         return @group;
       }
     }
@@ -133,7 +133,7 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
         if (cardGroup != null)
         {
           context.CardGroups.Remove(cardGroup);
-          context.SaveChanges();
+          context.SaveChanges(true);
         }
       }
     }
@@ -166,8 +166,8 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
     {
       using (TvEngineDbContext context = new TvEngineDbContext())
       {
-        context.Satellites.Add(satellite);
-        context.SaveChanges();
+        context.Update(satellite);
+        context.SaveChanges(true);
         return satellite;
       }
     }
@@ -176,8 +176,8 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
     {
       using (TvEngineDbContext context = new TvEngineDbContext())
       {
-        context.SoftwareEncoders.Add(encoder);
-        context.SaveChanges();
+        context.Update(encoder);
+        context.SaveChanges(true);
         return encoder;
       }
     }
@@ -190,7 +190,7 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
         if (map != null)
         {
           context.CardGroupMaps.Remove(map);
-          context.SaveChanges();
+          context.SaveChanges(true);
         }
       }
     }
@@ -199,8 +199,8 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
     {
       using (TvEngineDbContext context = new TvEngineDbContext())
       {
-        context.CardGroupMaps.Add(map);
-        context.SaveChanges();
+        context.Update(map);
+        context.SaveChanges(true);
         return map;
       }
     }
@@ -217,8 +217,8 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
     {
       using (TvEngineDbContext context = new TvEngineDbContext())
       {
-        context.Cards.AddRange(cards);
-        context.SaveChanges();
+        context.UpdateRange(cards);
+        context.SaveChanges(true);
         return cards.ToList();
       }
     }

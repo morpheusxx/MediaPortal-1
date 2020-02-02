@@ -56,7 +56,7 @@ namespace Tve35_EFCore.Context
       ctx.SoftwareEncoders.Add(new SoftwareEncoder { SoftwareEncoderId = 27, Name = "NVIDIA Audio Encoder", Priority = 14, Reusable = true, Type = 1 });
       ctx.SoftwareEncoders.Add(new SoftwareEncoder { SoftwareEncoderId = 28, Name = "Ulead MPEG Audio Encoder", Priority = 15, Reusable = true, Type = 1 });
 
-      ctx.SaveChanges();
-  }
+      ctx.SaveChanges(true);
+    }
   }
 }

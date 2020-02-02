@@ -11,8 +11,8 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
     {
       using (TvEngineDbContext context = new TvEngineDbContext())
       {
-        context.CanceledSchedules.Add(canceledSchedule);
-        context.SaveChanges();
+        context.Update(canceledSchedule);
+        context.SaveChanges(true);
       }
 
       ProgramManagement.SynchProgramStates(canceledSchedule.ScheduleId);
