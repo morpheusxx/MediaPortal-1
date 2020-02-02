@@ -94,6 +94,12 @@ namespace Mediaportal.TV.Server.TVLibrary.Streaming
 
     #region constructor
 
+    static RtspStreaming()
+    {
+      if (!PathManager.SetPlatformSearchDirectories(out string selectedPath))
+        Log.Error("Failed to set platform specific search directory!");
+    }
+
     /// <summary>
     /// Initializes a new instance of the <see cref="RtspStreaming"/> class.
     /// </summary>

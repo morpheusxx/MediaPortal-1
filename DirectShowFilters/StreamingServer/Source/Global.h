@@ -377,7 +377,7 @@ public:
    {
 		#ifndef DEBUG
 			m_nAffinity = 0;
-			DWORD SystemAffinityMask = 0;
+      DWORD_PTR SystemAffinityMask = 0;
 			if (GetProcessAffinityMask(GetCurrentProcess(), &m_nAffinity, &SystemAffinityMask)
 				&& SystemAffinityMask > 1)
 				SetThreadAffinityMask(GetCurrentThread(), 0x01&m_nAffinity);
@@ -392,7 +392,7 @@ public:
 		#endif
    }
      
-   DWORD m_nAffinity;
+   DWORD_PTR m_nAffinity;
 };
 
 class SecondAffinity
@@ -402,7 +402,7 @@ public:
    {
 		#ifndef DEBUG
 			m_nAffinity = 0;
-			DWORD SystemAffinityMask = 0;
+			DWORD_PTR SystemAffinityMask = 0;
 			if (GetProcessAffinityMask(GetCurrentProcess(), &m_nAffinity, &SystemAffinityMask)
 				&& SystemAffinityMask > 1)
 				SetThreadAffinityMask(GetCurrentThread(), 0x10&m_nAffinity);
@@ -417,7 +417,7 @@ public:
 		#endif
    }
      
-   DWORD m_nAffinity;
+   DWORD_PTR m_nAffinity;
 };
 
 #endif
