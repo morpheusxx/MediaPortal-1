@@ -536,7 +536,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
               dbChannel.ChannelNumber = channel.LogicalChannelNumber;
               dbChannel.MediaType = (int) channel.MediaType;
               dbChannel = ServiceAgents.Instance.ChannelServiceAgent.SaveChannel(dbChannel);
-              dbChannel.AcceptChanges();
+              //dbChannel.AcceptChanges();
             }
             else
             {

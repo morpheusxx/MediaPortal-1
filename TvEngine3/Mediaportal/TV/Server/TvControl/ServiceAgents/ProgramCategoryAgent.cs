@@ -23,13 +23,13 @@ namespace Mediaportal.TV.Server.TVControl.ServiceAgents
 
     public TvGuideCategory SaveTvGuideCategory(TvGuideCategory tvGuideCategory)
     {
-      tvGuideCategory.UnloadAllUnchangedRelationsForEntity();
+      //tvGuideCategory.UnloadAllUnchangedRelationsForEntity();
       return _channel.SaveTvGuideCategory(tvGuideCategory);
     }
 
     public ProgramCategory SaveProgramCategory(ProgramCategory programCategory)
     {
-      programCategory.UnloadAllUnchangedRelationsForEntity();
+      //programCategory.UnloadAllUnchangedRelationsForEntity();
       return _channel.SaveProgramCategory(programCategory);
     }
   }

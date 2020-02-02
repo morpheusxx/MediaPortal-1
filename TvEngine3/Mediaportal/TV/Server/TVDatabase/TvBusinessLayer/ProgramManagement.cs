@@ -1245,18 +1245,29 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
       return programs;
     }
 
-    //public static void DeleteAllProgramsWithChannelId(int idChannel)
-    //{
-    //  Delete<Program>(p => p.IdChannel == idChannel);
-    //  UnitOfWork.SaveChanges();
-    //}
+    public void DeleteAllProgramsWithChannelId(int idChannel)
+    {
+      using (TvEngineDbContext context = new TvEngineDbContext())
+      {
+        var toRemove = context.Programs.Where(p => p.ChannelId == idChannel);
+        if (!toRemove.Any())
+          return;
+        context.Programs.RemoveRange(toRemove);
+        context.SaveChanges();
+      }
+    }
 
-    //public Program GetProgramAt(DateTime date, string title)
-    //{
-    //  var programAt = GetQuery<Program>().Where(p => p.Title == title && p.EndTime > date && p.StartTime <= date);
-    //  programAt = IncludeAllRelations(programAt).OrderBy(p => p.StartTime);
-    //  return programAt.FirstOrDefault();
-    //}
+    public static Program GetProgramAt(DateTime date, string title)
+    {
+      using (TvEngineDbContext context = new TvEngineDbContext())
+      {
+        return context.Programs
+          .IncludeAllRelations()
+          .Where(p => p.Title == title && p.EndTime > date && p.StartTime <= date)
+          .OrderBy(p => p.StartTime)
+          .FirstOrDefault();
+      }
+    }
   }
 
   public static class ProgramExtensions

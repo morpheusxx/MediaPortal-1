@@ -1,21 +1,23 @@
 ﻿using System;
+using AutoMapper;
 using Mediaportal.TV.Server.TVDatabase.Entities.Enums;
 
 namespace Mediaportal.TV.Server.TVDatabase.Entities.Factories
 {
   public static class ProgramFactory
   {
+    private static readonly Mapper _mapper;
 
-    //public static Program Clone(Program source)
-    //{
-    //  return CloneHelper.DeepCopy<Program>(source);
-    //  /*Program p = CreateProgram( source.idChannel, source.startTime, source.endTime, source.title, source.description, source.ProgramCategory, (ProgramState)source.state,
-    //                          source.originalAirDate,
-    //                          source.seriesNum, source.episodeNum, source.episodeName, source.episodePart, source.starRating, source.classification,
-    //                          source.parentalRating);
-    //  p.idProgram = source.idProgram;*/
-    //}
+    static ProgramFactory()
+    {
+      MapperConfiguration config = new MapperConfiguration(c => { c.CreateMap<Program, Program>(); });
+      _mapper = new Mapper(config);
+    }
 
+    public static Program Clone(Program source)
+    {
+      return _mapper.Map<Program>(source);
+    }
 
     public static Program CreateProgram(int idChannel, DateTime startTime, DateTime endTime, string title, string description, ProgramCategory category,
                    ProgramState state, DateTime originalAirDate, string seriesNum, string episodeNum, string episodeName,

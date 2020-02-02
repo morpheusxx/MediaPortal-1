@@ -9,26 +9,26 @@ namespace Mediaportal.TV.Server.TVControl.ServiceAgents
   {
     public static GroupMap AddChannelToGroup(ref Channel channel, ChannelGroup @group)
     {
-      foreach (GroupMap groupMap in channel.GroupMaps.Where(groupMap => groupMap.IdGroup == @group.IdGroup))
+      foreach (GroupMap groupMap in channel.GroupMaps.Where(groupMap => groupMap.ChannelGroupId == @group.ChannelGroupId))
       {
         return groupMap;
       }
       DoAddChannelToGroup(channel, group);
       channel = ServiceAgents.Instance.ChannelServiceAgent.SaveChannel(channel);
-      channel.AcceptChanges();
-      return channel.GroupMaps.FirstOrDefault(gMap => gMap.IdGroup == @group.IdGroup);
+      //channel.AcceptChanges();
+      return channel.GroupMaps.FirstOrDefault(gMap => gMap.ChannelGroupId == @group.ChannelGroupId);
     }
 
     private static void DoAddChannelToGroup(Channel channel, ChannelGroup @group)
     {
       var groupMap = new GroupMap
-                       {
-                         //Channel = channel, // causes : AcceptChanges cannot continue because the object's key values conflict with another object in the ObjectStateManager. Make sure that the key values are unique before calling AcceptChanges.
-                         //ChannelGroup = group,
-                         IdChannel = channel.IdChannel,
-                         IdGroup = @group.IdGroup,                         
-                         SortOrder = channel.SortOrder
-                       };
+      {
+        //Channel = channel, // causes : AcceptChanges cannot continue because the object's key values conflict with another object in the ObjectStateManager. Make sure that the key values are unique before calling AcceptChanges.
+        //ChannelGroup = group,
+        ChannelId = channel.ChannelId,
+        ChannelGroupId = @group.ChannelGroupId,
+        SortOrder = channel.SortOrder
+      };
       channel.GroupMaps.Add(groupMap);
     }
 
@@ -52,8 +52,8 @@ namespace Mediaportal.TV.Server.TVControl.ServiceAgents
     }
 
     public static ChannelMap AddChannelToCard(Channel channel, Card card, bool epg)
-    {      
-      foreach (ChannelMap channelMap in channel.ChannelMaps.Where(chMap => chMap.IdCard == card.IdCard))
+    {
+      foreach (ChannelMap channelMap in channel.ChannelMaps.Where(chMap => chMap.CardId == card.CardId))
       {
         //already associated ?
         return channelMap;
@@ -61,18 +61,18 @@ namespace Mediaportal.TV.Server.TVControl.ServiceAgents
 
       var map = new ChannelMap()
       {
-        IdChannel = channel.IdChannel,
-        IdCard =  card.IdCard,
+        ChannelId = channel.ChannelId,
+        CardId = card.CardId,
         EpgOnly = epg
       };
-      
+
       channel.ChannelMaps.Add(map);
       channel = ServiceAgents.Instance.ChannelServiceAgent.SaveChannel(channel);
-      channel.AcceptChanges();
-      return channel.ChannelMaps.FirstOrDefault(chMap => chMap.IdCard == card.IdCard);
+      //channel.AcceptChanges();
+      return channel.ChannelMaps.FirstOrDefault(chMap => chMap.CardId == card.CardId);
     }
 
-    
-  
+
+
   }
 }

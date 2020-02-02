@@ -202,7 +202,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
         }
         group = new ChannelGroup { GroupName = dlg.GroupName, SortOrder = 9999, MediaType = (int)_mediaType };
         group = ServiceAgents.Instance.ChannelGroupServiceAgent.SaveGroup(group);
-        group.AcceptChanges();
+        //group.AcceptChanges();
 
         RefreshContextMenu();
       }
@@ -339,9 +339,9 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
           if (channel.SortOrder != i)
           {
             channel.SortOrder = i;
-            channel.UnloadAllUnchangedRelationsForEntity();
+            //channel.UnloadAllUnchangedRelationsForEntity();
             channels.Add(channel);
-            channel.AcceptChanges();
+            //channel.AcceptChanges();
             mpListView1.Items[i].Tag = channel;
           }
         }
@@ -361,7 +361,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
         group.SortOrder = i - 1;
         group.MediaType = (int)_mediaType;
         group = ServiceAgents.Instance.ChannelGroupServiceAgent.SaveGroup(group);
-        group.AcceptChanges();
+        //group.AcceptChanges();
       }
       RefreshAll();
     }
@@ -373,7 +373,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
         Channel channel = (Channel)mpListView1.Items[e.Item].Tag;
         channel.DisplayName = e.Label;
         channel = ServiceAgents.Instance.ChannelServiceAgent.SaveChannel(channel);
-        channel.AcceptChanges();
+        //channel.AcceptChanges();
       }
     }
 
@@ -386,7 +386,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
         {
           ch.VisibleInGuide = e.Item.Checked;
           ch = ServiceAgents.Instance.ChannelServiceAgent.SaveChannel(ch);
-          ch.AcceptChanges();
+          //ch.AcceptChanges();
         }
       }
     }
@@ -620,7 +620,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
           item.Checked = false;
           _channel.VisibleInGuide = false;
           _channel = ServiceAgents.Instance.ChannelServiceAgent.SaveChannel(_channel);
-          _channel.AcceptChanges();
+          //_channel.AcceptChanges();
         }
         if (_abortScanning)
         {
@@ -698,7 +698,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
       var group = new ChannelGroup { GroupName = dlg.GroupName, SortOrder = 9999, MediaType = (int)_mediaType };
 
       group = ServiceAgents.Instance.ChannelGroupServiceAgent.SaveGroup(group);
-      group.AcceptChanges();
+      //group.AcceptChanges();
 
       RefreshContextMenu();
       RefreshTabs();
@@ -729,7 +729,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
       group.GroupName = dlgGrpName.GroupName;
       group.MediaType = (int)_mediaType;
       group = ServiceAgents.Instance.ChannelGroupServiceAgent.SaveGroup(group);
-      group.AcceptChanges();
+      //group.AcceptChanges();
 
       if (group.GroupMaps.Count > 0)
       {
@@ -969,7 +969,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
       group.GroupName = dlg.GroupName;
       group.MediaType = (int)_mediaType;
       group = ServiceAgents.Instance.ChannelGroupServiceAgent.SaveGroup(group);
-      group.AcceptChanges();
+      //group.AcceptChanges();
 
       tab.Text = dlg.GroupName;
 

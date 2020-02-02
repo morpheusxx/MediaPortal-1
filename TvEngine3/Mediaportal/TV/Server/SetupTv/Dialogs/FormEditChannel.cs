@@ -291,7 +291,7 @@ namespace Mediaportal.TV.Server.SetupTV.Dialogs
           {
             int index = mpListView1.SelectedIndices[i];
             TuningDetail tuningDetailToDelete = _channel.TuningDetails.ToArray()[index];
-            tuningDetailToDelete.ChangeTracker.State = ObjectState.Deleted;
+            //tuningDetailToDelete.ChangeTracker.State = ObjectState.Deleted;
           }
           UpdateTuningDetailList();
         }

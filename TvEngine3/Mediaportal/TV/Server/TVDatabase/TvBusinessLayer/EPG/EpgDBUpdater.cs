@@ -299,7 +299,7 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer.EPG
 
     private Channel IsInsertAllowed(EpgChannel epgChannel)
     {
-      DVBBaseChannel dvbChannel = (DVBBaseChannel) epgChannel.Channel;
+      DVBBaseChannel dvbChannel = (DVBBaseChannel)epgChannel.Channel;
       //are there any epg infos for this channel?
       if (epgChannel.Programs.Count == 0)
       {
@@ -331,7 +331,7 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer.EPG
         return null;
       }
       //should we store epg for this channel?
-      var isRadio = dbChannel.MediaType == (decimal) MediaTypeEnum.Radio;
+      var isRadio = dbChannel.MediaType == (decimal)MediaTypeEnum.Radio;
       if ((isRadio && StoreOnlySelectedChannelsRadio) || (!isRadio && StoreOnlySelectedChannels))
       {
         if (!dbChannel.GrabEpg)
@@ -529,8 +529,8 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer.EPG
         // as also the relation to ProgramCategory will be tracked.
         if (programCategory != null)
         {
-          prgBLL.Entity.ProgramCategoryId = programCategory.IdProgramCategory;
-        } 
+          prgBLL.Entity.ProgramCategoryId = programCategory.ProgramCategoryId;
+        }
         prgBLL.Entity.StarRating = starRating;
         prgBLL.Entity.Classification = classification;
         prgBLL.Entity.ParentalRating = parentRating;

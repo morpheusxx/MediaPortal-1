@@ -23,7 +23,7 @@ namespace Mediaportal.TV.Server.TVControl.ServiceAgents
 
     public Card SaveCard(Card card)
     {
-      card.UnloadAllUnchangedRelationsForEntity();
+      //card.UnloadAllUnchangedRelationsForEntity();
       return _channel.SaveCard(card);
     }
 
@@ -34,7 +34,7 @@ namespace Mediaportal.TV.Server.TVControl.ServiceAgents
 
     public DisEqcMotor SaveDisEqcMotor(DisEqcMotor motor)
     {
-      motor.UnloadAllUnchangedRelationsForEntity();
+      //motor.UnloadAllUnchangedRelationsForEntity();
       return _channel.SaveDisEqcMotor(motor);
     }
 
@@ -45,7 +45,7 @@ namespace Mediaportal.TV.Server.TVControl.ServiceAgents
 
     public CardGroup SaveCardGroup(CardGroup @group)
     {
-      @group.UnloadAllUnchangedRelationsForEntity();
+      //@group.UnloadAllUnchangedRelationsForEntity();
       return _channel.SaveCardGroup(@group);
     }
 
@@ -76,13 +76,13 @@ namespace Mediaportal.TV.Server.TVControl.ServiceAgents
 
     public Satellite SaveSatellite(Satellite satellite)
     {
-      satellite.UnloadAllUnchangedRelationsForEntity();
+      //satellite.UnloadAllUnchangedRelationsForEntity();
       return _channel.SaveSatellite(satellite);
     }
 
     public SoftwareEncoder SaveSoftwareEncoder(SoftwareEncoder encoder)
     {
-      encoder.UnloadAllUnchangedRelationsForEntity();
+      //encoder.UnloadAllUnchangedRelationsForEntity();
       return _channel.SaveSoftwareEncoder(encoder);
     }
 
@@ -93,7 +93,7 @@ namespace Mediaportal.TV.Server.TVControl.ServiceAgents
 
     public CardGroupMap SaveCardGroupMap(CardGroupMap map)
     {
-      map.UnloadAllUnchangedRelationsForEntity();
+      //map.UnloadAllUnchangedRelationsForEntity();
       return _channel.SaveCardGroupMap(map);
     }
 

@@ -23,7 +23,7 @@ namespace Mediaportal.TV.Server.TVControl.ServiceAgents
 
     public Recording SaveRecording(Recording recording)
     {
-      recording.UnloadAllUnchangedRelationsForEntity();
+      //recording.UnloadAllUnchangedRelationsForEntity();
       return _channel.SaveRecording(recording);
     }
 

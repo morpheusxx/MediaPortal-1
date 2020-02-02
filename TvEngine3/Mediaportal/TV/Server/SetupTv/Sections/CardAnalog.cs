@@ -634,7 +634,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
       }
       dbChannel.MediaType = (int)channel.MediaType;
       dbChannel = ServiceAgents.Instance.ChannelServiceAgent.SaveChannel(dbChannel);
-      dbChannel.AcceptChanges();
+      //dbChannel.AcceptChanges();
       if (!exists)
       {
         ServiceAgents.Instance.ChannelServiceAgent.AddTuningDetail(dbChannel.ChannelId, channel);

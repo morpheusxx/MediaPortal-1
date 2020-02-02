@@ -20,10 +20,10 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
   public static class ChannelManagement
   {
 
-    public delegate void OnStateChangedTuningDetailDelegate(TuningDetail tuningDetail, ObjectState state);
+    public delegate void OnStateChangedTuningDetailDelegate(TuningDetail tuningDetail, EntityState state);
     public static event OnStateChangedTuningDetailDelegate OnStateChangedTuningDetailEvent;
 
-    public delegate void OnStateChangedChannelMapDelegate(ChannelMap map, ObjectState state);
+    public delegate void OnStateChangedChannelMapDelegate(ChannelMap map, EntityState state);
     public static event OnStateChangedChannelMapDelegate OnStateChangedChannelMapEvent;
 
     /*public delegate void OnAddTuningDetailDelegate(TuningDetail tuningDetail);
@@ -135,30 +135,31 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
 
     public static Channel SaveChannel(Channel channel)
     {
-      if (OnStateChangedChannelMapEvent != null || OnStateChangedTuningDetailEvent != null)
-      {
-        Dictionary<string, ObjectList>.ValueCollection deletedProperties = channel.ChangeTracker.ObjectsRemovedFromCollectionProperties.Values;
-        foreach (ObjectList deletedProperty in deletedProperties)
-        {
-          if (OnStateChangedTuningDetailEvent != null)
-          {
-            IEnumerable<TuningDetail> deletedTuningDetails = deletedProperty.OfType<TuningDetail>();
-            foreach (TuningDetail deletedTuningDetail in deletedTuningDetails)
-            {
-              OnStateChangedTuningDetailEvent(deletedTuningDetail, ObjectState.Deleted);
-            }
-          }
+      // TODO
+      //if (OnStateChangedChannelMapEvent != null || OnStateChangedTuningDetailEvent != null)
+      //{
+      //  Dictionary<string, ObjectList>.ValueCollection deletedProperties = channel.ChangeTracker.ObjectsRemovedFromCollectionProperties.Values;
+      //  foreach (ObjectList deletedProperty in deletedProperties)
+      //  {
+      //    if (OnStateChangedTuningDetailEvent != null)
+      //    {
+      //      IEnumerable<TuningDetail> deletedTuningDetails = deletedProperty.OfType<TuningDetail>();
+      //      foreach (TuningDetail deletedTuningDetail in deletedTuningDetails)
+      //      {
+      //        OnStateChangedTuningDetailEvent(deletedTuningDetail, EntityState.Deleted);
+      //      }
+      //    }
 
-          if (OnStateChangedChannelMapEvent != null)
-          {
-            IEnumerable<ChannelMap> deletedChannelMaps = deletedProperty.OfType<ChannelMap>();
-            foreach (ChannelMap deletedChannelMap in deletedChannelMaps)
-            {
-              OnStateChangedChannelMapEvent(deletedChannelMap, ObjectState.Deleted);
-            }
-          }
-        }
-      }
+      //    if (OnStateChangedChannelMapEvent != null)
+      //    {
+      //      IEnumerable<ChannelMap> deletedChannelMaps = deletedProperty.OfType<ChannelMap>();
+      //      foreach (ChannelMap deletedChannelMap in deletedChannelMaps)
+      //      {
+      //        OnStateChangedChannelMapEvent(deletedChannelMap, EntityState.Deleted);
+      //      }
+      //    }
+      //  }
+      //}
 
       using (var context = new TvEngineDbContext())
       {
@@ -166,41 +167,41 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
 
         //channelRepository.AttachEntityIfChangeTrackingDisabled(channelRepository.ObjectContext.Channels, channel);
         //channelRepository.ApplyChanges(channelRepository.ObjectContext.Channels, channel);
-        //channelRepository.UnitOfWork.SaveChanges();
+        context.SaveChanges();
 
         IList<Action> events = new List<Action>();
 
-        if (OnStateChangedChannelMapEvent != null || OnStateChangedTuningDetailEvent != null)
-        {
-          Dictionary<string, ObjectList>.ValueCollection addedProperties =
-            channel.ChangeTracker.ObjectsAddedToCollectionProperties.Values;
-          foreach (ObjectList addedProperty in addedProperties)
-          {
-            if (OnStateChangedTuningDetailEvent != null)
-            {
-              IEnumerable<TuningDetail> addedTuningDetails = addedProperty.OfType<TuningDetail>();
-              foreach (TuningDetail addedTuningDetail in addedTuningDetails)
-              {
-                TuningDetail detail = addedTuningDetail;
-                //events.Add(() => OnStateChangedTuningDetailEvent(detail, ObjectState.Added));
-                OnStateChangedTuningDetailEvent(detail, ObjectState.Added);
-              }
-            }
+        // TODO
+        //if (OnStateChangedChannelMapEvent != null || OnStateChangedTuningDetailEvent != null)
+        //{
+        //  Dictionary<string, ObjectList>.ValueCollection addedProperties = channel.ChangeTracker.ObjectsAddedToCollectionProperties.Values;
+        //  foreach (ObjectList addedProperty in addedProperties)
+        //  {
+        //    if (OnStateChangedTuningDetailEvent != null)
+        //    {
+        //      IEnumerable<TuningDetail> addedTuningDetails = addedProperty.OfType<TuningDetail>();
+        //      foreach (TuningDetail addedTuningDetail in addedTuningDetails)
+        //      {
+        //        TuningDetail detail = addedTuningDetail;
+        //        //events.Add(() => OnStateChangedTuningDetailEvent(detail, EntityState.Added));
+        //        OnStateChangedTuningDetailEvent(detail, EntityState.Added);
+        //      }
+        //    }
 
-            if (OnStateChangedChannelMapEvent != null)
-            {
-              IEnumerable<ChannelMap> addedChannelMaps = addedProperty.OfType<ChannelMap>();
-              foreach (ChannelMap addedChannelMap in addedChannelMaps)
-              {
-                ChannelMap map = addedChannelMap;
-                //events.Add(() => OnStateChangedChannelMapEvent(map, ObjectState.Added));
-                OnStateChangedChannelMapEvent(map, ObjectState.Added);
-              }
-            }
-          }
-        }
+        //    if (OnStateChangedChannelMapEvent != null)
+        //    {
+        //      IEnumerable<ChannelMap> addedChannelMaps = addedProperty.OfType<ChannelMap>();
+        //      foreach (ChannelMap addedChannelMap in addedChannelMaps)
+        //      {
+        //        ChannelMap map = addedChannelMap;
+        //        //events.Add(() => OnStateChangedChannelMapEvent(map, EntityState.Added));
+        //        OnStateChangedChannelMapEvent(map, EntityState.Added);
+        //      }
+        //    }
+        //  }
+        //}
 
-        channel.AcceptChanges();
+        //channel.AcceptChanges();
         Channel updatedChannel = GetChannel(channel.ChannelId);
 
         /*foreach (Action action in events)
@@ -588,7 +589,7 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
       SaveTuningDetail(detail);
       if (OnStateChangedTuningDetailEvent != null)
       {
-        OnStateChangedTuningDetailEvent(tuningDetail, ObjectState.Added);
+        OnStateChangedTuningDetailEvent(tuningDetail, EntityState.Added);
       }
     }
 
@@ -604,7 +605,7 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
 
         if (OnStateChangedTuningDetailEvent != null)
         {
-          OnStateChangedTuningDetailEvent(detail, ObjectState.Modified);
+          OnStateChangedTuningDetailEvent(detail, EntityState.Modified);
         }
       }
     }
@@ -800,7 +801,7 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
         TuningDetail tuningDetail = GetTuningDetail(idTuning);
         if (tuningDetail != null)
         {
-          OnStateChangedTuningDetailEvent(tuningDetail, ObjectState.Deleted);
+          OnStateChangedTuningDetailEvent(tuningDetail, EntityState.Deleted);
         }
       }
 
@@ -853,7 +854,7 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
         ChannelMap channelMap = GetChannelMap(idChannelMap);
         if (channelMap != null)
         {
-          OnStateChangedChannelMapEvent(channelMap, ObjectState.Deleted);
+          OnStateChangedChannelMapEvent(channelMap, EntityState.Deleted);
         }
       }
 
@@ -880,10 +881,11 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
 
     public static ChannelMap SaveChannelMap(ChannelMap map)
     {
-      if (OnStateChangedChannelMapEvent != null)
-      {
-        OnStateChangedChannelMapEvent(map, map.ChangeTracker.State);
-      }
+      // TODO
+      //if (OnStateChangedChannelMapEvent != null)
+      //{
+      //  OnStateChangedChannelMapEvent(map, map.ChangeTracker.State);
+      //}
 
       using (TvEngineDbContext context = new TvEngineDbContext())
       {

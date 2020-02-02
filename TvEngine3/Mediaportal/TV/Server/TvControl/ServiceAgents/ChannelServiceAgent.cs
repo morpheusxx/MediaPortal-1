@@ -30,10 +30,10 @@ namespace Mediaportal.TV.Server.TVControl.ServiceAgents
 
     public IList<Channel> SaveChannels(IEnumerable<Channel> channels)
     {
-      foreach (var channel in channels)
-      {
-        channel.UnloadAllUnchangedRelationsForEntity();
-      }
+      //foreach (var channel in channels)
+      //{
+      //  channel.UnloadAllUnchangedRelationsForEntity();
+      //}
       return _channel.SaveChannels(channels);
     }
 
@@ -58,7 +58,7 @@ namespace Mediaportal.TV.Server.TVControl.ServiceAgents
 
     public Channel SaveChannel(Channel channel)
     {
-      channel.UnloadAllUnchangedRelationsForEntity();
+      //channel.UnloadAllUnchangedRelationsForEntity();
       return _channel.SaveChannel(channel);
     }
 
@@ -74,7 +74,7 @@ namespace Mediaportal.TV.Server.TVControl.ServiceAgents
 
     public TuningDetail SaveTuningDetail(TuningDetail tuningDetail)
     {
-      tuningDetail.UnloadAllUnchangedRelationsForEntity();
+      //tuningDetail.UnloadAllUnchangedRelationsForEntity();
       return _channel.SaveTuningDetail(tuningDetail);
     }
 
@@ -125,7 +125,7 @@ namespace Mediaportal.TV.Server.TVControl.ServiceAgents
 
     public GroupMap SaveChannelGroupMap(GroupMap groupMap)
     {
-      groupMap.UnloadAllUnchangedRelationsForEntity();
+      //groupMap.UnloadAllUnchangedRelationsForEntity();
       return _channel.SaveChannelGroupMap(groupMap);
     }
 
@@ -136,7 +136,7 @@ namespace Mediaportal.TV.Server.TVControl.ServiceAgents
 
     public ChannelMap SaveChannelMap(ChannelMap map)
     {
-      map.UnloadAllUnchangedRelationsForEntity();
+      //map.UnloadAllUnchangedRelationsForEntity();
       return _channel.SaveChannelMap(map);
     }
 

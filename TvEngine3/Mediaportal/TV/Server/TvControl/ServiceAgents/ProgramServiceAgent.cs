@@ -29,7 +29,7 @@ namespace Mediaportal.TV.Server.TVControl.ServiceAgents
 
     public Program SaveProgram(Program program)
     {
-      program.UnloadAllUnchangedRelationsForEntity();
+      //program.UnloadAllUnchangedRelationsForEntity();
       return _channel.SaveProgram(program);
     }
 

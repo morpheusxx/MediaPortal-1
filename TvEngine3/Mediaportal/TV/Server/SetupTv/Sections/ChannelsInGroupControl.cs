@@ -191,8 +191,8 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
         if (groupMap.SortOrder != i)
         {
           groupMap.SortOrder = i;
-          groupMap.UnloadAllUnchangedRelationsForEntity();
-          groupMap.ChangeTracker.State = ObjectState.Modified;
+          //groupMap.UnloadAllUnchangedRelationsForEntity();
+          //groupMap.ChangeTracker.State = ObjectState.Modified;
           groupMaps.Add(groupMap);
         }
       }
@@ -328,7 +328,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
         Channel channel = ((GroupMap)listView1.Items[e.Item].Tag).Channel;
         channel.DisplayName = e.Label;
         channel = ServiceAgents.Instance.ChannelServiceAgent.SaveChannel(channel);
-        channel.AcceptChanges();
+        //channel.AcceptChanges();
       }
     }
 
@@ -341,7 +341,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
         {
           ch.VisibleInGuide = e.Item.Checked;
           ch = ServiceAgents.Instance.ChannelServiceAgent.SaveChannel(ch);
-          ch.AcceptChanges();
+          //ch.AcceptChanges();
           ((GroupMap)e.Item.Tag).Channel = ch;
         }
       }

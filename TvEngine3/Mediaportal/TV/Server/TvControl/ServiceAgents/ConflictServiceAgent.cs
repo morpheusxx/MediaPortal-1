@@ -17,7 +17,7 @@ namespace Mediaportal.TV.Server.TVControl.ServiceAgents
 
     public Conflict SaveConflict(Conflict conflict)
     {
-      conflict.UnloadAllUnchangedRelationsForEntity();
+      //conflict.UnloadAllUnchangedRelationsForEntity();
       return _channel.SaveConflict(conflict);
     }
 

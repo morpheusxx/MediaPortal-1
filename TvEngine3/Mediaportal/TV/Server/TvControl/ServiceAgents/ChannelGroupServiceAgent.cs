@@ -38,7 +38,7 @@ namespace Mediaportal.TV.Server.TVControl.ServiceAgents
 
     public ChannelGroup SaveGroup(ChannelGroup @group)
     {
-      @group.UnloadAllUnchangedRelationsForEntity();
+      //@group.UnloadAllUnchangedRelationsForEntity();
       return _channel.SaveGroup(@group);
     }
 

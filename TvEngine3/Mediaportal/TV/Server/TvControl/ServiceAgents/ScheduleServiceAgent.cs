@@ -18,7 +18,7 @@ namespace Mediaportal.TV.Server.TVControl.ServiceAgents
 
     public Schedule SaveSchedule(Schedule schedule)
     {
-      schedule.UnloadAllUnchangedRelationsForEntity();
+      //schedule.UnloadAllUnchangedRelationsForEntity();
       return _channel.SaveSchedule(schedule);
     }
 
@@ -94,7 +94,7 @@ namespace Mediaportal.TV.Server.TVControl.ServiceAgents
 
     public RuleBasedSchedule SaveRuleBasedSchedule(RuleBasedSchedule schedule)
     {
-      schedule.UnloadAllUnchangedRelationsForEntity();
+      //schedule.UnloadAllUnchangedRelationsForEntity();
       return _channel.SaveRuleBasedSchedule(schedule);
     }
   }

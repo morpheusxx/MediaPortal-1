@@ -30,7 +30,7 @@ namespace Mediaportal.TV.Server.TVLibrary.ChannelLinkage
 {
   public class ChannelLinkageGrabber : BaseChannelLinkageScanner
   {
-  
+
 
     #region variables
 
@@ -64,7 +64,7 @@ namespace Mediaportal.TV.Server.TVLibrary.ChannelLinkage
     #region private methods
 
     private static void PersistPortalChannel(PortalChannel pChannel)
-    {      
+    {
       Channel dbPortalChannel = ChannelManagement.GetChannelByTuningDetail(pChannel.NetworkId, pChannel.TransportId,
                                                                pChannel.ServiceId);
       if (dbPortalChannel == null)
@@ -72,27 +72,27 @@ namespace Mediaportal.TV.Server.TVLibrary.ChannelLinkage
         Log.Info("Portal channel with networkId={0}, transportId={1}, serviceId={2} not found", pChannel.NetworkId,
                  pChannel.TransportId, pChannel.ServiceId);
         return;
-      }      
+      }
       ChannelManagement.DeleteAllChannelLinkageMaps(dbPortalChannel.ChannelId);
       foreach (LinkedChannel lChannel in pChannel.LinkedChannels)
       {
         Channel dbLinkedChannnel = ChannelManagement.GetChannelByTuningDetail(lChannel.NetworkId, lChannel.TransportId,
-                                                                  lChannel.ServiceId);        
+                                                                  lChannel.ServiceId);
         if (dbLinkedChannnel == null)
         {
           Log.Info("Linked channel with name={0}, networkId={1}, transportId={2}, serviceId={3} not found",
                    lChannel.Name, lChannel.NetworkId, lChannel.TransportId, lChannel.ServiceId);
           continue;
         }
-        dbLinkedChannnel.DisplayName = lChannel.Name;        
+        dbLinkedChannnel.DisplayName = lChannel.Name;
         ChannelManagement.SaveChannel(dbLinkedChannnel);
 
         var map = new ChannelLinkageMap
-                                  {
-                                    IdLinkedChannel = dbLinkedChannnel.ChannelId,
-                                    IdPortalChannel = dbPortalChannel.ChannelId,
-                                    DisplayName = lChannel.Name
-                                  };
+        {
+          LinkedChannelId = dbLinkedChannnel.ChannelId,
+          PortalChannelId = dbPortalChannel.ChannelId,
+          DisplayName = lChannel.Name
+        };
 
         ChannelManagement.SaveChannelLinkageMap(map);
       }
