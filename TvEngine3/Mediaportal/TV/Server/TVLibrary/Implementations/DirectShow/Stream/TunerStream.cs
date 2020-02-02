@@ -131,7 +131,8 @@ namespace Mediaportal.TV.Server.TVLibrary.Implementations.DirectShow.Stream
       // Start with the source filter.
       if (_sourceFilterClsid == typeof(MediaPortalStreamSource).GUID)
       {
-        _filterStreamSource = FilterGraphTools.AddFilterFromFile(_graph, "MPIPTVSource.ax", _sourceFilterClsid, Name);
+        var filterPath = PathManager.BuildAssemblyRelativePathForArchitecture("MPIPTVSource.ax");
+        _filterStreamSource = FilterGraphTools.AddFilterFromFile(_graph, filterPath, _sourceFilterClsid, Name);
       }
       else
       {

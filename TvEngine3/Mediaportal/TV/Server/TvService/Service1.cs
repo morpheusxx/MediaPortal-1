@@ -106,7 +106,7 @@ namespace Mediaportal.TV.Server.TVService
       finally
       {
         Environment.Exit(-1);
-      }            
+      }
     }
 
     /// <summary>
@@ -239,7 +239,7 @@ namespace Mediaportal.TV.Server.TVService
           System.Diagnostics.Debugger.Launch();        
         }
 #endif
-        
+
         if (!(args != null && args.Length > 0 && args[0] == "/DEBUG"))
         {
           RequestAdditionalTime(60000); // starting database can be slow so increase default timeout        

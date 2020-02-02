@@ -227,7 +227,8 @@ namespace Mediaportal.TV.Server.TVLibrary.Implementations.DirectShow
     protected void AddAndConnectTsWriterIntoGraph(IBaseFilter upstreamFilter)
     {
       this.LogDebug("DirectShow base: add TS writer/analyser filter");
-      _filterTsWriter = ComHelper.LoadComObjectFromFile("TsWriter.ax", typeof(MediaPortalTsWriter).GUID, typeof(IBaseFilter).GUID, true) as IBaseFilter;
+      var filterPath = PathManager.BuildAssemblyRelativePathForArchitecture("TsWriter.ax");
+      _filterTsWriter = ComHelper.LoadComObjectFromFile(filterPath, typeof(MediaPortalTsWriter).GUID, typeof(IBaseFilter).GUID, true) as IBaseFilter;
       FilterGraphTools.AddAndConnectFilterIntoGraph(_graph, _filterTsWriter, "MediaPortal TS Analyser", upstreamFilter);
     }
 

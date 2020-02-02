@@ -114,7 +114,7 @@ namespace Mediaportal.TV.Server.TVLibrary.Implementations.DirectShow.Stream
       }
 
       // MediaPortal stream source filter.
-      if (File.Exists(PathManager.BuildAssemblyRelativePath("MPIPTVSource.ax")))
+      if (File.Exists(PathManager.BuildAssemblyRelativePathForArchitecture("MPIPTVSource.ax")))
       {
         // Was the filter already installed? If so reuse the existing tuner
         // instances.
