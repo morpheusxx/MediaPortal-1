@@ -78,12 +78,12 @@ unsigned int LinearBuffer::GetBufferSize()
 
 unsigned int LinearBuffer::GetBufferFreeSpace()
 {
-  return ((long)this->bufferSize - (long)this->dataEnd + (long)this->buffer);
+  return (int)((ptrdiff_t)this->bufferSize - (ptrdiff_t)this->dataEnd + (ptrdiff_t)this->buffer);
 }
 
 unsigned int LinearBuffer::GetBufferOccupiedSpace(void)
 {
-  return ((long)this->dataEnd - (long)this->dataStart);
+  return (int)((ptrdiff_t)this->dataEnd - (ptrdiff_t)this->dataStart);
 }
 
 void LinearBuffer::RemoveFromBuffer(unsigned int length)
@@ -178,7 +178,7 @@ unsigned int LinearBuffer::GetFirstPosition(unsigned int start, char c)
 {
   unsigned int result = UINT_MAX;
 
-  for(unsigned int i = start; i < this->GetBufferOccupiedSpace(); i++)
+  for (unsigned int i = start; i < this->GetBufferOccupiedSpace(); i++)
   {
     if (this->buffer[i] == c)
     {
@@ -224,7 +224,7 @@ bool LinearBuffer::SafeResizeBuffer(HANDLE lockMutex, unsigned int size, bool lo
 {
   bool result = false;
   if ((lockMutex != NULL) && (size != this->bufferSize) &&
-      ((logMessage && (logger != NULL)) || (!logMessage)))
+    ((logMessage && (logger != NULL)) || (!logMessage)))
   {
     WaitForSingleObject(lockMutex, INFINITE);
     result = this->ResizeBuffer(size);

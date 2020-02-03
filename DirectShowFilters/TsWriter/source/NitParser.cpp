@@ -504,7 +504,7 @@ void CNitParser::Reset()
 
 int CNitParser::GetMultiplexCount()
 {
-  return m_vCableMuxes.size() + m_vSatelliteMuxes.size() + m_vTerrestrialMuxes.size();
+  return (int)(m_vCableMuxes.size() + m_vSatelliteMuxes.size() + m_vTerrestrialMuxes.size());
 }
 
 NitMultiplexDetail* CNitParser::GetMultiplexDetail(int idx)
@@ -517,12 +517,12 @@ NitMultiplexDetail* CNitParser::GetMultiplexDetail(int idx)
   {
     return m_vCableMuxes[idx];
   }
-  idx -= m_vCableMuxes.size();
+  idx -= (int)m_vCableMuxes.size();
   if (idx < (int)m_vSatelliteMuxes.size())
   {
     return m_vSatelliteMuxes[idx];
   }
-  idx -= m_vSatelliteMuxes.size();
+  idx -= (int)m_vSatelliteMuxes.size();
   if (idx < (int)m_vTerrestrialMuxes.size())
   {
     return m_vTerrestrialMuxes[idx];
@@ -661,7 +661,7 @@ int CNitParser::GetNetworkNameCount(int networkId)
   map<unsigned int, char*>* networkNames = m_mGroupNames[networkId];
   if (networkNames != NULL)
   {
-    return networkNames->size();
+    return (int)networkNames->size();
   }
   return 0;
 }
@@ -696,7 +696,7 @@ int CNitParser::GetTargetRegionNameCount(__int64 regionId)
   map<unsigned int, char*>* targetRegionNames = m_mTargetRegionNames[regionId];
   if (targetRegionNames != NULL)
   {
-    count = targetRegionNames->size();
+    count = (int)targetRegionNames->size();
   }
   return count;
 }

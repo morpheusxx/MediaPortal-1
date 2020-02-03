@@ -207,7 +207,7 @@ void TsMPEG2TransportStreamFramer
 	unsigned short pcrExt = ((pkt[10]&0x01)<<8) | pkt[11];
 	clock += pcrExt/27000000.0;
 
-	unsigned pid = ((pkt[1]&0x1F)<<8) | pkt[2];
+	size_t pid = ((pkt[1]&0x1F)<<8) | pkt[2];
 
 	// Check whether we already have a record of a PCR for this PID:
 	TsPIDStatus* pidStatus = (TsPIDStatus*)(fPIDStatusTable->Lookup((char*)pid));

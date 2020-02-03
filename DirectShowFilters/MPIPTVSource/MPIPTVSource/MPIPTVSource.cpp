@@ -177,13 +177,13 @@ CUnknown * WINAPI CMPIPTVSource::CreateInstance(IUnknown *pUnk, HRESULT *phr)
 // @param restOfParameters : reference to rest of parameter string without first token and separator, if NULL then there is no rest of parameters and whole parameters string was processed
 // @param separatorMustBeFound : specifies if separator must be found
 // @return : true if successful, false otherwise
-bool SplitBySeparator(const TCHAR *parameters, const TCHAR *separator, unsigned int *length, TCHAR **restOfParameters, bool separatorMustBeFound)
+bool SplitBySeparator(const TCHAR *parameters, const TCHAR *separator, size_t *length, TCHAR **restOfParameters, bool separatorMustBeFound)
 {
   bool result = false;
 
   if ((parameters != NULL) && (separator != NULL) && (length != NULL) && (restOfParameters))
   {
-    unsigned int parameterLength = _tcslen(parameters);
+    size_t parameterLength = _tcslen(parameters);
 
     TCHAR *tempSeparator = NULL;
     TCHAR *tempParameters = (TCHAR *)parameters;
@@ -256,7 +256,7 @@ bool SplitBySeparator(const TCHAR *parameters, const TCHAR *separator, unsigned 
 // @return : size of memory block to fit result value, UINT_MAX if error
 unsigned int ReplaceDoubleSeparator(const TCHAR *value, const TCHAR *separator, TCHAR *replacedValue, unsigned int replacedValueLength)
 {
-  unsigned int requiredLength = UINT_MAX;
+  size_t requiredLength = SIZE_T_MAX;
   // first count of replaced value length
 
   if ((value != NULL) && (separator != NULL))
@@ -267,7 +267,7 @@ unsigned int ReplaceDoubleSeparator(const TCHAR *value, const TCHAR *separator, 
     TCHAR *tempValue = (TCHAR *)value;
     while(true)
     {
-      unsigned int valueLength = _tcslen(tempValue);
+      size_t valueLength = _tcslen(tempValue);
       tempSeparator = (TCHAR *)_tcsstr(tempValue, separator);
 
       if (tempSeparator != NULL)
@@ -310,7 +310,7 @@ unsigned int ReplaceDoubleSeparator(const TCHAR *value, const TCHAR *separator, 
     }
   }
 
-  return requiredLength;
+  return (int) requiredLength;
 }
 
 STDMETHODIMP CMPIPTVSource::SetConnectInfo(LPCOLESTR pszConnectInfo)
@@ -336,7 +336,7 @@ STDMETHODIMP CMPIPTVSource::SetConnectInfo(LPCOLESTR pszConnectInfo)
     this->m_parameters->Clear();
 
     bool splitted = false;
-    unsigned int tokenLength = 0;
+    size_t tokenLength = 0;
     TCHAR *rest = NULL;
     do
     {
@@ -358,7 +358,7 @@ STDMETHODIMP CMPIPTVSource::SetConnectInfo(LPCOLESTR pszConnectInfo)
           _tcsncpy_s(token, tokenLength, sParameters, tokenLength - 1);
           sParameters = rest;
 
-          unsigned int nameLength = 0;
+          size_t nameLength = 0;
           TCHAR *value = NULL;
           bool splittedNameAndValue = SplitBySeparator(token, _T("="), &nameLength, &value, true);
 

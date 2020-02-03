@@ -994,7 +994,7 @@ void CDiskRecorder::WriteToRecording(byte* buffer, int len)
                 wchar_t ext[MAX_PATH];
                 wchar_t fileName[MAX_PATH];
                 wchar_t part[100];
-                int len = wcslen(m_fileName) - 1;
+                int len = (int)wcslen(m_fileName) - 1;
                 int pos = len-1;
                 while (pos > 0)
                 {
@@ -1499,7 +1499,7 @@ void CDiskRecorder::PatchPcr(byte* tsPacket, CTsHeader& header)
         // We assume that PCR is delivered at a regular interval which is approximated by
         // m_averagePcrSpeed. Improve the PCR speed estimate by comparison with the current speed (ie. the
         // time since the previous PCR was seen). Use a 10% adjustment factor.
-        m_averagePcrSpeed += ((float)dt - m_averagePcrSpeed) * 0.1;
+        m_averagePcrSpeed += ((float)dt - m_averagePcrSpeed) * 0.1f;
         if (m_pcrGapConfirmations > 0)
         {
           WriteLog("PCR restabilised after %d confirmation(s), speed = %I64d", m_pcrGapConfirmations, (__int64)m_averagePcrSpeed);

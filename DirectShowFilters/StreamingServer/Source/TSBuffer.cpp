@@ -81,15 +81,15 @@ void CTSBuffer::Clear()
 long CTSBuffer::Count()
 {
 	Mediaportal::CEnterCriticalSection lock(m_BufferLock);
-	long bytesAvailable = 0;
-	long itemCount = m_Array.size();
+	size_t bytesAvailable = 0;
+	size_t itemCount = m_Array.size();
 
 	if (itemCount > 0)
 	{
 		bytesAvailable += m_lTSBufferItemSize - m_lItemOffset;
 		bytesAvailable += m_lTSBufferItemSize * (itemCount - 1);
 	}
-	return bytesAvailable;
+	return (long)bytesAvailable;
 }
 
 void CTSBuffer::SetChannelType(int channelType)

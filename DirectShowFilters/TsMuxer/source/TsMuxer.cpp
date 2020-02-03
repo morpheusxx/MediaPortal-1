@@ -1840,7 +1840,7 @@ HRESULT CTsMuxer::UpdatePmt()
 
 HRESULT CTsMuxer::UpdateSdt()
 {
-  byte serviceNameLength = strlen(m_serviceName);
+  byte serviceNameLength = (byte)strlen(m_serviceName);
   byte serviceDescriptorLength = 3 + serviceNameLength;
   byte descriptorLoopLength = 2 + serviceDescriptorLength;
   byte sectionLength = 17 + descriptorLoopLength;

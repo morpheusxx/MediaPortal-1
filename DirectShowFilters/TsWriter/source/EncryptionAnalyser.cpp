@@ -128,7 +128,7 @@ STDMETHODIMP CEncryptionAnalyser::GetPidCount(int* pidCount)
 {
   try
   {
-    *pidCount = m_pids.size();
+    *pidCount = (int)m_pids.size();
     LogDebug("encryption: get PID count, count = %d", pidCount);
     return S_OK;
   }

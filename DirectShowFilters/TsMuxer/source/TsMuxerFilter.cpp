@@ -146,7 +146,7 @@ HRESULT CTsMuxerFilter::AddPin()
 int CTsMuxerFilter::GetPinCount()
 {
   CAutoLock pinLock(&m_inputPinsLock);
-  return 1 + m_inputPins.size();
+  return 1 + (int)m_inputPins.size();
 }
 
 HRESULT CTsMuxerFilter::Deliver(PBYTE data, long dataLength)
