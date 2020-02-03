@@ -73,7 +73,7 @@ namespace Mediaportal.TV.Server.TVLibrary.Interfaces
     public static string BuildAssemblyRelativePathForArchitecture(string fileName)
     {
       string executingPath = Assembly.GetCallingAssembly().Location;
-      string architecture = Environment.Is64BitOperatingSystem ? "x64" : "x86";
+      string architecture = IntPtr.Size > 4 ? "x64" : "x86";
       return Path.Combine(Path.GetDirectoryName(executingPath), architecture, fileName);
     }
 
