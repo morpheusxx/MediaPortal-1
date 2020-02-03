@@ -39,10 +39,6 @@
 DEFINE_GUID(CLSID_MPIPTVSource, 
   0xd3dd4c59, 0xd3a7, 0x4b82, 0x97, 0x27, 0x7b, 0x92, 0x3, 0xeb, 0x67, 0xc0);
 
-static void StubForGetModuleHandleEx()
-{
-}
-
 // This class is exported from the MPIPTVSource.ax
 class CMPIPTVSource : public CSource, public IFileSourceFilter, public IMPIPTVConnectInfo
 {

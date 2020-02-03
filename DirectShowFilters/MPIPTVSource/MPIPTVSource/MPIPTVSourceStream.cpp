@@ -29,7 +29,6 @@
 #include <Shlwapi.h>
 #include <ShlObj.h>
 #include <stdio.h>
-#include "MPIPTVSource.h"
 
 #define MODULE_NAME                                               _T("MPIPTVSourceStream")
 
@@ -137,6 +136,12 @@ CMPIPTVSourceStream::~CMPIPTVSourceStream(void)
   this->logger.Log(LOGGER_INFO, METHOD_END_FORMAT, MODULE_NAME, METHOD_DESTRUCTOR_NAME);
 }
 
+static void DummyStatic()
+{
+  // The only reason this function exists is to help us to get the path/name of
+  // this module at runtime.
+}
+
 void CMPIPTVSourceStream::LoadPlugins()
 {
   logger.Log(LOGGER_INFO, METHOD_START_FORMAT, MODULE_NAME, METHOD_LOAD_PLUGINS_NAME);
@@ -154,18 +159,9 @@ void CMPIPTVSourceStream::LoadPlugins()
     ALLOC_MEM_DEFINE_SET(strDllPath, TCHAR, _MAX_PATH, 0);
     ALLOC_MEM_DEFINE_SET(strDllSearch, TCHAR, _MAX_PATH, 0);
 
-    // Try to get the current module location (this dll, not the executing process)
-    HMODULE hm = NULL;
-    if (GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS | GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, (LPCTSTR)&StubForGetModuleHandleEx, &hm))
-    {
-      GetModuleFileName(hm, strDllPath, _MAX_PATH);
-    }
-    else
-    {
-      logger.Log(LOGGER_VERBOSE, _T("%s: %s: Could not get HMODULE from address"), MODULE_NAME, METHOD_LOAD_PLUGINS_NAME);
-      GetModuleFileName(NULL, strDllPath, _MAX_PATH);
-    }
-
+    HMODULE hmodule = NULL;
+    GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS | GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, (LPCTSTR)&DummyStatic, &hmodule);
+    GetModuleFileName(hmodule, strDllPath, _MAX_PATH);
     PathRemoveFileSpec(strDllPath);
 
     _tcscat_s(strDllPath, _MAX_PATH, _T("\\"));
