@@ -926,8 +926,8 @@ void CChannelScan::OnPmtReceived(const CPidTable& pidTable)
     info->ServiceId = pidTable.ProgramNumber;
     // We trust PMT information over anything else for A/V present
     // status.
-    info->VideoStreamCount = (int)pidTable.VideoPids.size();
-    info->AudioStreamCount = (int)pidTable.AudioPids.size();
+    info->VideoStreamCount = (unsigned short)pidTable.VideoPids.size();
+    info->AudioStreamCount = (unsigned short)pidTable.AudioPids.size();
     // We trust service and encryption analyser information over the PMT information
     // for encryption and running status.
     if (!info->IsServiceInfoReceived && !info->IsPidReceived)

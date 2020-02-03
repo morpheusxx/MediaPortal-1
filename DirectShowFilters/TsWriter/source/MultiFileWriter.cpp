@@ -418,7 +418,7 @@ HRESULT MultiFileWriter::WriteTSBufferFile()
   for ( ; it < m_tsFileNames.end() ; it++ )
   {
     LPWSTR pFilename = *it;
-    long length = wcslen(pFilename)+1;
+    long length = (long)wcslen(pFilename)+1;
     length *= sizeof(wchar_t);
 
     memcpy(writePointer, pFilename, length);

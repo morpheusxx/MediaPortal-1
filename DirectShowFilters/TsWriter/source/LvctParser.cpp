@@ -267,10 +267,10 @@ void CLvctParser::OnNewSection(CSection& sections)
           if (isFirst)
           {
             isFirst = false;
-            int bufferSize = strlen(*it) + 1; // + 1 for NULL termination
+            int bufferSize = (int)strlen(*it) + 1; // + 1 for NULL termination
             if (short_name != NULL)
             {
-              bufferSize += strlen(short_name) + 3; // + 3 for " (" and ")"
+              bufferSize += (int)strlen(short_name) + 3; // + 3 for " (" and ")"
             }
             info.ServiceName = new char[bufferSize];
             if (info.ServiceName == NULL)

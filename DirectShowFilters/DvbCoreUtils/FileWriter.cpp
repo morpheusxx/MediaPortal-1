@@ -62,7 +62,7 @@ HRESULT FileWriter::SetFileName(LPCWSTR pszFileName)
     return E_POINTER;
   }
 
-  long length = (long)wcslen(pszFileName);
+  long length = wcslen(pszFileName);
 
   if(length > MAX_PATH)
     return ERROR_FILENAME_EXCED_RANGE;
