@@ -29,6 +29,7 @@
 #include <Shlwapi.h>
 #include <ShlObj.h>
 #include <stdio.h>
+#include "MPIPTVSource.h"
 
 #define MODULE_NAME                                               _T("MPIPTVSourceStream")
 
@@ -153,7 +154,18 @@ void CMPIPTVSourceStream::LoadPlugins()
     ALLOC_MEM_DEFINE_SET(strDllPath, TCHAR, _MAX_PATH, 0);
     ALLOC_MEM_DEFINE_SET(strDllSearch, TCHAR, _MAX_PATH, 0);
 
-    GetModuleFileName(NULL, strDllPath, _MAX_PATH);
+    // Try to get the current module location (this dll, not the executing process)
+    HMODULE hm = NULL;
+    if (GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS | GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, (LPCTSTR)&StubForGetModuleHandleEx, &hm))
+    {
+      GetModuleFileName(hm, strDllPath, _MAX_PATH);
+    }
+    else
+    {
+      logger.Log(LOGGER_VERBOSE, _T("%s: %s: Could not get HMODULE from address"), MODULE_NAME, METHOD_LOAD_PLUGINS_NAME);
+      GetModuleFileName(NULL, strDllPath, _MAX_PATH);
+    }
+
     PathRemoveFileSpec(strDllPath);
 
     _tcscat_s(strDllPath, _MAX_PATH, _T("\\"));
