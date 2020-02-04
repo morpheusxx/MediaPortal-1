@@ -92,11 +92,6 @@
     <Compile Include="Context\TvEngineDbContext.cs" />
     <Compile Include="EntitySQLDebug.cs" />
     <Compile Include="Extensions\EntityExtensions.cs" />
-    <Compile Include="Model.Designer.cs">
-      <DependentUpon>Model.edmx</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-    </Compile>
     <Compile Include="ObjContext\EntityFrameworkExtension.cs" />
     <Compile Include="Extensions\ExpressionExtension.cs" />
     <Compile Include="Extensions\ExpressionVisitor.cs" />
@@ -107,23 +102,6 @@
     <Compile Include="Specification\ISpecification.cs" />
     <Compile Include="Specification\OrSpecification.cs" />
     <Compile Include="Specification\Specification.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="App.Config">
-      <SubType>Designer</SubType>
-    </None>
-    <EntityDeploy Include="Model.edmx">
-      <Generator>EntityModelCodeGenerator</Generator>
-      <LastGenOutput>Model.Designer.cs</LastGenOutput>
-    </EntityDeploy>
-    <EmbeddedResource Include="Model.MSSQL.ssdl" />
-    <EmbeddedResource Include="Model.MySQL.ssdl">
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Model.MSSQLCE.ssdl">
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Model.SQLite.ssdl" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
@@ -143,20 +121,11 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="how 2 auto generate poco classes.txt" />
-    <Content Include="Model.edmx.sql" />
-    <Content Include="Model_MySQL.edmx.sql" />
-    <Content Include="Model_SQLite.edmx.sql" />
-  </ItemGroup>
-  <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite">
       <Version>3.1.1</Version>
     </PackageReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Interfaces\" />
-    <Folder Include="Repositories\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
