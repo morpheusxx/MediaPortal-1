@@ -1,4 +1,5 @@
-﻿using Mediaportal.TV.Server.TVDatabase.Entities;
+﻿using System.Configuration;
+using Mediaportal.TV.Server.TVDatabase.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Mediaportal.TV.Server.TVDatabase.EntityModel.Context
@@ -73,6 +74,12 @@ namespace Mediaportal.TV.Server.TVDatabase.EntityModel.Context
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder options)
-      => options.UseSqlite("Data Source=S:\\TVE35_EFCore.db");
+    {
+      ConnectionStringSettings connection = ConfigurationManager.ConnectionStrings["TvEngineDb"];
+      if (connection.ProviderName == "SQLite")
+      {
+        options.UseSqlite(connection.ConnectionString);
+      }
+    }
   }
 }
