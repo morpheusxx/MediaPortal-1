@@ -21,6 +21,7 @@
 #region usings
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -116,7 +117,7 @@ namespace Mediaportal.TV.Server.TVLibrary
     /// </summary>
     private int _maxFreeCardsToTry;
 
-    private Dictionary<int, ITvCardHandler> _cards = new Dictionary<int, ITvCardHandler>();
+    private IDictionary<int, ITvCardHandler> _cards = new ConcurrentDictionary<int, ITvCardHandler>();
 
     /// 
     // contains a cached copy of all the channels in the user defined groups (excl. the all channels group)
@@ -1183,10 +1184,8 @@ namespace Mediaportal.TV.Server.TVLibrary
     {
       try
       {
-        Dictionary<int, ITvCardHandler>.Enumerator en = _cards.GetEnumerator();
-        while (en.MoveNext())
+        foreach (var card in _cards.Values)
         {
-          ITvCardHandler card = en.Current.Value;
           IUser user = new User();
           user.CardId = card.DataBaseCard.CardId;
           if (card.Recorder.IsAnySubChannelRecording)
@@ -1220,10 +1219,8 @@ namespace Mediaportal.TV.Server.TVLibrary
 
       try
       {
-        Dictionary<int, ITvCardHandler>.Enumerator en = _cards.GetEnumerator();
-        while (en.MoveNext())
+        foreach (var card in _cards.Values)
         {
-          ITvCardHandler card = en.Current.Value;
           IUser user = card.UserManagement.GetUserCopy(userName);
 
           if (!isRec)
@@ -1265,10 +1262,8 @@ namespace Mediaportal.TV.Server.TVLibrary
       card = null;
       try
       {
-        Dictionary<int, ITvCardHandler>.Enumerator en = _cards.GetEnumerator();
-        while (en.MoveNext())
+        foreach (var tvcard in _cards.Values)
         {
-          ITvCardHandler tvcard = en.Current.Value;
           IUser user = tvcard.UserManagement.GetUserRecordingChannel(idChannel);
           if (user != null && user.UserType == UserType.Scheduler)
           {
@@ -3675,11 +3670,9 @@ namespace Mediaportal.TV.Server.TVLibrary
     {
       get
       {
-        Dictionary<int, ITvCardHandler>.Enumerator enumer = _cards.GetEnumerator();
-        while (enumer.MoveNext())
+        foreach (var card in _cards.Values)
         {
-          int cardId = enumer.Current.Key;
-          if (_cards[cardId].IsIdle == false)
+          if (card.IsIdle == false)
             return false;
         }
         return true;
@@ -3912,10 +3905,9 @@ namespace Mediaportal.TV.Server.TVLibrary
     public IDictionary<int, ChannelState> GetAllTimeshiftingAndRecordingChannels()
     {
       IDictionary<int, ChannelState> result = new Dictionary<int, ChannelState>();
-      Dictionary<int, ITvCardHandler>.ValueCollection cardHandlers = _cards.Values;
 
 
-      foreach (ITvCardHandler tvcard in cardHandlers)
+      foreach (var tvcard in _cards.Values)
       {
         IDictionary<int, ChannelState> channelIds = tvcard.UserManagement.GetAllTimeShiftingAndRecordingChannelIds();
 
