@@ -22,6 +22,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using Castle.DynamicProxy;
 using Castle.MicroKernel.Registration;
 using Castle.Windsor;
 using MediaPortal.Common.Utils;
@@ -67,6 +68,9 @@ namespace Mediaportal.TV.Server.Plugins.Base
         string pluginFolder = Path.Combine(Path.GetDirectoryName(Assembly.GetCallingAssembly().Location), "Plugins");
         var assemblyFilter = new AssemblyFilter(pluginFolder);
         IWindsorContainer container = Instantiator.Instance.Container();
+
+        container.Register(Component.For<IInterceptor>().ImplementedBy<PluginExceptionInterceptor>().IsDefault().Named("PluginExceptionInterceptor"));
+
         container.Register(
           Classes.FromAssemblyInDirectory(assemblyFilter).
             BasedOn<ITvServerPlugin>().
