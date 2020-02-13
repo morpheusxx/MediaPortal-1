@@ -62,7 +62,7 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
       {
         using (var context = new TvEngineDbContext())
         {
-          var query = context.GetAllChannelsByGroupIdAndMediaType(idGroup, mediaType).IncludeAllRelations();
+          var query = context.GetAllChannelsByGroupIdAndMediaType(idGroup, mediaType);
           return query.ToList();
         }
       }
@@ -169,6 +169,7 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
         //channelRepository.ApplyChanges(channelRepository.ObjectContext.Channels, channel);
         context.SaveChanges(true);
 
+        return channel;
         IList<Action> events = new List<Action>();
 
         // TODO
@@ -515,7 +516,7 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
     {
       using (TvEngineDbContext context = new TvEngineDbContext())
       {
-        var channel = GetChannel(idChannel);
+        var channel = new Channel { ChannelId = idChannel }; // Primary key is enough for deleting
         context.Channels.Remove(channel);
         context.SaveChanges(true);
         ////SetRelatedRecordingsToNull(idChannel, channelRepository);
@@ -937,8 +938,11 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
         {
           return context.Channels
             .IncludeAllRelations(includeRelations)
-            .GetAllChannelsByGroupIdAndMediaType(context, idGroup, mediaType)
+            .Include(c => c.GroupMaps)
+            .Where(c => c.MediaType == (int)mediaType)
+            .Where(c => c.GroupMaps.Any(gm=> gm.ChannelGroupId == idGroup))
             .ToList();
+          //.GetAllChannelsByGroupIdAndMediaType(context, idGroup, mediaType)
         }
       }
       catch (Exception ex)

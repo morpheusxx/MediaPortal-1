@@ -1,8 +1,7 @@
 ﻿using Mediaportal.TV.Server.TVDatabase.Entities;
-using Mediaportal.TV.Server.TVDatabase.EntityModel.Context;
 using Microsoft.EntityFrameworkCore.Internal;
 
-namespace Tve35_EFCore.Context
+namespace Mediaportal.TV.Server.TVDatabase.EntityModel.Context
 {
   public class SeedData
   {

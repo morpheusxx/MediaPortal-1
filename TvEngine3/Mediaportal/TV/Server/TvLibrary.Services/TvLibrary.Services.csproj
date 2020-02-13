@@ -169,6 +169,10 @@
       <Project>{4C2D9698-AF44-4157-99B6-48F5269F20CC}</Project>
       <Name>Entities</Name>
     </ProjectReference>
+    <ProjectReference Include="..\TVDatabase\EntityModel\EntityModel.csproj">
+      <Project>{4D0F06A3-DE88-4395-823F-67B27DE30E81}</Project>
+      <Name>EntityModel</Name>
+    </ProjectReference>
     <ProjectReference Include="..\TVDatabase\Presentation\Presentation.csproj">
       <Project>{FB53D159-8115-4155-921D-F64E0072A633}</Project>
       <Name>Presentation</Name>

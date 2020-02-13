@@ -10,6 +10,7 @@ using MediaPortal.Common.Utils;
 using Mediaportal.TV.Server.Plugins.Base;
 using Mediaportal.TV.Server.Plugins.Base.Interfaces;
 using Mediaportal.TV.Server.TVControl;
+using Mediaportal.TV.Server.TVDatabase.EntityModel.Context;
 using Mediaportal.TV.Server.TVDatabase.TVBusinessLayer;
 using Mediaportal.TV.Server.TVLibrary.Interfaces.Integration;
 using Mediaportal.TV.Server.TVLibrary.Interfaces.Logging;
@@ -618,6 +619,8 @@ namespace Mediaportal.TV.Server.TVLibrary
 
           //Check for unsupported operating systems
           OSPrerequisites.OSPrerequisites.OsCheck(false);
+
+          DbSetup.EnsureCreated();
 
           _powerEventThread = new Thread(PowerEventThread) { Name = "PowerEventThread", IsBackground = true };
           _powerEventThread.Start();

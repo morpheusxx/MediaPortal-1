@@ -94,7 +94,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
     public override void OnSectionActivated()
     {
       cards = new Dictionary<int, CardType>();
-      IList<Card> dbsCards = ServiceAgents.Instance.CardServiceAgent.ListAllCards(CardIncludeRelationEnum.None);
+      IList<Card> dbsCards = ServiceAgents.Instance.CardServiceAgent.ListAllCards(CardIncludeRelationEnum.ChannelMaps);
       mpComboBoxCard.Items.Clear();
       foreach (Card card in dbsCards)
       {

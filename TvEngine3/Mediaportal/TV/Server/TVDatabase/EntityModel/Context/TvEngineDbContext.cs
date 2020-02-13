@@ -82,4 +82,19 @@ namespace Mediaportal.TV.Server.TVDatabase.EntityModel.Context
       }
     }
   }
+
+  public static class DbSetup
+  {
+    public static bool EnsureCreated()
+    {
+      using (var context = new TvEngineDbContext())
+      {
+        context.Database.EnsureCreated();
+        SeedData.EnsureSeedData(context);
+        context.SaveChanges();
+      }
+
+      return true;
+    }
+  }
 }

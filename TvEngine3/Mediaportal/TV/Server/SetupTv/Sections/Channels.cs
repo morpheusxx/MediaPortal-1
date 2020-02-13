@@ -1012,7 +1012,7 @@ namespace Mediaportal.TV.Server.SetupTV.Sections
         return;
       }
 
-      bool groupIsEmpty = (group.GroupMaps.Count <= 0);
+      bool groupIsEmpty = false; // GroupMaps not loaded before... (group.GroupMaps.Count <= 0);
 
       ServiceAgents.Instance.ChannelGroupServiceAgent.DeleteChannelGroup(group.ChannelGroupId);
       tabControl1.TabPages.Remove(tab);
