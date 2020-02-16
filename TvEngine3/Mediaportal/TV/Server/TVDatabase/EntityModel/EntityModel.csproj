@@ -92,16 +92,10 @@
     <Compile Include="Context\TvEngineDbContext.cs" />
     <Compile Include="EntitySQLDebug.cs" />
     <Compile Include="Extensions\EntityExtensions.cs" />
-    <Compile Include="ObjContext\EntityFrameworkExtension.cs" />
     <Compile Include="Extensions\ExpressionExtension.cs" />
     <Compile Include="Extensions\ExpressionVisitor.cs" />
     <Compile Include="Extensions\ParameterRebinder .cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Specification\AndSpecification.cs" />
-    <Compile Include="Specification\CompositeSpecification.cs" />
-    <Compile Include="Specification\ISpecification.cs" />
-    <Compile Include="Specification\OrSpecification.cs" />
-    <Compile Include="Specification\Specification.cs" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
@@ -121,6 +115,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore">
+      <Version>3.1.1</Version>
+    </PackageReference>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite">
       <Version>3.1.1</Version>
     </PackageReference>
