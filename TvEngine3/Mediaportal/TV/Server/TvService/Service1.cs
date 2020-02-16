@@ -20,6 +20,7 @@
 
 using System;
 using System.Collections;
+using System.Configuration;
 using System.Configuration.Install;
 #if DEBUG
 using System.IO;
@@ -120,9 +121,11 @@ namespace Mediaportal.TV.Server.TVService
         opt = args[0];
       }
 
+      _connectionString = ConfigurationManager.ConnectionStrings["TvEngineDb"];
+
       if (opt != null && opt.ToUpperInvariant() == "-CONSOLE")
       {
-        var tvServiceThread = new TvServiceThread(Application.ExecutablePath);
+        var tvServiceThread = new TvServiceThread(Application.ExecutablePath, _connectionString);
         tvServiceThread.Start();
 
         while (Console.ReadKey().KeyChar != 'q')
@@ -224,6 +227,7 @@ namespace Mediaportal.TV.Server.TVService
 
 
     private TvServiceThread _tvServiceThread;
+    private static ConnectionStringSettings _connectionString;
 
     /// <summary>
     /// When implemented in a derived class, executes when a Start command is sent to the service by the Service Control Manager (SCM) or when the operating system starts (for a service that starts automatically). Specifies actions to take when the service starts.
@@ -236,7 +240,7 @@ namespace Mediaportal.TV.Server.TVService
 #if DEBUG
         if (File.Exists(@"c:\debug_tvservice.txt"))
         {
-          System.Diagnostics.Debugger.Launch();        
+          System.Diagnostics.Debugger.Launch();
         }
 #endif
 
@@ -245,7 +249,7 @@ namespace Mediaportal.TV.Server.TVService
           RequestAdditionalTime(60000); // starting database can be slow so increase default timeout        
         }
 
-        _tvServiceThread = new TvServiceThread(Application.ExecutablePath);
+        _tvServiceThread = new TvServiceThread(Application.ExecutablePath, _connectionString);
         _tvServiceThread.Start();
         _tvServiceThread.InitializedEvent.WaitOne();
       }

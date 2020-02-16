@@ -1,5 +1,6 @@
 ﻿using System.Configuration;
 using Mediaportal.TV.Server.TVDatabase.Entities;
+using Mediaportal.TV.Server.TVLibrary.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace Mediaportal.TV.Server.TVDatabase.EntityModel.Context
@@ -75,7 +76,8 @@ namespace Mediaportal.TV.Server.TVDatabase.EntityModel.Context
 
     protected override void OnConfiguring(DbContextOptionsBuilder options)
     {
-      ConnectionStringSettings connection = ConfigurationManager.ConnectionStrings["TvEngineDb"];
+      var container = Instantiator.Instance.Container();
+      ConnectionStringSettings connection = container.Resolve<ConnectionStringSettings>();
       if (connection.ProviderName == "SQLite")
       {
         options.UseSqlite(connection.ConnectionString);
@@ -85,14 +87,16 @@ namespace Mediaportal.TV.Server.TVDatabase.EntityModel.Context
 
   public static class DbSetup
   {
+    private static readonly object _syncObj = new object();
     public static bool EnsureCreated()
     {
-      using (var context = new TvEngineDbContext())
-      {
-        context.Database.EnsureCreated();
-        SeedData.EnsureSeedData(context);
-        context.SaveChanges();
-      }
+      lock (_syncObj)
+        using (var context = new TvEngineDbContext())
+        {
+          context.Database.EnsureCreated();
+          SeedData.EnsureSeedData(context);
+          context.SaveChanges();
+        }
 
       return true;
     }

@@ -1,20 +1,25 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Configuration;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Security.AccessControl;
 using System.Security.Principal;
 using System.Threading;
+using Castle.MicroKernel.Registration;
 using MediaPortal.Common.Utils;
 using Mediaportal.TV.Server.Plugins.Base;
 using Mediaportal.TV.Server.Plugins.Base.Interfaces;
 using Mediaportal.TV.Server.TVControl;
 using Mediaportal.TV.Server.TVDatabase.EntityModel.Context;
 using Mediaportal.TV.Server.TVDatabase.TVBusinessLayer;
+using Mediaportal.TV.Server.TVLibrary.Interfaces;
 using Mediaportal.TV.Server.TVLibrary.Interfaces.Integration;
 using Mediaportal.TV.Server.TVLibrary.Interfaces.Logging;
 using Mediaportal.TV.Server.TVLibrary.Services;
+using Component = Castle.MicroKernel.Registration.Component;
 
 namespace Mediaportal.TV.Server.TVLibrary
 {
@@ -36,10 +41,17 @@ namespace Mediaportal.TV.Server.TVLibrary
 
     #endregion
 
-    public TvServiceThread(string applicationPath)
+    public TvServiceThread(string applicationPath, ConnectionStringSettings connectionString)
     {
       // Initialize hosting environment
       IntegrationProviderHelper.Register();
+      var container = Instantiator.Instance.Container();
+      container.Register(Component.For<ConnectionStringSettings>().OnCreate(c =>
+      {
+        c.Name = connectionString.Name;
+        c.ConnectionString = connectionString.ConnectionString;
+        c.ProviderName = connectionString.ProviderName;
+      }).LifestyleSingleton());
 
       // set working dir from application.exe
       _applicationPath = applicationPath;
@@ -550,18 +562,19 @@ namespace Mediaportal.TV.Server.TVLibrary
 
     public void Start(bool allowEnvExit = true)
     {
-      var tvServiceThreadStart = new ThreadStart(() => {
-          try
-          {
-            DoStart();
-          }
-          catch (OSPrerequisites.OSPrerequisites.OperationSystemException ex)
-          {
-            // Only exit the process if the caller forces this behavior.
-            if (allowEnvExit)
-              Environment.Exit(ex.ExitCode);
-          }
-        });
+      var tvServiceThreadStart = new ThreadStart(() =>
+      {
+        try
+        {
+          DoStart();
+        }
+        catch (OSPrerequisites.OSPrerequisites.OperationSystemException ex)
+        {
+          // Only exit the process if the caller forces this behavior.
+          if (allowEnvExit)
+            Environment.Exit(ex.ExitCode);
+        }
+      });
       _tvServiceThread = new Thread(tvServiceThreadStart) { IsBackground = false };
 
 
