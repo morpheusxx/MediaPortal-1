@@ -250,7 +250,7 @@ xcopy "$(SolutionDir)Plugins\CustomDevices\TurbosightRemote\$(OutDir)Mediaportal
 xcopy "$(SolutionDir)Plugins\CustomDevices\TwinhanHidRemote\$(OutDir)Mediaportal.TV.Server.Plugins.TunerExtension.*" "$(TargetDir)Plugins\CustomDevices\" /C/Y/S || exit /b 51
 xcopy "$(SolutionDir)Plugins\CustomDevices\Twinhan\$(OutDir)Mediaportal.TV.Server.Plugins.TunerExtension.*" "$(TargetDir)Plugins\CustomDevices\" /C/Y/S || exit /b 52
 xcopy "$(SolutionDir)Plugins\CustomDevices\ViXS\$(OutDir)Mediaportal.TV.Server.Plugins.TunerExtension.*" "$(TargetDir)Plugins\CustomDevices\" /C/Y/S || exit /b 53
-xcopy "$(SolutionDir)TVServer.Base\*.dll" "$(TargetDir)Plugins\CustomDevices\Resources\" /C/Y/S || exit /b 54
+xcopy "$(SolutionDir)TVServer.Base\*.dll" "$(TargetDir)Plugins\CustomDevices\x86\Resources\" /C/Y/S || exit /b 54
 rem xcopy "$(SolutionDir)..\..\..\..\DirectShowFilters\DXErr9\$(OutDir)dxerr9.*" "$(TargetDir)" /C/Y/S || exit /b 55
 xcopy "$(SolutionDir)TvLibrary.IntegrationProvider.Interfaces\$(OutDir)*.dll" "$(TargetDir)" /C/Y/S || exit /b 56
 xcopy "$(SolutionDir)TvLibrary.IntegrationProvider.Interfaces\$(OutDir)*.pdb" "$(TargetDir)" /C/Y/S || exit /b 57

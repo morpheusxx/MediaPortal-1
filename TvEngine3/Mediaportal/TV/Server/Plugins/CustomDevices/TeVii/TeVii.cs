@@ -149,6 +149,12 @@ namespace Mediaportal.TV.Server.Plugins.TunerExtension.TeVii
 
     #endregion
 
+    static TeVii()
+    {
+      if (!PathManager.SetPlatformSearchDirectories(out string selectedPath, "Resources"))
+        Log.Error("Failed to set platform specific search directory!");
+    }
+
     #region DLL imports
 
     #region information functions
@@ -158,7 +164,7 @@ namespace Mediaportal.TV.Server.Plugins.TunerExtension.TeVii
     /// Get the SDK API version number.
     /// </summary>
     /// <returns>the API Version number</returns>
-    [DllImport("Resources\\TeVii.dll", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("TeVii.dll", CallingConvention = CallingConvention.Cdecl)]
     private static extern int GetAPIVersion();
 
     /// <summary>
@@ -169,7 +175,7 @@ namespace Mediaportal.TV.Server.Plugins.TunerExtension.TeVii
     /// really enumerate. Subsequent calls will just return the result from the first call.
     /// </remarks>
     /// <returns>the number of TeVii-compatible devices connected to the system</returns>
-    [DllImport("Resources\\TeVii.dll", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("TeVii.dll", CallingConvention = CallingConvention.Cdecl)]
     private static extern int FindDevices();
 
     /// <summary>
@@ -181,7 +187,7 @@ namespace Mediaportal.TV.Server.Plugins.TunerExtension.TeVii
     /// </remarks>
     /// <param name="index">The zero-based device index (0 &lt;= index &lt; FindDevices()).</param>
     /// <returns>a pointer to a NULL terminated buffer containing the device name, otherwise <c>IntPtr.Zero</c></returns>
-    [DllImport("Resources\\TeVii.dll", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("TeVii.dll", CallingConvention = CallingConvention.Cdecl)]
     private static extern IntPtr GetDeviceName(int index);
 
     /// <summary>
@@ -193,7 +199,7 @@ namespace Mediaportal.TV.Server.Plugins.TunerExtension.TeVii
     /// </remarks>
     /// <param name="index">The zero-based device index (0 &lt;= index &lt; FindDevices()).</param>
     /// <returns>a pointer to a NULL terminated buffer containing the device path, otherwise <c>IntPtr.Zero</c></returns>
-    [DllImport("Resources\\TeVii.dll", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("TeVii.dll", CallingConvention = CallingConvention.Cdecl)]
     private static extern IntPtr GetDevicePath(int index);
 
     #endregion
@@ -212,7 +218,7 @@ namespace Mediaportal.TV.Server.Plugins.TunerExtension.TeVii
     /// <param name="captureCallBack">An optional delegate that will be invoked when raw stream packets are received.</param>
     /// <param name="context">An optional pointer that will be passed as a paramter to the capture call back.</param>
     /// <returns><c>true</c> if the device access is successfully established, otherwise <c>false</c></returns>
-    [DllImport("Resources\\TeVii.dll", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("TeVii.dll", CallingConvention = CallingConvention.Cdecl)]
     [return: MarshalAs(UnmanagedType.Bool)]
     private static extern bool OpenDevice(int index, OnTeViiCaptureData captureCallBack, IntPtr context);
 
@@ -221,7 +227,7 @@ namespace Mediaportal.TV.Server.Plugins.TunerExtension.TeVii
     /// </summary>
     /// <param name="index">The zero-based device index (0 &lt;= index &lt; FindDevices()).</param>
     /// <returns><c>true</c> if the device access is successfully closed, otherwise <c>false</c></returns>
-    [DllImport("Resources\\TeVii.dll", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("TeVii.dll", CallingConvention = CallingConvention.Cdecl)]
     [return: MarshalAs(UnmanagedType.Bool)]
     private static extern bool CloseDevice(int index);
 
@@ -237,7 +243,7 @@ namespace Mediaportal.TV.Server.Plugins.TunerExtension.TeVii
     /// <param name="modulation">The transponder modulation. Note that it's better to avoid using <c>TeViiModulation.Auto</c> for DVB-S2 transponders to minimise lock time.</param>
     /// <param name="fecRate">The transponder FEC rate. Note that it's better to avoid using <c>TeViiFecRate.Auto</c> for DVB-S2 transponders to minimise lock time.</param>
     /// <returns><c>true</c> if the tuner successfully locks on the transponder, otherwise <c>false</c></returns>
-    [DllImport("Resources\\TeVii.dll", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("TeVii.dll", CallingConvention = CallingConvention.Cdecl)]
     [return: MarshalAs(UnmanagedType.Bool)]
     private static extern bool TuneTransponder(int index, int frequency, int symbolRate, int lnbLof, TeViiPolarisation polarisation,
                                                [MarshalAs(UnmanagedType.Bool)] bool toneOn, TeViiModulation modulation, TeViiFecRate fecRate);
@@ -250,7 +256,7 @@ namespace Mediaportal.TV.Server.Plugins.TunerExtension.TeVii
     /// <param name="strength">A signal strength rating ranging between 0 (low strength) and 100 (high strength).</param>
     /// <param name="quality">A signal quality rating ranging between 0 (low quality) and 100 (high quality).</param>
     /// <returns><c>true</c> if the signal status is successfully retrieved, otherwise <c>false</c></returns>
-    [DllImport("Resources\\TeVii.dll", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("TeVii.dll", CallingConvention = CallingConvention.Cdecl)]
     [return: MarshalAs(UnmanagedType.Bool)]
     private static extern bool GetSignalStatus(int index, [MarshalAs(UnmanagedType.Bool)] out bool isLocked, out int strength, out int quality);
 
@@ -263,7 +269,7 @@ namespace Mediaportal.TV.Server.Plugins.TunerExtension.TeVii
     /// <param name="repeatCount">The number of times to resend the message. Zero means send the message once.</param>
     /// <param name="repeatFlag"><c>True</c> to set the first byte in the message to 0xe1 if/when the message is resent.</param>
     /// <returns><c>true</c> if the message is successfully sent, otherwise <c>false</c></returns>
-    [DllImport("Resources\\TeVii.dll", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("TeVii.dll", CallingConvention = CallingConvention.Cdecl)]
     [return: MarshalAs(UnmanagedType.Bool)]
     private static extern bool SendDiSEqC(int index, [MarshalAs(UnmanagedType.LPArray)] byte[] message, int length, int repeatCount, [MarshalAs(UnmanagedType.Bool)] bool repeatFlag);
 
@@ -274,7 +280,7 @@ namespace Mediaportal.TV.Server.Plugins.TunerExtension.TeVii
     /// <param name="remoteKeyCallBack">A delegate that will be invoked when remote keypress events are detected.</param>
     /// <param name="context">An optional pointer that will be passed as a paramter to the remote key call back.</param>
     /// <returns><c>true</c> if the call back function is successfully set, otherwise <c>false</c></returns>
-    [DllImport("Resources\\TeVii.dll", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("TeVii.dll", CallingConvention = CallingConvention.Cdecl)]
     [return: MarshalAs(UnmanagedType.Bool)]
     private static extern bool SetRemoteControl(int index, OnTeViiRemoteControlKeyPress remoteKeyCallBack, IntPtr context);
 

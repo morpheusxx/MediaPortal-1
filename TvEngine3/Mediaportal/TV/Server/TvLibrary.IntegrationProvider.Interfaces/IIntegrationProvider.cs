@@ -21,7 +21,7 @@
 namespace Mediaportal.TV.Server.TVLibrary.IntegrationProvider.Interfaces
 {
   /// <summary>
-  /// <see cref="IIntegrationProvider"/> provides required information about the hosting enviromment and features for the TvCore. 
+  /// <see cref="IIntegrationProvider"/> provides required information about the hosting environment and features for the TvCore. 
   /// Each hosting environment needs to provide an integration provider to allow use of different folders or logging providers. 
   /// This way we can use the TvCore inside MP1-TvServer or in MP2-Server as plugin.
   /// </summary>

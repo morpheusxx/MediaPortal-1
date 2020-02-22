@@ -174,7 +174,7 @@ namespace Mediaportal.TV.Server.Plugins.TunerExtension.HauppaugeEcp
 
       try
       {
-        string file = Path.Combine(PathManager.BuildAssemblyRelativePath("Resources"), "HauppaugeEcp.dll");
+        string file = Path.Combine(PathManager.BuildAssemblyRelativePathForArchitecture("Resources"), "HauppaugeEcp.dll");
         _interfaceEcp = ComHelper.LoadComObjectFromFile(file, typeof(MpHcwEcp).GUID, typeof(IMpHcwEcp).GUID, true) as IMpHcwEcp;
       }
       catch (Exception ex)

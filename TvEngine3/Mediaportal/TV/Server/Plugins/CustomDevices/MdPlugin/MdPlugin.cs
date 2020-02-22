@@ -209,7 +209,7 @@ namespace Mediaportal.TV.Server.Plugins.TunerExtension.MdPlugin
     private bool _isMdPlugin = false;
     private bool _isCaInterfaceOpen = false;
     private HashSet<string> _providers = new HashSet<string>();
-    private string _pluginFolder = PathManager.BuildAssemblyRelativePath("MDPLUGINS");
+    private string _pluginFolder = PathManager.BuildAssemblyRelativePathForArchitecture("MDPLUGINS");
     private string _configurationFolderPrefix = string.Empty;
     private IFilterGraph2 _graph = null;
     private IBaseFilter _infTee = null;

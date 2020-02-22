@@ -269,6 +269,12 @@ namespace Mediaportal.TV.Server.Plugins.TunerExtension.TechnoTrend
 
     #endregion
 
+    static TechnoTrend()
+    {
+      if (!PathManager.SetPlatformSearchDirectories(out string selectedPath, "Resources"))
+        Log.Error("Failed to set platform specific search directory!");
+    }
+
     #region structs
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
@@ -480,7 +486,7 @@ namespace Mediaportal.TV.Server.Plugins.TunerExtension.TechnoTrend
     /// </summary>
     /// <param name="category">The category/type of devices to count.</param>
     /// <returns>the number of devices that are available</returns>
-    [DllImport("Resources\\ttBdaDrvApi_Dll.dll", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("ttBdaDrvApi_Dll.dll", CallingConvention = CallingConvention.Cdecl)]
     [SuppressUnmanagedCodeSecurity]
     private static extern IntPtr bdaapiEnumerate(TtDeviceCategory category);
 
@@ -490,7 +496,7 @@ namespace Mediaportal.TV.Server.Plugins.TunerExtension.TechnoTrend
     /// <param name="category">The category/type of device to initialise.</param>
     /// <param name="index">The device's hardware index.</param>
     /// <returns>a handle that the DLL can use to identify this device for future function calls</returns>
-    [DllImport("Resources\\ttBdaDrvApi_Dll.dll", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("ttBdaDrvApi_Dll.dll", CallingConvention = CallingConvention.Cdecl)]
     [SuppressUnmanagedCodeSecurity]
     private static extern IntPtr bdaapiOpenHWIdx(TtDeviceCategory category, uint index);
 
@@ -498,7 +504,7 @@ namespace Mediaportal.TV.Server.Plugins.TunerExtension.TechnoTrend
     /// Close access to a specific device and relinquish control over it.
     /// </summary>
     /// <param name="handle">The handle allocated to a device when it was opened.</param>
-    [DllImport("Resources\\ttBdaDrvApi_Dll.dll", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("ttBdaDrvApi_Dll.dll", CallingConvention = CallingConvention.Cdecl)]
     [SuppressUnmanagedCodeSecurity]
     private static extern void bdaapiClose(IntPtr handle);
 
@@ -512,7 +518,7 @@ namespace Mediaportal.TV.Server.Plugins.TunerExtension.TechnoTrend
     /// <param name="handle">The handle allocated to a device when it was opened.</param>
     /// <param name="autoOffsetModeOn"><c>True</c> to turn offset scanning on.</param>
     /// <returns>a TechnoTrend API result to indicate success or failure reason</returns>
-    [DllImport("Resources\\ttBdaDrvApi_Dll.dll", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("ttBdaDrvApi_Dll.dll", CallingConvention = CallingConvention.Cdecl)]
     [SuppressUnmanagedCodeSecurity]
     private static extern TtApiResult bdaapiSetDVBTAutoOffsetMode(IntPtr handle, [MarshalAs(UnmanagedType.Bool)] bool autoOffsetModeOn);
 
@@ -522,7 +528,7 @@ namespace Mediaportal.TV.Server.Plugins.TunerExtension.TechnoTrend
     /// <param name="handle">The handle allocated to a device when it was opened.</param>
     /// <param name="autoOffsetModeOn"><c>True</c> if automatic offset scanning is on, otherwise <c>false</c>.</param>
     /// <returns>a TechnoTrend API result to indicate success or failure reason</returns>
-    [DllImport("Resources\\ttBdaDrvApi_Dll.dll", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("ttBdaDrvApi_Dll.dll", CallingConvention = CallingConvention.Cdecl)]
     [SuppressUnmanagedCodeSecurity]
     private static extern TtApiResult bdaapiGetDVBTAutoOffsetMode(IntPtr handle, [MarshalAs(UnmanagedType.Bool)] ref bool autoOffsetModeOn);
 
@@ -537,7 +543,7 @@ namespace Mediaportal.TV.Server.Plugins.TunerExtension.TechnoTrend
     /// <param name="callBack">A delegate for the DLL to invoke when remote control key presses are detected.</param>
     /// <param name="context">Optional context that the DLL will pass as a parameter to the call back.</param>
     /// <returns>a TechnoTrend API result to indicate success or failure reason</returns>
-    [DllImport("Resources\\ttBdaDrvApi_Dll.dll", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("ttBdaDrvApi_Dll.dll", CallingConvention = CallingConvention.Cdecl)]
     [SuppressUnmanagedCodeSecurity]
     private static extern TtApiResult bdaapiOpenIR(IntPtr handle, OnTtRemoteControlKeyPress callBack, IntPtr context);
 
@@ -546,7 +552,7 @@ namespace Mediaportal.TV.Server.Plugins.TunerExtension.TechnoTrend
     /// </summary>
     /// <param name="handle">The handle allocated to a device when it was opened.</param>
     /// <returns>a TechnoTrend API result to indicate success or failure reason</returns>
-    [DllImport("Resources\\ttBdaDrvApi_Dll.dll", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("ttBdaDrvApi_Dll.dll", CallingConvention = CallingConvention.Cdecl)]
     [SuppressUnmanagedCodeSecurity]
     private static extern TtApiResult bdaapiCloseIR(IntPtr handle);
 
@@ -562,7 +568,7 @@ namespace Mediaportal.TV.Server.Plugins.TunerExtension.TechnoTrend
     /// <param name="toneBurst">An optional tone burst command that can be sent after the DiSEqC command has been sent.</param>
     /// <param name="polarisation">The polarisation to use when sending the command. This is used as a way to specify the voltage (ie. either 13 or 18 volts).</param>
     /// <returns>a TechnoTrend API result to indicate success or failure reason</returns>
-    [DllImport("Resources\\ttBdaDrvApi_Dll.dll", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("ttBdaDrvApi_Dll.dll", CallingConvention = CallingConvention.Cdecl)]
     [SuppressUnmanagedCodeSecurity]
     private static extern TtApiResult bdaapiSetDiSEqCMsg(IntPtr handle, [MarshalAs(UnmanagedType.LPArray)] byte[] command, byte length, byte repeats,
                                                         TtToneBurst toneBurst, Polarisation polarisation);
@@ -574,7 +580,7 @@ namespace Mediaportal.TV.Server.Plugins.TunerExtension.TechnoTrend
     /// <param name="useCiVideoPort"><c>True</c> to use the CI videoport.</param>
     /// <param name="effectiveCiVideoPort"><c>True</c> if the CI videoport is *actually* being used.</param>
     /// <returns>a TechnoTrend API result to indicate success or failure reason</returns>
-    [DllImport("Resources\\ttBdaDrvApi_Dll.dll", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("ttBdaDrvApi_Dll.dll", CallingConvention = CallingConvention.Cdecl)]
     [SuppressUnmanagedCodeSecurity]
     private static extern TtApiResult bdaapiSetVideoport(IntPtr handle, [MarshalAs(UnmanagedType.Bool)] bool useCiVideoPort, [MarshalAs(UnmanagedType.Bool)] ref bool effectiveCiVideoPort);
 
@@ -586,7 +592,7 @@ namespace Mediaportal.TV.Server.Plugins.TunerExtension.TechnoTrend
     /// <param name="handle">The handle allocated to a device when it was opened.</param>
     /// <param name="antennaPowerOn"><c>True</c> to turn the antenna power supply on.</param>
     /// <returns>a TechnoTrend API result to indicate success or failure reason</returns>
-    [DllImport("Resources\\ttBdaDrvApi_Dll.dll", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("ttBdaDrvApi_Dll.dll", CallingConvention = CallingConvention.Cdecl)]
     [SuppressUnmanagedCodeSecurity]
     private static extern TtApiResult bdaapiSetDVBTAntPwr(IntPtr handle, [MarshalAs(UnmanagedType.Bool)] bool antennaPowerOn);
 
@@ -596,7 +602,7 @@ namespace Mediaportal.TV.Server.Plugins.TunerExtension.TechnoTrend
     /// <param name="handle">The handle allocated to a device when it was opened.</param>
     /// <param name="antennaPowerOn"><c>True</c> if the antenna power supply is on, otherwise <c>false</c>.</param>
     /// <returns>a TechnoTrend API result to indicate success or failure reason</returns>
-    [DllImport("Resources\\ttBdaDrvApi_Dll.dll", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("ttBdaDrvApi_Dll.dll", CallingConvention = CallingConvention.Cdecl)]
     [SuppressUnmanagedCodeSecurity]
     private static extern TtApiResult bdaapiGetDVBTAntPwr(IntPtr handle, [MarshalAs(UnmanagedType.Bool)] ref bool antennaPowerOn);
 
@@ -613,7 +619,7 @@ namespace Mediaportal.TV.Server.Plugins.TunerExtension.TechnoTrend
     /// <param name="v3">Part 3 of the driver version number.</param>
     /// <param name="v4">Part 4 of the driver version number.</param>
     /// <returns>a TechnoTrend API result to indicate success or failure reason</returns>
-    [DllImport("Resources\\ttBdaDrvApi_Dll.dll", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("ttBdaDrvApi_Dll.dll", CallingConvention = CallingConvention.Cdecl)]
     [SuppressUnmanagedCodeSecurity]
     private static extern TtApiResult bdaapiGetDrvVersion(IntPtr handle, ref byte v1, ref byte v2, ref byte v3, ref byte v4);
 
@@ -624,7 +630,7 @@ namespace Mediaportal.TV.Server.Plugins.TunerExtension.TechnoTrend
     /// <param name="highPart">The high part of the address.</param>
     /// <param name="lowPart">The low part of the address.</param>
     /// <returns>a TechnoTrend API result to indicate success or failure reason</returns>
-    [DllImport("Resources\\ttBdaDrvApi_Dll.dll", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("ttBdaDrvApi_Dll.dll", CallingConvention = CallingConvention.Cdecl)]
     [SuppressUnmanagedCodeSecurity]
     private static extern TtApiResult bdaapiGetMAC(IntPtr handle, ref uint highPart, ref uint lowPart);
 
@@ -637,7 +643,7 @@ namespace Mediaportal.TV.Server.Plugins.TunerExtension.TechnoTrend
     /// <param name="deviceId">The device identifier.</param>
     /// <param name="subDeviceId">The sub-device identifier.</param>
     /// <returns>a TechnoTrend API result to indicate success or failure reason</returns>
-    [DllImport("Resources\\ttBdaDrvApi_Dll.dll", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("ttBdaDrvApi_Dll.dll", CallingConvention = CallingConvention.Cdecl)]
     [SuppressUnmanagedCodeSecurity]
     private static extern TtApiResult bdaapiGetDeviceIDs(IntPtr handle, ref ushort vendorId, ref ushort subVendorId, ref ushort deviceId, ref ushort subDeviceId);
 
@@ -647,7 +653,7 @@ namespace Mediaportal.TV.Server.Plugins.TunerExtension.TechnoTrend
     /// <param name="handle">The handle allocated to a device when it was opened.</param>
     /// <param name="usbHighSpeedSupported"><c>True</c> if USB 2 speeds are supported, otherwise <c>false</c>.</param>
     /// <returns>a TechnoTrend API result to indicate success or failure reason</returns>
-    [DllImport("Resources\\ttBdaDrvApi_Dll.dll", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("ttBdaDrvApi_Dll.dll", CallingConvention = CallingConvention.Cdecl)]
     [SuppressUnmanagedCodeSecurity]
     private static extern TtApiResult bdaapiGetUSBHighspeedMode(IntPtr handle, [MarshalAs(UnmanagedType.Bool)] out bool usbHighSpeedSupported);
 
@@ -657,7 +663,7 @@ namespace Mediaportal.TV.Server.Plugins.TunerExtension.TechnoTrend
     /// <param name="handle">The handle allocated to a device when it was opened.</param>
     /// <param name="filterNames">The filter information.</param>
     /// <returns>a TechnoTrend API result to indicate success or failure reason</returns>
-    [DllImport("Resources\\ttBdaDrvApi_Dll.dll", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("ttBdaDrvApi_Dll.dll", CallingConvention = CallingConvention.Cdecl)]
     [SuppressUnmanagedCodeSecurity]
     private static extern TtApiResult bdaapiGetDevNameAndFEType(IntPtr handle, out FilterNames filterNames);
 
@@ -667,7 +673,7 @@ namespace Mediaportal.TV.Server.Plugins.TunerExtension.TechnoTrend
     /// <param name="handle">The handle allocated to a device when it was opened.</param>
     /// <param name="index">The hardware index.</param>
     /// <returns>a TechnoTrend API result to indicate success or failure reason</returns>
-    [DllImport("Resources\\ttBdaDrvApi_Dll.dll", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("ttBdaDrvApi_Dll.dll", CallingConvention = CallingConvention.Cdecl)]
     [SuppressUnmanagedCodeSecurity]
     private static extern TtApiResult bdaapiGetHwIdx(IntPtr handle, ref int index);
 
@@ -678,7 +684,7 @@ namespace Mediaportal.TV.Server.Plugins.TunerExtension.TechnoTrend
     /// <param name="devicePath">A buffer containing the device path string.</param>
     /// <param name="devicePathLength">The length of the device path in bytes.</param>
     /// <returns>a TechnoTrend API result to indicate success or failure reason</returns>
-    [DllImport("Resources\\ttBdaDrvApi_Dll.dll", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+    [DllImport("ttBdaDrvApi_Dll.dll", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
     [SuppressUnmanagedCodeSecurity]
     private static extern TtApiResult bdaapiGetDevicePath(IntPtr handle, [MarshalAs(UnmanagedType.LPStr)] StringBuilder devicePath, ref int devicePathLength);
 
@@ -688,7 +694,7 @@ namespace Mediaportal.TV.Server.Plugins.TunerExtension.TechnoTrend
     /// <param name="handle">The handle allocated to a device when it was opened.</param>
     /// <param name="sellerId">The seller identifier.</param>
     /// <returns>a TechnoTrend API result to indicate success or failure reason</returns>
-    [DllImport("Resources\\ttBdaDrvApi_Dll.dll", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("ttBdaDrvApi_Dll.dll", CallingConvention = CallingConvention.Cdecl)]
     [SuppressUnmanagedCodeSecurity]
     private static extern TtApiResult bdaapiGetProductSellerID(IntPtr handle, ref TtProductSeller sellerId);
 
@@ -704,7 +710,7 @@ namespace Mediaportal.TV.Server.Plugins.TunerExtension.TechnoTrend
     /// <param name="handle">The handle allocated to a device when it was opened.</param>
     /// <param name="callBack">Full call back structure pointer.</param>
     /// <returns><c>TtApiResult.Success</c> if a CI slot is present/connected, otherwise <c>TtApiResult.Error</c></returns>
-    [DllImport("Resources\\ttBdaDrvApi_Dll.dll", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("ttBdaDrvApi_Dll.dll", CallingConvention = CallingConvention.Cdecl)]
     [SuppressUnmanagedCodeSecurity]
     private static extern TtApiResult bdaapiOpenCI(IntPtr handle, TtFullCiCallBack callBack);
 
@@ -715,7 +721,7 @@ namespace Mediaportal.TV.Server.Plugins.TunerExtension.TechnoTrend
     /// <param name="callBack">Full call back structure pointer.</param>
     /// <param name="ciMessageHandler">A delegate for handling raw messages from the interface.</param>
     /// <returns><c>TtApiResult.Success</c> if a CI slot is present/connected, otherwise <c>TtApiResult.Error</c></returns>
-    [DllImport("Resources\\ttBdaDrvApi_Dll.dll", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("ttBdaDrvApi_Dll.dll", CallingConvention = CallingConvention.Cdecl)]
     [SuppressUnmanagedCodeSecurity]
     private static extern TtApiResult bdaapiOpenCIext(IntPtr handle, TtFullCiCallBack callBack, OnTtCiMessage ciMessageHandler);
 
@@ -725,7 +731,7 @@ namespace Mediaportal.TV.Server.Plugins.TunerExtension.TechnoTrend
     /// <param name="handle">The handle allocated to a device when it was opened.</param>
     /// <param name="callBack">Minimal call back structure pointer.</param>
     /// <returns><c>TtApiResult.Success</c> if a CI slot is present/connected, otherwise <c>TtApiResult.Error</c></returns>
-    [DllImport("Resources\\ttBdaDrvApi_Dll.dll", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("ttBdaDrvApi_Dll.dll", CallingConvention = CallingConvention.Cdecl)]
     [SuppressUnmanagedCodeSecurity]
     private static extern TtApiResult bdaapiOpenCISlim(IntPtr handle, TtSlimCiCallBack callBack);
 
@@ -734,7 +740,7 @@ namespace Mediaportal.TV.Server.Plugins.TunerExtension.TechnoTrend
     /// </summary>
     /// <param name="handle">The handle allocated to a device when it was opened.</param>
     /// <returns><c>TtApiResult.Success</c> if a CI slot is present/connected, otherwise <c>TtApiResult.Error</c></returns>
-    [DllImport("Resources\\ttBdaDrvApi_Dll.dll", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("ttBdaDrvApi_Dll.dll", CallingConvention = CallingConvention.Cdecl)]
     [SuppressUnmanagedCodeSecurity]
     private static extern TtApiResult bdaapiOpenCIWithoutPointer(IntPtr handle);
 
@@ -742,7 +748,7 @@ namespace Mediaportal.TV.Server.Plugins.TunerExtension.TechnoTrend
     /// Close the conditional access interface.
     /// </summary>
     /// <param name="handle">The handle allocated to a device when it was opened.</param>
-    [DllImport("Resources\\ttBdaDrvApi_Dll.dll", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("ttBdaDrvApi_Dll.dll", CallingConvention = CallingConvention.Cdecl)]
     [SuppressUnmanagedCodeSecurity]
     private static extern void bdaapiCloseCI(IntPtr handle);
 
@@ -755,7 +761,7 @@ namespace Mediaportal.TV.Server.Plugins.TunerExtension.TechnoTrend
     /// <param name="pmt">The PMT for the service that should be descrambled.</param>
     /// <param name="pmtLength">The length of the PMT in bytes.</param>
     /// <returns>a TechnoTrend API result to indicate success or failure reason</returns>
-    [DllImport("Resources\\ttBdaDrvApi_Dll.dll", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("ttBdaDrvApi_Dll.dll", CallingConvention = CallingConvention.Cdecl)]
     [SuppressUnmanagedCodeSecurity]
     private static extern TtApiResult bdaapiCIReadPSIFastWithPMT(IntPtr handle, [MarshalAs(UnmanagedType.LPArray)] byte[] pmt, ushort pmtLength);
 
@@ -765,7 +771,7 @@ namespace Mediaportal.TV.Server.Plugins.TunerExtension.TechnoTrend
     /// <param name="handle">The handle allocated to a device when it was opened.</param>
     /// <param name="serviceId">The service ID of the service that should be descrambled.</param>
     /// <returns>a TechnoTrend API result to indicate success or failure reason</returns>
-    [DllImport("Resources\\ttBdaDrvApi_Dll.dll", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("ttBdaDrvApi_Dll.dll", CallingConvention = CallingConvention.Cdecl)]
     [SuppressUnmanagedCodeSecurity]
     private static extern TtApiResult bdaapiCIReadPSIFastDrvDemux(IntPtr handle, ushort serviceId);
 
@@ -776,7 +782,7 @@ namespace Mediaportal.TV.Server.Plugins.TunerExtension.TechnoTrend
     /// <param name="sidList">A list of service IDs, one for each service that should be descrambled.</param>
     /// <param name="serviceCount">The number of services for the CAM to descramble.</param>
     /// <returns>a TechnoTrend API result to indicate success or failure reason</returns>
-    [DllImport("Resources\\ttBdaDrvApi_Dll.dll", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("ttBdaDrvApi_Dll.dll", CallingConvention = CallingConvention.Cdecl)]
     [SuppressUnmanagedCodeSecurity]
     private static extern TtApiResult bdaapiCIMultiDecode(IntPtr handle, [MarshalAs(UnmanagedType.LPArray)] ushort[] sidList, int serviceCount);
 
@@ -786,7 +792,7 @@ namespace Mediaportal.TV.Server.Plugins.TunerExtension.TechnoTrend
     /// <param name="handle">The handle allocated to a device when it was opened.</param>
     /// <param name="slotIndex">The index of the CI slot containing the CAM.</param>
     /// <returns>a TechnoTrend API result to indicate success or failure reason</returns>
-    [DllImport("Resources\\ttBdaDrvApi_Dll.dll", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("ttBdaDrvApi_Dll.dll", CallingConvention = CallingConvention.Cdecl)]
     [SuppressUnmanagedCodeSecurity]
     private static extern TtApiResult bdaapiCIEnterModuleMenu(IntPtr handle, byte slotIndex);
 
@@ -799,7 +805,7 @@ namespace Mediaportal.TV.Server.Plugins.TunerExtension.TechnoTrend
     /// <param name="handle">The handle allocated to a device when it was opened.</param>
     /// <param name="slotIndex">The index of the CI slot containing the CAM.</param>
     /// <returns>a TechnoTrend API result to indicate success or failure reason</returns>
-    [DllImport("Resources\\ttBdaDrvApi_Dll.dll", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("ttBdaDrvApi_Dll.dll", CallingConvention = CallingConvention.Cdecl)]
     [SuppressUnmanagedCodeSecurity]
     private static extern TtApiResult bdaapiCIGetSlotStatus(IntPtr handle, byte slotIndex);
 
@@ -811,7 +817,7 @@ namespace Mediaportal.TV.Server.Plugins.TunerExtension.TechnoTrend
     /// <param name="menuAnswer">The user's response.</param>
     /// <param name="answerLength">The length of the user's response in bytes.</param>
     /// <returns>a TechnoTrend API result to indicate success or failure reason</returns>
-    [DllImport("Resources\\ttBdaDrvApi_Dll.dll", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+    [DllImport("ttBdaDrvApi_Dll.dll", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
     [SuppressUnmanagedCodeSecurity]
     private static extern TtApiResult bdaapiCIAnswer(IntPtr handle, byte slotIndex,
                                                     [MarshalAs(UnmanagedType.LPStr)] string menuAnswer, byte answerLength);
@@ -823,7 +829,7 @@ namespace Mediaportal.TV.Server.Plugins.TunerExtension.TechnoTrend
     /// <param name="slotIndex">The index of the CI slot containing the CAM.</param>
     /// <param name="choice">The index (0..n) of the menu choice selected by the user.</param>
     /// <returns>a TechnoTrend API result to indicate success or failure reason</returns>
-    [DllImport("Resources\\ttBdaDrvApi_Dll.dll", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("ttBdaDrvApi_Dll.dll", CallingConvention = CallingConvention.Cdecl)]
     [SuppressUnmanagedCodeSecurity]
     private static extern TtApiResult bdaapiCIMenuAnswer(IntPtr handle, byte slotIndex, byte choice);
 
@@ -835,7 +841,7 @@ namespace Mediaportal.TV.Server.Plugins.TunerExtension.TechnoTrend
     /// <param name="handle">The handle allocated to a device when it was opened.</param>
     /// <param name="tuneRequest">A buffer containing the tune request.</param>
     /// <returns>a TechnoTrend API result to indicate success or failure reason</returns>
-    [DllImport("Resources\\ttBdaDrvApi_Dll.dll", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("ttBdaDrvApi_Dll.dll", CallingConvention = CallingConvention.Cdecl)]
     [SuppressUnmanagedCodeSecurity]
     private static extern TtApiResult bdaapiTune(IntPtr handle, IntPtr tuneRequest);
 

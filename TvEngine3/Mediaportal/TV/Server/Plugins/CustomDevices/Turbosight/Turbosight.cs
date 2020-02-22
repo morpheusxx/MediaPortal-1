@@ -415,7 +415,7 @@ namespace Mediaportal.TV.Server.Plugins.TunerExtension.Turbosight
       _apiCount++;
       _apiIndex = _apiCount;
       this.LogDebug("Turbosight: loading API, API index = {0}", _apiIndex);
-      string resourcesFolder = PathManager.BuildAssemblyRelativePath("Resources");
+      string resourcesFolder = PathManager.BuildAssemblyRelativePathForArchitecture("Resources");
       string sourceFilename = Path.Combine(resourcesFolder, "tbsCIapi.dll");
       string targetFilename = Path.Combine(resourcesFolder, "tbsCIapi" + _apiIndex + ".dll");
       if (!File.Exists(targetFilename))

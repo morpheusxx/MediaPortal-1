@@ -55,11 +55,14 @@ namespace Mediaportal.TV.Server.TVLibrary.Interfaces
     /// </example>
     /// </summary>
     /// <returns><c>true</c> if path could be set successfully.</returns>
-    public static bool SetPlatformSearchDirectories(out string selectedPath)
+    public static bool SetPlatformSearchDirectories(out string selectedPath, params string[] subPaths)
     {
       string platformDir = IntPtr.Size > 4 ? "x64" : "x86";
       string executingPath = Assembly.GetCallingAssembly().Location;
       string absolutePlatformDir = Path.Combine(Path.GetDirectoryName(executingPath), platformDir);
+      if (subPaths != null && subPaths.Length > 0)
+        foreach (string subPath in subPaths)
+          absolutePlatformDir = Path.Combine(absolutePlatformDir, subPath);
       SetDefaultDllDirectories(LOAD_LIBRARY_SEARCH_USER_DIRS | LOAD_LIBRARY_SEARCH_DEFAULT_DIRS);
       selectedPath = absolutePlatformDir;
       return AddDllDirectory(absolutePlatformDir);

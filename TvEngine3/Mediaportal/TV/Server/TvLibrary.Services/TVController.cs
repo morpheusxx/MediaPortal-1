@@ -4990,21 +4990,25 @@ namespace Mediaportal.TV.Server.TVLibrary
     public IDictionary<string, byte[]> GetPluginBinariesResources()
     {
       var fileStreams = new Dictionary<string, byte[]>();
+      List<string> binaryPaths = new List<string> { "plugins\\CustomDevices\\x86\\Resources", "plugins\\CustomDevices\\x64\\Resources" };
       try
       {
-        string resourcesFolder = PathManager.BuildAssemblyRelativePath("plugins\\CustomDevices\\Resources");
-        var dirInfoResources = new DirectoryInfo(resourcesFolder);
-
-        FileInfo[] filesResources = dirInfoResources.GetFiles("*.dll");
-
-        foreach (FileInfo fileInfo in filesResources)
+        foreach (string binaryPath in binaryPaths)
         {
-          using (var filestream = new FileStream(fileInfo.FullName, FileMode.Open, FileAccess.Read))
+          string resourcesFolder = PathManager.BuildAssemblyRelativePath(binaryPath);
+          var dirInfoResources = new DirectoryInfo(resourcesFolder);
+
+          FileInfo[] filesResources = dirInfoResources.GetFiles("*.dll");
+
+          foreach (FileInfo fileInfo in filesResources)
           {
-            long length = filestream.Length;
-            var data = new byte[length];
-            filestream.Read(data, 0, (int)length);
-            fileStreams.Add(fileInfo.Name, data);
+            using (var filestream = new FileStream(fileInfo.FullName, FileMode.Open, FileAccess.Read))
+            {
+              long length = filestream.Length;
+              var data = new byte[length];
+              filestream.Read(data, 0, (int) length);
+              fileStreams.Add(fileInfo.Name, data);
+            }
           }
         }
       }

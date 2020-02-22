@@ -684,7 +684,7 @@ namespace Mediaportal.TV.Server.Plugins.TunerExtension.TurbosightRemote
           IMpTbsNxpIrRcReceiver receiver = null;
           try
           {
-            string file = Path.Combine(PathManager.BuildAssemblyRelativePath("Resources"), "TbsNxpIrRcReceiver.dll");
+            string file = Path.Combine(PathManager.BuildAssemblyRelativePathForArchitecture("Resources"), "TbsNxpIrRcReceiver.dll");
             receiver = ComHelper.LoadComObjectFromFile(file, typeof(MpTbsNxpIrRcReceiver).GUID, typeof(IMpTbsNxpIrRcReceiver).GUID, true) as IMpTbsNxpIrRcReceiver;
           }
           catch (Exception ex)
