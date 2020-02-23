@@ -1040,19 +1040,9 @@ namespace Mediaportal.TV.Server.TVLibrary.Services
     }
 
 
-    public IDictionary<string, byte[]> GetPluginBinaries()
+    public byte[] GetPluginBinariesZipped()
     {
-      return Service.GetPluginBinaries();
-    }
-
-    public IDictionary<string, byte[]> GetPluginBinariesCustomDevices()
-    {
-      return Service.GetPluginBinariesCustomDevices();
-    }
-
-    public IDictionary<string, byte[]> GetPluginBinariesResources()
-    {
-      return Service.GetPluginBinariesResources();
+      return Service.GetPluginBinariesZipped();
     }
 
     public IList<StreamPresentation> ListAllStreamingChannels()

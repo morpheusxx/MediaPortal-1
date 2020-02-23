@@ -251,7 +251,7 @@ namespace Mediaportal.TV.Server.TVControl.Interfaces.Services
     /// <param name="idChannel"></param>
     /// <param name="idCard"></param>
     /// <returns></returns>
-    [OperationContract(Name = "IsRecordingCard")]        
+    [OperationContract(Name = "IsRecordingCard")]
     bool IsRecording(int idChannel, int idCard);
 
     /// <summary>
@@ -604,7 +604,7 @@ namespace Mediaportal.TV.Server.TVControl.Interfaces.Services
     /// <returns>
     /// TvResult indicating whether method succeeded
     /// </returns>    
-    [OperationContract(Name = "StartTimeShiftingForceCardId")]    
+    [OperationContract(Name = "StartTimeShiftingForceCardId")]
     TvResult StartTimeShifting(string userName, int idChannel, int? kickCardId, out IVirtualCard card, out Dictionary<int, List<IUser>> kickableCards, bool forceCardId, out IUser user);
 
     /// <summary>
@@ -861,7 +861,7 @@ namespace Mediaportal.TV.Server.TVControl.Interfaces.Services
     [OperationContract]
     bool SetCiMenuHandler(int cardId, IConditionalAccessMenuCallBack callbackHandler);
 
-    
+
 
     #endregion
 
@@ -880,7 +880,7 @@ namespace Mediaportal.TV.Server.TVControl.Interfaces.Services
     #endregion
 
     [OperationContract]
-    void RegisterUserForHeartbeatMonitoring (string username);
+    void RegisterUserForHeartbeatMonitoring(string username);
 
     [OperationContract]
     void RegisterUserForCiMenu(string username);
@@ -897,16 +897,10 @@ namespace Mediaportal.TV.Server.TVControl.Interfaces.Services
     [OperationContract]
     void UnRegisterUserForTvServerEvents(string username);
 
-    [OperationContract]    
-    IDictionary<string, byte[]> GetPluginBinaries();
+    [OperationContract]
+    byte[] GetPluginBinariesZipped();
 
     [OperationContract]
-    IDictionary<string, byte[]> GetPluginBinariesCustomDevices();
-
-    [OperationContract]
-    IDictionary<string, byte[]> GetPluginBinariesResources();
-
-    [OperationContract]    
     IList<StreamPresentation> ListAllStreamingChannels();
 
     [OperationContract]

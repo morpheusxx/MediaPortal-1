@@ -19,8 +19,8 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using Mediaportal.TV.Server.Plugins.Base;
 using Mediaportal.TV.Server.TVControl.ServiceAgents;
 using Mediaportal.TV.Server.TVLibrary.Interfaces;
@@ -53,47 +53,31 @@ namespace Mediaportal.TV.Server.SetupTV
         return;
       }
 
-      IDictionary<string, byte[]> streamList = ServiceAgents.Instance.ControllerServiceAgent.GetPluginBinaries();
+      byte[] pluginsZip = ServiceAgents.Instance.ControllerServiceAgent.GetPluginBinariesZipped();
+      if (pluginsZip == null)
+        return;
+
       string pluginsFolder = PathManager.BuildAssemblyRelativePath("plugins");
       if (!Directory.Exists(pluginsFolder))
-      {
         Directory.CreateDirectory(pluginsFolder);
-      }
 
-      foreach (KeyValuePair<string, byte[]> stream in streamList)
+      using (var ms = new MemoryStream(pluginsZip))
+      using (var zip = new ZipArchive(ms))
       {
-        string fileFullPath = Path.Combine(pluginsFolder, stream.Key);
-        using (FileStream fileStream = File.Create(fileFullPath, stream.Value.Length))
+        foreach (ZipArchiveEntry entry in zip.Entries)
         {
-          fileStream.Write(stream.Value, 0, stream.Value.Length);
-        }
-      }
-      IDictionary<string, byte[]> streamListCustomDevices = ServiceAgents.Instance.ControllerServiceAgent.GetPluginBinariesCustomDevices();
-      string customDevicesFolder = Path.Combine(pluginsFolder, "CustomDevices");
-      if (!Directory.Exists(customDevicesFolder))
-      {
-        Directory.CreateDirectory(customDevicesFolder);
-      }
-      foreach (KeyValuePair<string, byte[]> stream in streamListCustomDevices)
-      {
-        string fileFullPath = Path.Combine(customDevicesFolder, stream.Key);
-        using (FileStream fileStream = File.Create(fileFullPath, stream.Value.Length))
-        {
-          fileStream.Write(stream.Value, 0, stream.Value.Length);
-        }
-      }
-      IDictionary<string, byte[]> streamListResources = ServiceAgents.Instance.ControllerServiceAgent.GetPluginBinariesResources();
-      string resourceFolder = Path.Combine(customDevicesFolder, "Resources");
-      if (!Directory.Exists(resourceFolder))
-      {
-        Directory.CreateDirectory(resourceFolder);
-      }
-      foreach (KeyValuePair<string, byte[]> stream in streamListResources)
-      {
-        string fileFullPath = Path.Combine(resourceFolder, stream.Key);
-        using (FileStream fileStream = File.Create(fileFullPath, stream.Value.Length))
-        {
-          fileStream.Write(stream.Value, 0, stream.Value.Length);
+          var targetFile = pluginsFolder + entry.FullName; // No Path.Combine here, because the entry contains a leading backslash, which makes the result root based.
+          var targetFolder = Path.GetDirectoryName(targetFile);
+          if (!Directory.Exists(targetFolder))
+            Directory.CreateDirectory(targetFolder);
+
+          if (File.Exists(targetFile))
+            continue;
+          using (var fsStream = new FileStream(targetFile, FileMode.Create))
+          using (var stream = entry.Open())
+          {
+            stream.CopyTo(fsStream);
+          }
         }
       }
     }

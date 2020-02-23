@@ -25,6 +25,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
@@ -4931,92 +4932,32 @@ namespace Mediaportal.TV.Server.TVLibrary
       }
     }
 
-    public IDictionary<string, byte[]> GetPluginBinaries()
+    public byte[] GetPluginBinariesZipped()
     {
-      var fileStreams = new Dictionary<string, byte[]>();
       try
       {
         string pluginsFolder = PathManager.BuildAssemblyRelativePath("plugins");
-        var dirInfo = new DirectoryInfo(pluginsFolder);
-
-        FileInfo[] files = dirInfo.GetFiles("*.dll");
-
-        foreach (FileInfo fileInfo in files)
+        using (MemoryStream ms = new MemoryStream())
         {
-          using (var filestream = new FileStream(fileInfo.FullName, FileMode.Open, FileAccess.Read))
+          using (ZipArchive archive = new ZipArchive(ms, ZipArchiveMode.Create))
           {
-            long length = filestream.Length;
-            var data = new byte[length];
-            filestream.Read(data, 0, (int)length);
-            fileStreams.Add(fileInfo.Name, data);
-          }
-        }
-      }
-      catch (Exception e)
-      {
-        HandleControllerException(e);
-      }
-      return fileStreams;
-    }
-
-    public IDictionary<string, byte[]> GetPluginBinariesCustomDevices()
-    {
-      var fileStreams = new Dictionary<string, byte[]>();
-      try
-      {
-        string customDevicesFolder = PathManager.BuildAssemblyRelativePath("plugins\\CustomDevices");
-        var dirInfoCustomDevices = new DirectoryInfo(customDevicesFolder);
-
-        FileInfo[] filesCustomDevices = dirInfoCustomDevices.GetFiles("*.dll");
-
-        foreach (FileInfo fileInfo in filesCustomDevices)
-        {
-          using (var filestream = new FileStream(fileInfo.FullName, FileMode.Open, FileAccess.Read))
-          {
-            long length = filestream.Length;
-            var data = new byte[length];
-            filestream.Read(data, 0, (int)length);
-            fileStreams.Add(fileInfo.Name, data);
-          }
-        }
-      }
-      catch (Exception e)
-      {
-        HandleControllerException(e);
-      }
-      return fileStreams;
-    }
-
-    public IDictionary<string, byte[]> GetPluginBinariesResources()
-    {
-      var fileStreams = new Dictionary<string, byte[]>();
-      List<string> binaryPaths = new List<string> { "plugins\\CustomDevices\\x86\\Resources", "plugins\\CustomDevices\\x64\\Resources" };
-      try
-      {
-        foreach (string binaryPath in binaryPaths)
-        {
-          string resourcesFolder = PathManager.BuildAssemblyRelativePath(binaryPath);
-          var dirInfoResources = new DirectoryInfo(resourcesFolder);
-
-          FileInfo[] filesResources = dirInfoResources.GetFiles("*.dll");
-
-          foreach (FileInfo fileInfo in filesResources)
-          {
-            using (var filestream = new FileStream(fileInfo.FullName, FileMode.Open, FileAccess.Read))
+            var filePaths = Directory.GetFiles(pluginsFolder, "*.*", SearchOption.AllDirectories);
+            foreach (var filePath in filePaths)
             {
-              long length = filestream.Length;
-              var data = new byte[length];
-              filestream.Read(data, 0, (int) length);
-              fileStreams.Add(fileInfo.Name, data);
+              var relativePath = filePath.Replace(pluginsFolder, string.Empty);
+              using (Stream fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read))
+              using (Stream fileStreamInZip = archive.CreateEntry(relativePath).Open())
+                fileStream.CopyTo(fileStreamInZip);
             }
           }
+          return ms.ToArray();
         }
       }
       catch (Exception e)
       {
         HandleControllerException(e);
+        return null;
       }
-      return fileStreams;
     }
 
     public IList<StreamPresentation> ListAllStreamingChannels()
