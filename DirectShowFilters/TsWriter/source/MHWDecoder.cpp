@@ -277,7 +277,7 @@ void CMhwDecoder::GetTitle(int program, UINT* id, UINT* transportId, UINT* netwo
   *timeStart=prog.timeStart;
   *title=(char*)prog.Title.c_str();
   char tmp[128];
-  sprintf(tmp,"got:prog.id:%lu\n",prog.ID);OutputDebugString(A2T(tmp));
+  sprintf(tmp,"got:prog.id:%lu\n",(ULONG)prog.ID);OutputDebugString(A2T(tmp));
   //LogDebug("mhw-epg: GetTitle(%d) size:%d chan:%d progid:%x '%s'", 
   //  program,m_vecTitles.size(),
   //  *channelId, *programId, *title);

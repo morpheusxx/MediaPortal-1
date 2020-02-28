@@ -201,7 +201,7 @@ HRESULT MultiFileWriter::Write(PBYTE pbData, ULONG lDataLength)
 
     // Try writing the remaining data now that a new file has been created.
     pbData += dataToWrite;
-    lDataLength -= dataToWrite;
+    lDataLength -= (ULONG)dataToWrite;
     return Write(pbData, lDataLength);
   }
   else
@@ -444,7 +444,7 @@ HRESULT MultiFileWriter::WriteTSBufferFile()
   *((long*)writePointer) = m_filesRemoved;
   writePointer += sizeof(long);
 
-  WriteFile(m_hTSBufferFile, writeBuffer, writePointer - writeBuffer, &written, NULL);
+  WriteFile(m_hTSBufferFile, writeBuffer, (DWORD)(ptrdiff_t(writePointer) - ptrdiff_t(writeBuffer)), &written, NULL);
   delete[] writeBuffer;
 
 
