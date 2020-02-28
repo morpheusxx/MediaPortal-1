@@ -1,7 +1,7 @@
 /**********
 This library is free software; you can redistribute it and/or modify it under
 the terms of the GNU Lesser General Public License as published by the
-Free Software Foundation; either version 3 of the License, or (at your
+Free Software Foundation; either version 2.1 of the License, or (at your
 option) any later version. (See <http://www.gnu.org/copyleft/lesser.html>.)
 
 This library is distributed in the hope that it will be useful, but WITHOUT
@@ -13,7 +13,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with this library; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 **********/
-// Copyright (c) 1996-2018 Live Networks, Inc.  All rights reserved.
+// Copyright (c) 1996-2009 Live Networks, Inc.  All rights reserved.
 // Basic Usage Environment: for a simple, non-scripted, console application
 // C++ header
 
@@ -46,41 +46,26 @@ protected:
 
 class BasicTaskScheduler: public BasicTaskScheduler0 {
 public:
-  static BasicTaskScheduler* createNew(unsigned maxSchedulerGranularity = 10000/*microseconds*/);
-    // "maxSchedulerGranularity" (default value: 10 ms) specifies the maximum time that we wait (in "select()") before
-    // returning to the event loop to handle non-socket or non-timer-based events, such as 'triggered events'.
-    // You can change this is you wish (but only if you know what you're doing!), or set it to 0, to specify no such maximum time.
-    // (You should set it to 0 only if you know that you will not be using 'event triggers'.)
+  static BasicTaskScheduler* createNew();
   virtual ~BasicTaskScheduler();
 
 protected:
-  BasicTaskScheduler(unsigned maxSchedulerGranularity);
+  BasicTaskScheduler();
       // called only by "createNew()"
-
-  static void schedulerTickTask(void* clientData);
-  void schedulerTickTask();
 
 protected:
   // Redefined virtual functions:
   virtual void SingleStep(unsigned maxDelayTime);
 
-  virtual void setBackgroundHandling(int socketNum, int conditionSet, BackgroundHandlerProc* handlerProc, void* clientData);
-  virtual void moveSocketHandling(int oldSocketNum, int newSocketNum);
+  virtual void turnOnBackgroundReadHandling(int socketNum,
+				    BackgroundHandlerProc* handlerProc,
+				    void* clientData);
+  virtual void turnOffBackgroundReadHandling(int socketNum);
 
 protected:
-  unsigned fMaxSchedulerGranularity;
-
-  // To implement background operations:
+  // To implement background reads:
   int fMaxNumSockets;
   fd_set fReadSet;
-  fd_set fWriteSet;
-  fd_set fExceptionSet;
-
-private:
-#if defined(__WIN32__) || defined(_WIN32)
-  // Hack to work around a bug in Windows' "select()" implementation:
-  int fDummySocketNum;
-#endif
 };
 
 #endif

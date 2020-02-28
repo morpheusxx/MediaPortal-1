@@ -1,148 +1,144 @@
 /* 
-*  Copyright (C) 2006-2009 Team MediaPortal
-*  http://www.team-mediaportal.com
+*	Copyright (C) 2006-2009 Team MediaPortal
+*	http://www.team-mediaportal.com
 *
 *  This Program is free software; you can redistribute it and/or modify
 *  it under the terms of the GNU General Public License as published by
 *  the Free Software Foundation; either version 2, or (at your option)
 *  any later version.
-*
+*   
 *  This Program is distributed in the hope that it will be useful,
 *  but WITHOUT ANY WARRANTY; without even the implied warranty of
 *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 *  GNU General Public License for more details.
-*
+*   
 *  You should have received a copy of the GNU General Public License
 *  along with GNU Make; see the file COPYING.  If not, write to
 *  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA. 
 *  http://www.gnu.org/copyleft/gpl.html
 *
 */
+
 #include "MPRTSPServer.h"
-#include <ctime>    // time_t
+#include "RTSPCommon.hh"
+#include <GroupsockHelper.hh>
 
+#if defined(__WIN32__) || defined(_WIN32) || defined(_QNX4)
+#else
+#include <signal.h>
+#define USE_SIGNALS 1
+#endif
+#include <time.h> // for "strftime()" and "gmtime()"
 
-extern void LogDebug(const wchar_t* fmt, ...);
+#define RTPINFO_INCLUDE_RTPTIME 1
 
-MPRTSPServer* MPRTSPServer::createNew(UsageEnvironment& env,
-                                      Port ourPort,
-                                      UserAuthenticationDatabase* authDatabase,
-                                      unsigned reclamationTimeSeconds)
-{
-  int ourSocket = setUpOurSocket(env, ourPort);
-  if (ourSocket < 0)
-  {
-    return NULL;
-  }
+////////// RTSPServer //////////
 
-  return new MPRTSPServer(env, ourSocket, ourPort, authDatabase, reclamationTimeSeconds);
-}
+extern void LogDebug(const char *fmt, ...) ;
+MPRTSPServer*
+MPRTSPServer::createNew(UsageEnvironment& env, Port ourPort,
+						UserAuthenticationDatabase* authDatabase,
+						unsigned reclamationTestSeconds) {
+							int ourSocket = -1;
 
-unsigned short MPRTSPServer::GetSessionCount()
-{
-  return (unsigned short)m_clientSessions.size();
-}
+							do {
+								int ourSocket = setUpOurSocket(env, ourPort);
+								if (ourSocket == -1) break;
 
-MPRTSPServer::MPRTSPClientSession* MPRTSPServer::GetSessionByIndex(unsigned short index)
-{
-  if (index >= m_clientSessions.size())
-  {
-    return NULL;
-  }
-  unsigned short currentIndex = 0;
-  map<u_int32_t, MPRTSPClientSession*>::iterator it = m_clientSessions.begin();
-  while (it != m_clientSessions.end())
-  {
-    if (currentIndex == index)
-    {
-      return it->second;
-    }
-    it++;
-    currentIndex++;
-  }
-  return NULL;
-}
+								return new MPRTSPServer(env, ourSocket, ourPort, authDatabase,
+									reclamationTestSeconds);
+							} while (0);
 
-bool MPRTSPServer::RemoveSessionById(u_int32_t sessionId)
-{
-  map<u_int32_t, MPRTSPClientSession*>::iterator it = m_clientSessions.find(sessionId);
-  if (it == m_clientSessions.end() || it->second == NULL)
-  {
-    return false;
-  }
-  delete it->second;
-  return true;
+							if (ourSocket != -1) ::closeSocket(ourSocket);
+							return NULL;
 }
 
 MPRTSPServer::MPRTSPServer(UsageEnvironment& env,
-                            int ourSocket,
-                            Port ourPort,
-                            UserAuthenticationDatabase* authDatabase,
-                            unsigned reclamationTimeSeconds)
-  : RTSPServer(env, ourSocket, ourPort, authDatabase, reclamationTimeSeconds)
-{
+						   int ourSocket, Port ourPort,
+						   UserAuthenticationDatabase* authDatabase,
+						   unsigned reclamationTestSeconds)
+						   : RTSPServer(env,ourSocket,ourPort,authDatabase,reclamationTestSeconds){
+							   fMPReclamationTestSeconds=reclamationTestSeconds;
 }
 
-MPRTSPServer::~MPRTSPServer()
-{
-  m_clientSessions.clear();
+MPRTSPServer::~MPRTSPServer() {
 }
 
-GenericMediaServer::ClientConnection* MPRTSPServer::createNewClientConnection(int clientSocket, struct sockaddr_in clientAddr)
-{
-  return new MPRTSPClientConnection(*this, clientSocket, clientAddr);
-}
-
-GenericMediaServer::ClientSession* MPRTSPServer::createNewClientSession(u_int32_t sessionId)
-{
-  MPRTSPClientSession* session = new MPRTSPClientSession(*this, sessionId);
-  m_clientSessions[sessionId] = session;
-  return session;
-}
-
-
-////////// MPRTSPServer::MPRTSPClientConnection //////////
-
-MPRTSPServer::MPRTSPClientConnection::MPRTSPClientConnection(MPRTSPServer& ourServer, int clientSocket, struct sockaddr_in clientAddr)
-  : RTSPClientConnection(ourServer, clientSocket, clientAddr)
-{
-}
-
-MPRTSPServer::MPRTSPClientConnection::~MPRTSPClientConnection()
-{
+RTSPServer::RTSPClientSession*
+MPRTSPServer::createNewClientSession(unsigned sessionId, int clientSocket, struct sockaddr_in clientAddr) {
+	return new MPRTSPClientSession(*this, sessionId, clientSocket, clientAddr);
 }
 
 
 ////////// MPRTSPServer::MPRTSPClientSession //////////
 
-MPRTSPServer::MPRTSPClientSession::MPRTSPClientSession(MPRTSPServer& ourServer, u_int32_t sessionId)
-  : RTSPClientSession(ourServer, sessionId)
-{
-  m_startDateTime = time(NULL);
-  m_isPaused = false;
+MPRTSPServer::MPRTSPClientSession
+::MPRTSPClientSession(MPRTSPServer& ourServer, unsigned sessionId,
+					  int clientSocket, struct sockaddr_in clientAddr)
+					  : RTSPClientSession(ourServer,sessionId,clientSocket,clientAddr),
+					  fOurMPServer(ourServer) {
+						  startDateTime=time(NULL);
+						  m_bPaused=false;
+						  fOurMPServer.AddClient(this);
 }
 
-MPRTSPServer::MPRTSPClientSession::~MPRTSPClientSession()
-{
-  MPRTSPServer& server = static_cast<MPRTSPServer&>(fOurServer);
-  server.m_clientSessions.erase(fOurSessionId);
+MPRTSPServer::MPRTSPClientSession::~MPRTSPClientSession() {
+	fOurMPServer.RemoveClient(this);
 }
 
-void MPRTSPServer::MPRTSPClientSession::handleCmd_PLAY(RTSPClientConnection* ourClientConnection,
-                                                        ServerMediaSubsession* subsession,
-                                                        const char* fullRequestStr)
-{
-  MPRTSPServer::MPRTSPClientConnection* mpConnection = (MPRTSPServer::MPRTSPClientConnection*)ourClientConnection;
-  if (mpConnection != NULL)
-  {
-    m_clientAddress = mpConnection->ClientAddress();
-  }
-  RTSPClientSession::handleCmd_PLAY(ourClientConnection, subsession, fullRequestStr);
+void MPRTSPServer::MPRTSPClientSession
+::handleCmd_PLAY(ServerMediaSubsession* subsession, char const* cseq,
+				 char const* fullRequestStr) {
+					 RTSPClientSession::handleCmd_PLAY(subsession,cseq,fullRequestStr);
+					 m_bPaused=false;
 }
 
-void MPRTSPServer::MPRTSPClientSession::handleCmd_PAUSE(RTSPClientConnection* ourClientConnection,
-                                                        ServerMediaSubsession* subsession)
+void MPRTSPServer::MPRTSPClientSession
+::handleCmd_PAUSE(ServerMediaSubsession* subsession, char const* cseq) {
+	RTSPClientSession::handleCmd_PAUSE(subsession,cseq);
+	m_bPaused=true;
+}
+
+vector<MPRTSPServer::MPRTSPClientSession*> MPRTSPServer::Clients()
 {
-  RTSPClientSession::handleCmd_PAUSE(ourClientConnection, subsession);
-  m_isPaused = true;
+	return m_clients;
+}
+void MPRTSPServer::AddClient(MPRTSPClientSession* client)
+{
+	m_clients.push_back(client);
+}
+void MPRTSPServer::RemoveClient(MPRTSPClientSession* client)
+{
+	itClients it;
+	it=m_clients.begin();
+	while (it!=m_clients.end())
+	{
+		if (*it==client)
+		{
+			m_clients.erase(it);
+			return;
+		}
+		++it;
+	}
+}
+
+void MPRTSPServer::MPRTSPClientSession
+::livenessTimeoutTaskMP(MPRTSPClientSession* clientSession) {
+	if (clientSession->m_bPaused) 
+	{
+		LogDebug("livenessTimeoutTask - Paused returning");
+		return;
+	}
+	LogDebug("livenessTimeoutTask");
+	RTSPServer::RTSPClientSession::livenessTimeoutTask(clientSession);
+}
+
+void MPRTSPServer::MPRTSPClientSession::noteLiveness() {
+	if (fOurMPServer.fMPReclamationTestSeconds > 0) {
+		//LogDebug("noteLiveness::RescheduleDelayedTask");
+		envir().taskScheduler()
+			.rescheduleDelayedTask(fLivenessCheckTask,
+			fOurMPServer.fMPReclamationTestSeconds*1000000,
+			(TaskFunc*)livenessTimeoutTaskMP, this);
+	}
 }

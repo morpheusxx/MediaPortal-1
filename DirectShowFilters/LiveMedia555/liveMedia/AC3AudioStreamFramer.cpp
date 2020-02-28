@@ -1,7 +1,7 @@
 /**********
 This library is free software; you can redistribute it and/or modify it under
 the terms of the GNU Lesser General Public License as published by the
-Free Software Foundation; either version 3 of the License, or (at your
+Free Software Foundation; either version 2.1 of the License, or (at your
 option) any later version. (See <http://www.gnu.org/copyleft/lesser.html>.)
 
 This library is distributed in the hope that it will be useful, but WITHOUT
@@ -14,7 +14,7 @@ along with this library; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 **********/
 // "liveMedia"
-// Copyright (c) 1996-2018 Live Networks, Inc.  All rights reserved.
+// Copyright (c) 1996-2009 Live Networks, Inc.  All rights reserved.
 // A filter that breaks up an AC3 audio elementary stream into frames
 // Implementation
 
@@ -44,8 +44,9 @@ public:
   virtual ~AC3AudioStreamParser();
 
 public:
-  void testStreamCode(unsigned char ourStreamCode,
-		      unsigned char* ptr, unsigned size);
+  Boolean testStreamCode(unsigned char ourStreamCode,
+			 unsigned char* ptr, unsigned size);
+     // returns True iff the initial stream code is ours
   unsigned parseFrame(unsigned& numTruncatedBytes);
      // returns the size of the frame that was acquired, or 0 if none was
 
@@ -150,8 +151,13 @@ void AC3AudioStreamFramer
 
 void AC3AudioStreamFramer
 ::handleNewData(unsigned char* ptr, unsigned size) {
-  fParser->testStreamCode(fOurStreamCode, ptr, size);
+  if (!fParser->testStreamCode(fOurStreamCode, ptr, size)) {
+    // This block of data is not for us; try again:
+    parseNextFrame();
+    return;
+  }
 
+  // Now that we know that this data is for us, get the next frame:
   parseNextFrame();
 }
 
@@ -232,21 +238,23 @@ void AC3AudioStreamParser::registerReadInterest(unsigned char* to,
   fMaxSize = maxSize;
 }
 
-void AC3AudioStreamParser
+Boolean AC3AudioStreamParser
 ::testStreamCode(unsigned char ourStreamCode,
 		 unsigned char* ptr, unsigned size) {
-  if (ourStreamCode == 0) return; // we assume that there's no stream code at the beginning of the data
-
-  if (size < 4) return;
+  if (size < 4) return False; // shouldn't happen
   unsigned char streamCode = *ptr;
 
   if (streamCode == ourStreamCode) {
     // Remove the first 4 bytes from the stream:
     memmove(ptr, ptr + 4, size - 4);
     totNumValidBytes() = totNumValidBytes() - 4;
+
+    return True;
   } else {
     // Discard all of the data that was just read:
     totNumValidBytes() = totNumValidBytes() - size;
+
+    return False;
   }
 }
 

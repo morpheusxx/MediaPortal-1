@@ -1,7 +1,7 @@
 /**********
 This library is free software; you can redistribute it and/or modify it under
 the terms of the GNU Lesser General Public License as published by the
-Free Software Foundation; either version 3 of the License, or (at your
+Free Software Foundation; either version 2.1 of the License, or (at your
 option) any later version. (See <http://www.gnu.org/copyleft/lesser.html>.)
 
 This library is distributed in the hope that it will be useful, but WITHOUT
@@ -14,7 +14,7 @@ along with this library; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 **********/
 // "liveMedia"
-// Copyright (c) 1996-2018 Live Networks, Inc.  All rights reserved.
+// Copyright (c) 1996-2009 Live Networks, Inc.  All rights reserved.
 // A sink that generates a QuickTime file from a composite media session
 // C++ header
 
@@ -45,7 +45,7 @@ public:
 
   unsigned numActiveSubsessions() const { return fNumSubsessions; }
 
-protected:
+private:
   QuickTimeFileSink(UsageEnvironment& env, MediaSession& inputSession,
 		    char const* outputFileName, unsigned bufferSize,
 		    unsigned short movieWidth, unsigned short movieHeight,
@@ -55,10 +55,6 @@ protected:
       // called only by createNew()
   virtual ~QuickTimeFileSink();
 
-  virtual void noteRecordedFrame(MediaSubsession& inputSubsession,
-				 unsigned packetDataSize, struct timeval const& presentationTime);
-
-private:
   Boolean continuePlaying();
   static void afterGettingFrame(void* clientData, unsigned frameSize,
 				unsigned numTruncatedBytes,
@@ -89,7 +85,6 @@ private:
 private:
   ///// Definitions specific to the QuickTime file format:
 
-  unsigned addWord64(u_int64_t word);
   unsigned addWord(unsigned word);
   unsigned addHalfWord(unsigned short halfWord);
   unsigned addByte(unsigned char byte) {
@@ -101,10 +96,8 @@ private:
   unsigned addArbitraryString(char const* str,
 			      Boolean oneByteLength = True);
   unsigned addAtomHeader(char const* atomName);
-  unsigned addAtomHeader64(char const* atomName);
       // strlen(atomName) must be 4
-  void setWord(int64_t filePosn, unsigned size);
-  void setWord64(int64_t filePosn, u_int64_t size);
+  void setWord(unsigned filePosn, unsigned size);
 
   unsigned movieTimeScale() const {return fLargestRTPtimestampFrequency;}
 
@@ -158,7 +151,7 @@ private:
                       _atom(stss);
                       _atom(stsc);
                       _atom(stsz);
-                      _atom(co64);
+                      _atom(stco);
           _atom(udta);
               _atom(name);
               _atom(hnti);
@@ -183,8 +176,8 @@ private:
 private:
   unsigned short fMovieWidth, fMovieHeight;
   unsigned fMovieFPS;
-  int64_t fMDATposition;
-  int64_t fMVHD_durationPosn;
+  unsigned fMDATposition;
+  unsigned fMVHD_durationPosn;
   unsigned fMaxTrackDurationM; // in movie time units
   class SubsessionIOState* fCurrentIOState;
 };

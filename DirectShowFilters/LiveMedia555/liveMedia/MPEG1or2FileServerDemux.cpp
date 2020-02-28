@@ -1,7 +1,7 @@
 /**********
 This library is free software; you can redistribute it and/or modify it under
 the terms of the GNU Lesser General Public License as published by the
-Free Software Foundation; either version 3 of the License, or (at your
+Free Software Foundation; either version 2.1 of the License, or (at your
 option) any later version. (See <http://www.gnu.org/copyleft/lesser.html>.)
 
 This library is distributed in the hope that it will be useful, but WITHOUT
@@ -14,7 +14,7 @@ along with this library; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 **********/
 // "liveMedia"
-// Copyright (c) 1996-2018 Live Networks, Inc.  All rights reserved.
+// Copyright (c) 1996-2009 Live Networks, Inc.  All rights reserved.
 // A server demultiplexer for a MPEG 1 or 2 Program Stream
 // Implementation
 
@@ -163,12 +163,12 @@ static float MPEG1or2ProgramStreamFileDuration(UsageEnvironment& env,
   return duration;
 }
 
-#define MFSD_DUMMY_SINK_BUFFER_SIZE (6+65535) /* large enough for a PES packet */
+#define DUMMY_SINK_BUFFER_SIZE (6+65535) /* large enough for a PES packet */
 
-class MFSD_DummySink: public MediaSink {
+class DummySink: public MediaSink {
 public:
-  MFSD_DummySink(MPEG1or2Demux& demux, Boolean returnFirstSeenCode);
-  virtual ~MFSD_DummySink();
+  DummySink(MPEG1or2Demux& demux, Boolean returnFirstSeenCode);
+  virtual ~DummySink();
 
   char watchVariable;
 
@@ -186,10 +186,10 @@ private:
 private:
   MPEG1or2Demux& fOurDemux;
   Boolean fReturnFirstSeenCode;
-  unsigned char fBuf[MFSD_DUMMY_SINK_BUFFER_SIZE];
+  unsigned char fBuf[DUMMY_SINK_BUFFER_SIZE];
 };
 
-static void afterPlayingMFSD_DummySink(MFSD_DummySink* sink); // forward
+static void afterPlayingDummySink(DummySink* sink); // forward
 static float computeSCRTimeCode(MPEG1or2Demux::SCR const& scr); // forward
 
 static Boolean getMPEG1or2TimeCode(FramedSource* dataSource,
@@ -199,9 +199,9 @@ static Boolean getMPEG1or2TimeCode(FramedSource* dataSource,
   // Start reading through "dataSource", until we see a SCR time code:
   parentDemux.lastSeenSCR().isValid = False;
   UsageEnvironment& env = dataSource->envir(); // alias
-  MFSD_DummySink sink(parentDemux, returnFirstSeenCode);
+  DummySink sink(parentDemux, returnFirstSeenCode);
   sink.startPlaying(*dataSource,
-		    (MediaSink::afterPlayingFunc*)afterPlayingMFSD_DummySink, &sink);
+		    (MediaSink::afterPlayingFunc*)afterPlayingDummySink, &sink);
   env.taskScheduler().doEventLoop(&sink.watchVariable);
 
   timeCode = computeSCRTimeCode(parentDemux.lastSeenSCR());
@@ -209,17 +209,17 @@ static Boolean getMPEG1or2TimeCode(FramedSource* dataSource,
 }
 
 
-////////// MFSD_DummySink implementation //////////
+////////// DummySink implementation //////////
 
-MFSD_DummySink::MFSD_DummySink(MPEG1or2Demux& demux, Boolean returnFirstSeenCode)
+DummySink::DummySink(MPEG1or2Demux& demux, Boolean returnFirstSeenCode)
   : MediaSink(demux.envir()),
     watchVariable(0), fOurDemux(demux), fReturnFirstSeenCode(returnFirstSeenCode) {
 }
 
-MFSD_DummySink::~MFSD_DummySink() {
+DummySink::~DummySink() {
 }
 
-Boolean MFSD_DummySink::continuePlaying() {
+Boolean DummySink::continuePlaying() {
   if (fSource == NULL) return False; // sanity check
 
   fSource->getNextFrame(fBuf, sizeof fBuf,
@@ -228,26 +228,26 @@ Boolean MFSD_DummySink::continuePlaying() {
   return True;
 }
 
-void MFSD_DummySink::afterGettingFrame(void* clientData, unsigned /*frameSize*/,
+void DummySink::afterGettingFrame(void* clientData, unsigned /*frameSize*/,
 				  unsigned /*numTruncatedBytes*/,
 				  struct timeval /*presentationTime*/,
 				  unsigned /*durationInMicroseconds*/) {
-  MFSD_DummySink* sink = (MFSD_DummySink*)clientData;
+  DummySink* sink = (DummySink*)clientData;
   sink->afterGettingFrame1();
 }
 
-void MFSD_DummySink::afterGettingFrame1() {
+void DummySink::afterGettingFrame1() {
   if (fReturnFirstSeenCode && fOurDemux.lastSeenSCR().isValid) {
     // We were asked to return the first SCR that we saw, and we've seen one,
     // so we're done.  (Handle this as if the input source had closed.)
-    onSourceClosure();
+    onSourceClosure(this);
     return;
   }
 
   continuePlaying();
 }
 
-static void afterPlayingMFSD_DummySink(MFSD_DummySink* sink) {
+static void afterPlayingDummySink(DummySink* sink) {
   // Return from the "doEventLoop()" call:
   sink->watchVariable = ~0;
 }

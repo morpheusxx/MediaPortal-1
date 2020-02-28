@@ -1,7 +1,7 @@
 /**********
 This library is free software; you can redistribute it and/or modify it under
 the terms of the GNU Lesser General Public License as published by the
-Free Software Foundation; either version 3 of the License, or (at your
+Free Software Foundation; either version 2.1 of the License, or (at your
 option) any later version. (See <http://www.gnu.org/copyleft/lesser.html>.)
 
 This library is distributed in the hope that it will be useful, but WITHOUT
@@ -14,7 +14,7 @@ along with this library; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 **********/
 // "liveMedia"
-// Copyright (c) 1996-2018 Live Networks, Inc.  All rights reserved.
+// Copyright (c) 1996-2009 Live Networks, Inc.  All rights reserved.
 // H.264 Video RTP Sources
 // Implementation
 
@@ -41,7 +41,7 @@ private: // redefined virtual functions
 };
 
 
-///////// H264VideoRTPSource implementation ////////
+///////// MPEG4H264VideoRTPSource implementation ////////
 
 H264VideoRTPSource*
 H264VideoRTPSource::createNew(UsageEnvironment& env, Groupsock* RTPgs,
@@ -67,48 +67,51 @@ Boolean H264VideoRTPSource
                        unsigned& resultSpecialHeaderSize) {
   unsigned char* headerStart = packet->data();
   unsigned packetSize = packet->dataSize();
-  unsigned numBytesToSkip;
 
-  // Check the 'nal_unit_type' for special 'aggregation' or 'fragmentation' packets:
-  if (packetSize < 1) return False;
+  // The header has a minimum size of 0, since the NAL header is used
+  // as a payload header
+  unsigned expectedHeaderSize = 0;
+
+  // Check if the type field is 28 (FU-A) or 29 (FU-B)
   fCurPacketNALUnitType = (headerStart[0]&0x1F);
   switch (fCurPacketNALUnitType) {
   case 24: { // STAP-A
-    numBytesToSkip = 1; // discard the type byte
+    expectedHeaderSize = 1; // discard the type byte
     break;
   }
   case 25: case 26: case 27: { // STAP-B, MTAP16, or MTAP24
-    numBytesToSkip = 3; // discard the type byte, and the initial DON
+    expectedHeaderSize = 3; // discard the type byte, and the initial DON
     break;
   }
   case 28: case 29: { // // FU-A or FU-B
     // For these NALUs, the first two bytes are the FU indicator and the FU header.
-    // If the start bit is set, we reconstruct the original NAL header into byte 1:
-    if (packetSize < 2) return False;
+    // If the start bit is set, we reconstruct the original NAL header:
     unsigned char startBit = headerStart[1]&0x80;
     unsigned char endBit = headerStart[1]&0x40;
     if (startBit) {
-      fCurrentPacketBeginsFrame = True;
+      expectedHeaderSize = 1;
+      if (packetSize < expectedHeaderSize) return False;
 
-      headerStart[1] = (headerStart[0]&0xE0)|(headerStart[1]&0x1F);
-      numBytesToSkip = 1;
+      headerStart[1] = (headerStart[0]&0xE0)+(headerStart[1]&0x1F);
+      fCurrentPacketBeginsFrame = True;
     } else {
-      // The start bit is not set, so we skip both the FU indicator and header:
+      // If the startbit is not set, both the FU indicator and header
+      // can be discarded
+      expectedHeaderSize = 2;
+      if (packetSize < expectedHeaderSize) return False;
       fCurrentPacketBeginsFrame = False;
-      numBytesToSkip = 2;
     }
     fCurrentPacketCompletesFrame = (endBit != 0);
     break;
   }
   default: {
-    // This packet contains one complete NAL unit:
+    // This packet contains one or more complete, decodable NAL units
     fCurrentPacketBeginsFrame = fCurrentPacketCompletesFrame = True;
-    numBytesToSkip = 0;
     break;
   }
   }
 
-  resultSpecialHeaderSize = numBytesToSkip;
+  resultSpecialHeaderSize = expectedHeaderSize;
   return True;
 }
 

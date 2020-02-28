@@ -1,7 +1,7 @@
 /**********
 This library is free software; you can redistribute it and/or modify it under
 the terms of the GNU Lesser General Public License as published by the
-Free Software Foundation; either version 3 of the License, or (at your
+Free Software Foundation; either version 2.1 of the License, or (at your
 option) any later version. (See <http://www.gnu.org/copyleft/lesser.html>.)
 
 This library is distributed in the hope that it will be useful, but WITHOUT
@@ -13,7 +13,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with this library; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 **********/
- // Copyright (c) 1996-2018, Live Networks, Inc.  All rights reserved
+ // Copyright (c) 1996-2009, Live Networks, Inc.  All rights reserved
 // Delay queue
 // C++ header
 
@@ -111,23 +111,23 @@ DelayInterval operator*(short arg1, DelayInterval const& arg2);
 
 extern DelayInterval const DELAY_ZERO;
 extern DelayInterval const DELAY_SECOND;
-extern DelayInterval const DELAY_MINUTE;
-extern DelayInterval const DELAY_HOUR;
-extern DelayInterval const DELAY_DAY;
+DelayInterval const DELAY_MINUTE = 60*DELAY_SECOND;
+DelayInterval const DELAY_HOUR = 60*DELAY_MINUTE;
+DelayInterval const DELAY_DAY = 24*DELAY_HOUR;
 
-///// _EventTime /////
+///// EventTime /////
 
-class _EventTime: public Timeval {
+class EventTime: public Timeval {
 public:
-  _EventTime(unsigned secondsSinceEpoch = 0,
+  EventTime(unsigned secondsSinceEpoch = 0,
 	    unsigned usecondsSinceEpoch = 0)
     // We use the Unix standard epoch: January 1, 1970
     : Timeval(secondsSinceEpoch, usecondsSinceEpoch) {}
 };
 
-_EventTime TimeNow();
+EventTime TimeNow();
 
-extern _EventTime const THE_END_OF_TIME;
+extern EventTime const THE_END_OF_TIME;
 
 
 ///// DelayQueueEntry /////
@@ -136,7 +136,7 @@ class DelayQueueEntry {
 public:
   virtual ~DelayQueueEntry();
 
-  intptr_t token() {
+  long token() {
     return fToken;
   }
 
@@ -151,8 +151,8 @@ private:
   DelayQueueEntry* fPrev;
   DelayInterval fDeltaTimeRemaining;
 
-  intptr_t fToken;
-  static intptr_t tokenCounter;
+  long fToken;
+  static long tokenCounter;
 };
 
 ///// DelayQueue /////
@@ -164,19 +164,19 @@ public:
 
   void addEntry(DelayQueueEntry* newEntry); // returns a token for the entry
   void updateEntry(DelayQueueEntry* entry, DelayInterval newDelay);
-  void updateEntry(intptr_t tokenToFind, DelayInterval newDelay);
+  void updateEntry(long tokenToFind, DelayInterval newDelay);
   void removeEntry(DelayQueueEntry* entry); // but doesn't delete it
-  DelayQueueEntry* removeEntry(intptr_t tokenToFind); // but doesn't delete it
+  DelayQueueEntry* removeEntry(long tokenToFind); // but doesn't delete it
 
   DelayInterval const& timeToNextAlarm();
   void handleAlarm();
 
 private:
   DelayQueueEntry* head() { return fNext; }
-  DelayQueueEntry* findEntryByToken(intptr_t token);
+  DelayQueueEntry* findEntryByToken(long token);
   void synchronize(); // bring the 'time remaining' fields up-to-date
 
-  _EventTime fLastSyncTime;
+  EventTime fLastSyncTime;
 };
 
 #endif

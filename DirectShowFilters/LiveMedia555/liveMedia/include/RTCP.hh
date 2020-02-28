@@ -1,7 +1,7 @@
 /**********
 This library is free software; you can redistribute it and/or modify it under
 the terms of the GNU Lesser General Public License as published by the
-Free Software Foundation; either version 3 of the License, or (at your
+Free Software Foundation; either version 2.1 of the License, or (at your
 option) any later version. (See <http://www.gnu.org/copyleft/lesser.html>.)
 
 This library is distributed in the hope that it will be useful, but WITHOUT
@@ -14,7 +14,7 @@ along with this library; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 **********/
 // "liveMedia"
-// Copyright (c) 1996-2018 Live Networks, Inc.  All rights reserved.
+// Copyright (c) 1996-2009 Live Networks, Inc.  All rights reserved.
 // RTCP
 // C++ header
 
@@ -39,10 +39,6 @@ private:
   unsigned char fData[2 + 0xFF]; // first 2 bytes are tag and length
 };
 
-typedef void RTCPAppHandlerFunc(void* clientData,
-				u_int8_t subtype, u_int32_t nameBytes/*big-endian order*/,
-				u_int8_t* appDependentData, unsigned appDependentDataSize);
-
 class RTCPMemberDatabase; // forward
 
 class RTCPInstance: public Medium {
@@ -51,14 +47,13 @@ public:
 				 unsigned totSessionBW, /* in kbps */
 				 unsigned char const* cname,
 				 RTPSink* sink,
-				 RTPSource* source,
+				 RTPSource const* source,
 				 Boolean isSSMSource = False);
 
   static Boolean lookupByName(UsageEnvironment& env, char const* instanceName,
                               RTCPInstance*& resultInstance);
 
   unsigned numMembers() const;
-  unsigned totSessionBW() const { return fTotSessionBW; }
 
   void setByeHandler(TaskFunc* handlerTask, void* clientData,
 		     Boolean handleActiveParticipantsOnly = True);
@@ -72,29 +67,17 @@ public:
       // called if some other multicast receiver happens to exit.
       // If "handleActiveParticipantsOnly" is False, then the handler is called
       // for any incoming RTCP "BYE".
-      // (To remove an existing "BYE" handler, call "setByeHandler()" again, with a "handlerTask" of NULL.)
   void setSRHandler(TaskFunc* handlerTask, void* clientData);
   void setRRHandler(TaskFunc* handlerTask, void* clientData);
-      // Assigns a handler routine to be called if a "SR" or "RR" packet
+      // Assigns a handler routine to be called if a "SR" or "RR"
       // (respectively) arrives.  Unlike "setByeHandler()", the handler will
       // be called once for each incoming "SR" or "RR".  (To turn off handling,
-      // call the function again with "handlerTask" (and "clientData") as NULL.)
+      // call the function again with "handlerTask" (and "clientData") as NULL.
   void setSpecificRRHandler(netAddressBits fromAddress, Port fromPort,
 			    TaskFunc* handlerTask, void* clientData);
       // Like "setRRHandler()", but applies only to "RR" packets that come from
       // a specific source address and port.  (Note that if both a specific
       // and a general "RR" handler function is set, then both will be called.)
-  void unsetSpecificRRHandler(netAddressBits fromAddress, Port fromPort); // equivalent to setSpecificRRHandler(..., NULL, NULL);
-  void setAppHandler(RTCPAppHandlerFunc* handlerTask, void* clientData);
-      // Assigns a handler routine to be called whenever an "APP" packet arrives.  (To turn off
-      // handling, call the function again with "handlerTask" (and "clientData") as NULL.)
-  void sendAppPacket(u_int8_t subtype, char const* name,
-		     u_int8_t* appDependentData, unsigned appDependentDataSize);
-      // Sends a custom RTCP "APP" packet to the peer(s).  The parameters correspond to their
-      // respective fields as described in the RTP/RTCP definition (RFC 3550).
-      // Note that only the low-order 5 bits of "subtype" are used, and only the first 4 bytes
-      // of "name" are used.  (If "name" has fewer than 4 bytes, or is NULL,
-      // then the remaining bytes are '\0'.)
 
   Groupsock* RTCPgs() const { return fRTCPInterface.gs(); }
 
@@ -111,28 +94,20 @@ public:
 					    handlerClientData);
   }
 
-  void injectReport(u_int8_t const* packet, unsigned packetSize, struct sockaddr_in const& fromAddress);
-    // Allows an outside party to inject an RTCP report (from other than the network interface)
-
 protected:
   RTCPInstance(UsageEnvironment& env, Groupsock* RTPgs, unsigned totSessionBW,
 	       unsigned char const* cname,
-	       RTPSink* sink, RTPSource* source,
+	       RTPSink* sink, RTPSource const* source,
 	       Boolean isSSMSource);
       // called only by createNew()
   virtual ~RTCPInstance();
-
-  virtual void noteArrivingRR(struct sockaddr_in const& fromAddressAndPort,
-			      int tcpSocketNum, unsigned char tcpStreamChannelId);
-
-  void incomingReportHandler1();
 
 private:
   // redefined virtual functions:
   virtual Boolean isRTCPInstance() const;
 
 private:
-  Boolean addReport(Boolean alwaysAdd = False);
+  void addReport();
     void addSR();
     void addRR();
       void enqueueCommonReportPrefix(unsigned char packetType, u_int32_t SSRC,
@@ -148,18 +123,18 @@ private:
   void onExpire1();
 
   static void incomingReportHandler(RTCPInstance* instance, int /*mask*/);
-  void processIncomingReport(unsigned packetSize, struct sockaddr_in const& fromAddressAndPort,
-			     int tcpSocketNum, unsigned char tcpStreamChannelId);
+  void incomingReportHandler1();
   void onReceive(int typeOfPacket, int totPacketSize, u_int32_t ssrc);
 
+  void unsetSpecificRRHandler(netAddressBits fromAddress, Port fromPort);
+
 private:
-  u_int8_t* fInBuf;
-  unsigned fNumBytesAlreadyRead;
+  unsigned char* fInBuf;
   OutPacketBuffer* fOutBuf;
   RTPInterface fRTCPInterface;
   unsigned fTotSessionBW;
   RTPSink* fSink;
-  RTPSource* fSource;
+  RTPSource const* fSource;
   Boolean fIsSSMSource;
 
   SDESItem fCNAME;
@@ -188,8 +163,6 @@ private:
   TaskFunc* fRRHandlerTask;
   void* fRRHandlerClientData;
   AddressPortLookupTable* fSpecificRRHandlerTable;
-  RTCPAppHandlerFunc* fAppHandlerTask;
-  void* fAppHandlerClientData;
 
 public: // because this stuff is used by an external "C" function
   void schedule(double nextTime);
@@ -211,13 +184,6 @@ const unsigned char RTCP_PT_RR = 201;
 const unsigned char RTCP_PT_SDES = 202;
 const unsigned char RTCP_PT_BYE = 203;
 const unsigned char RTCP_PT_APP = 204;
-const unsigned char RTCP_PT_RTPFB = 205; // Generic RTP Feedback [RFC4585]
-const unsigned char RTCP_PT_PSFB = 206; // Payload-specific [RFC4585]
-const unsigned char RTCP_PT_XR = 207; // extended report [RFC3611]
-const unsigned char RTCP_PT_AVB = 208; // AVB RTCP packet ["Standard for Layer 3 Transport Protocol for Time Sensitive Applications in Local Area Networks." Work in progress.]
-const unsigned char RTCP_PT_RSI = 209; // Receiver Summary Information [RFC5760]
-const unsigned char RTCP_PT_TOKEN = 210; // Port Mapping [RFC6284]
-const unsigned char RTCP_PT_IDMS = 211; // IDMS Settings [RFC7272]
 
 // SDES tags:
 const unsigned char RTCP_SDES_END = 0;

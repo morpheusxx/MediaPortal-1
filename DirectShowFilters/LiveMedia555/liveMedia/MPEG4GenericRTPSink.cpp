@@ -1,7 +1,7 @@
 /**********
 This library is free software; you can redistribute it and/or modify it under
 the terms of the GNU Lesser General Public License as published by the
-Free Software Foundation; either version 3 of the License, or (at your
+Free Software Foundation; either version 2.1 of the License, or (at your
 option) any later version. (See <http://www.gnu.org/copyleft/lesser.html>.)
 
 This library is distributed in the hope that it will be useful, but WITHOUT
@@ -14,13 +14,11 @@ along with this library; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 **********/
 // "liveMedia"
-// Copyright (c) 1996-2018 Live Networks, Inc.  All rights reserved.
+// Copyright (c) 1996-2009 Live Networks, Inc.  All rights reserved.
 // MPEG4-GENERIC ("audio", "video", or "application") RTP stream sinks
 // Implementation
 
 #include "MPEG4GenericRTPSink.hh"
-#include "Locale.hh"
-#include <ctype.h> // needed on some systems to define "tolower()"
 
 MPEG4GenericRTPSink
 ::MPEG4GenericRTPSink(UsageEnvironment& env, Groupsock* RTPgs,
@@ -36,18 +34,9 @@ MPEG4GenericRTPSink
   // Check whether "mpeg4Mode" is one that we handle:
   if (mpeg4Mode == NULL) {
     env << "MPEG4GenericRTPSink error: NULL \"mpeg4Mode\" parameter\n";
-  } else {
-    // To ease comparison, convert "mpeg4Mode" to lower case:
-    size_t const len = strlen(mpeg4Mode) + 1;
-    char* m = new char[len];
-
-    Locale l("POSIX");
-    for (size_t i = 0; i < len; ++i) m[i] = tolower(mpeg4Mode[i]); 
-
-    if (strcmp(m, "aac-hbr") != 0) {
-      env << "MPEG4GenericRTPSink error: Unknown \"mpeg4Mode\" parameter: \"" << mpeg4Mode << "\"\n";
-    }
-    delete[] m;
+  } else if (strcmp(mpeg4Mode, "AAC-hbr") != 0) {
+    env << "MPEG4GenericRTPSink error: Unknown \"mpeg4Mode\" parameter: \""
+	<< mpeg4Mode << "\"\n";
   }
 
   // Set up the "a=fmtp:" SDP line for this stream:
@@ -102,7 +91,7 @@ void MPEG4GenericRTPSink
 ::doSpecialFrameHandling(unsigned fragmentationOffset,
 			 unsigned char* frameStart,
 			 unsigned numBytesInFrame,
-			 struct timeval framePresentationTime,
+			 struct timeval frameTimestamp,
 			 unsigned numRemainingBytes) {
   // Set the "AU Header Section".  This is 4 bytes: 2 bytes for the
   // initial "AU-headers-length" field, and 2 bytes for the first
@@ -125,7 +114,7 @@ void MPEG4GenericRTPSink
   // to set the packet's timestamp:
   MultiFramedRTPSink::doSpecialFrameHandling(fragmentationOffset,
 					     frameStart, numBytesInFrame,
-					     framePresentationTime,
+					     frameTimestamp,
 					     numRemainingBytes);
 }
 

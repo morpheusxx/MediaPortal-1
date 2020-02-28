@@ -1,7 +1,7 @@
 /**********
 This library is free software; you can redistribute it and/or modify it under
 the terms of the GNU Lesser General Public License as published by the
-Free Software Foundation; either version 3 of the License, or (at your
+Free Software Foundation; either version 2.1 of the License, or (at your
 option) any later version. (See <http://www.gnu.org/copyleft/lesser.html>.)
 
 This library is distributed in the hope that it will be useful, but WITHOUT
@@ -14,7 +14,7 @@ along with this library; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 **********/
 // "liveMedia"
-// Copyright (c) 1996-2018 Live Networks, Inc.  All rights reserved.
+// Copyright (c) 1996-2009 Live Networks, Inc.  All rights reserved.
 // A 'ServerMediaSubsession' object that creates new, unicast, "RTPSink"s
 // on demand, from an MP3 audio file.
 // (Actually, any MPEG-1 or MPEG-2 audio file should work.)
@@ -29,9 +29,6 @@ along with this library; if not, write to the Free Software Foundation, Inc.,
 #ifndef _MP3_ADU_INTERLEAVING_HH
 #include "MP3ADUinterleaving.hh"
 #endif
-#ifndef _MP3_ADU_HH
-#include "MP3ADU.hh"
-#endif
 
 class MP3AudioFileServerMediaSubsession: public FileServerMediaSubsession{
 public:
@@ -41,7 +38,7 @@ public:
       // Note: "interleaving" is used only if "generateADUs" is True,
       // (and a value of NULL means 'no interleaving')
 
-protected:
+private:
   MP3AudioFileServerMediaSubsession(UsageEnvironment& env,
 				    char const* fileName, Boolean reuseFirstSource,
 				    Boolean generateADUs,
@@ -49,12 +46,8 @@ protected:
       // called only by createNew();
   virtual ~MP3AudioFileServerMediaSubsession();
 
-  FramedSource* createNewStreamSourceCommon(FramedSource* baseMP3Source, unsigned mp3NumBytes, unsigned& estBitrate);
-  void getBaseStreams(FramedSource* frontStream,
-		      FramedSource*& sourceMP3Stream, ADUFromMP3Source*& aduStream/*if any*/);
-
-protected: // redefined virtual functions
-  virtual void seekStreamSource(FramedSource* inputSource, double& seekNPT, double streamDuration, u_int64_t& numBytes);
+private: // redefined virtual functions
+  virtual void seekStreamSource(FramedSource* inputSource, double seekNPT);
   virtual void setStreamSourceScale(FramedSource* inputSource, float scale);
   virtual FramedSource* createNewStreamSource(unsigned clientSessionId,
 					      unsigned& estBitrate);
@@ -64,7 +57,7 @@ protected: // redefined virtual functions
   virtual void testScaleFactor(float& scale);
   virtual float duration() const;
 
-protected:
+private:
   Boolean fGenerateADUs;
   Interleaving* fInterleaving;
   float fFileDuration;

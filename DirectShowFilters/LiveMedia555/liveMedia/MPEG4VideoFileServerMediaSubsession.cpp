@@ -1,7 +1,7 @@
 /**********
 This library is free software; you can redistribute it and/or modify it under
 the terms of the GNU Lesser General Public License as published by the
-Free Software Foundation; either version 3 of the License, or (at your
+Free Software Foundation; either version 2.1 of the License, or (at your
 option) any later version. (See <http://www.gnu.org/copyleft/lesser.html>.)
 
 This library is distributed in the hope that it will be useful, but WITHOUT
@@ -14,7 +14,7 @@ along with this library; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 **********/
 // "liveMedia"
-// Copyright (c) 1996-2018 Live Networks, Inc.  All rights reserved.
+// Copyright (c) 1996-2009 Live Networks, Inc.  All rights reserved.
 // A 'ServerMediaSubsession' object that creates new, unicast, "RTPSink"s
 // on demand, from a MPEG-4 video file.
 // Implementation
@@ -35,11 +35,11 @@ MPEG4VideoFileServerMediaSubsession
 ::MPEG4VideoFileServerMediaSubsession(UsageEnvironment& env,
                                       char const* fileName, Boolean reuseFirstSource)
   : FileServerMediaSubsession(env, fileName, reuseFirstSource),
-    fAuxSDPLine(NULL), fDoneFlag(0), fDummyRTPSink(NULL) {
+    fDoneFlag(0) {
 }
 
-MPEG4VideoFileServerMediaSubsession::~MPEG4VideoFileServerMediaSubsession() {
-  delete[] fAuxSDPLine;
+MPEG4VideoFileServerMediaSubsession
+::~MPEG4VideoFileServerMediaSubsession() {
 }
 
 static void afterPlayingDummy(void* clientData) {
@@ -62,19 +62,10 @@ static void checkForAuxSDPLine(void* clientData) {
 }
 
 void MPEG4VideoFileServerMediaSubsession::checkForAuxSDPLine1() {
-  nextTask() = NULL;
-
-  char const* dasl;
-  if (fAuxSDPLine != NULL) {
+  if (fDummyRTPSink->auxSDPLine() != NULL) {
     // Signal the event loop that we're done:
     setDoneFlag();
-  } else if (fDummyRTPSink != NULL && (dasl = fDummyRTPSink->auxSDPLine()) != NULL) {
-    fAuxSDPLine= strDup(dasl);
-    fDummyRTPSink = NULL;
-
-    // Signal the event loop that we're done:
-    setDoneFlag();
-  } else if (!fDoneFlag) {
+  } else {
     // try again after a brief delay:
     int uSecsToDelay = 100000; // 100 ms
     nextTask() = envir().taskScheduler().scheduleDelayedTask(uSecsToDelay,
@@ -82,25 +73,24 @@ void MPEG4VideoFileServerMediaSubsession::checkForAuxSDPLine1() {
   }
 }
 
-char const* MPEG4VideoFileServerMediaSubsession::getAuxSDPLine(RTPSink* rtpSink, FramedSource* inputSource) {
-  if (fAuxSDPLine != NULL) return fAuxSDPLine; // it's already been set up (for a previous client)
+char const* MPEG4VideoFileServerMediaSubsession
+::getAuxSDPLine(RTPSink* rtpSink, FramedSource* inputSource) {
+  // Note: For MPEG-4 video files, the 'config' information isn't known
+  // until we start reading the file.  This means that "rtpSink"s
+  // "auxSDPLine()" will be NULL initially, and we need to start reading
+  // data from our file until this changes.
+  fDummyRTPSink = rtpSink;
 
-  if (fDummyRTPSink == NULL) { // we're not already setting it up for another, concurrent stream
-    // Note: For MPEG-4 video files, the 'config' information isn't known
-    // until we start reading the file.  This means that "rtpSink"s
-    // "auxSDPLine()" will be NULL initially, and we need to start reading data from our file until this changes.
-    fDummyRTPSink = rtpSink;
+  // Start reading the file:
+  fDummyRTPSink->startPlaying(*inputSource, afterPlayingDummy, this);
 
-    // Start reading the file:
-    fDummyRTPSink->startPlaying(*inputSource, afterPlayingDummy, this);
-
-    // Check whether the sink's 'auxSDPLine()' is ready:
-    checkForAuxSDPLine(this);
-  }
+  // Check whether the sink's 'auxSDPLine()' is ready:
+  checkForAuxSDPLine(this);
 
   envir().taskScheduler().doEventLoop(&fDoneFlag);
 
-  return fAuxSDPLine;
+  char const* auxSDPLine = fDummyRTPSink->auxSDPLine();
+  return auxSDPLine;
 }
 
 FramedSource* MPEG4VideoFileServerMediaSubsession

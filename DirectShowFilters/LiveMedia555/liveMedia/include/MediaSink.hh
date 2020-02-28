@@ -1,7 +1,7 @@
 /**********
 This library is free software; you can redistribute it and/or modify it under
 the terms of the GNU Lesser General Public License as published by the
-Free Software Foundation; either version 3 of the License, or (at your
+Free Software Foundation; either version 2.1 of the License, or (at your
 option) any later version. (See <http://www.gnu.org/copyleft/lesser.html>.)
 
 This library is distributed in the hope that it will be useful, but WITHOUT
@@ -14,7 +14,7 @@ along with this library; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 **********/
 // "liveMedia"
-// Copyright (c) 1996-2018 Live Networks, Inc.  All rights reserved.
+// Copyright (c) 1996-2009 Live Networks, Inc.  All rights reserved.
 // Media Sinks
 // C++ header
 
@@ -50,8 +50,7 @@ protected:
   virtual Boolean continuePlaying() = 0;
       // called by startPlaying()
 
-  static void onSourceClosure(void* clientData); // can be used in "getNextFrame()" calls
-  void onSourceClosure();
+  static void onSourceClosure(void* clientData);
       // should be called (on ourselves) by continuePlaying() when it
       // discovers that the source we're playing from has closed.
 
@@ -70,13 +69,10 @@ private:
 // A data structure that a sink may use for an output packet:
 class OutPacketBuffer {
 public:
-  OutPacketBuffer(unsigned preferredPacketSize, unsigned maxPacketSize,
-		  unsigned maxBufferSize = 0);
-      // if "maxBufferSize" is >0, use it - instead of "maxSize" to compute the buffer size
+  OutPacketBuffer(unsigned preferredPacketSize, unsigned maxPacketSize);
   ~OutPacketBuffer();
 
   static unsigned maxSize;
-  static void increaseMaxSizeTo(unsigned newMaxSize) { if (newMaxSize > OutPacketBuffer::maxSize) OutPacketBuffer::maxSize = newMaxSize; }
 
   unsigned char* curPtr() const {return &fBuf[fPacketStart + fCurOffset];}
   unsigned totalBytesAvailable() const {
@@ -89,11 +85,11 @@ public:
   void increment(unsigned numBytes) {fCurOffset += numBytes;}
 
   void enqueue(unsigned char const* from, unsigned numBytes);
-  void enqueueWord(u_int32_t word);
+  void enqueueWord(unsigned word);
   void insert(unsigned char const* from, unsigned numBytes, unsigned toPosition);
-  void insertWord(u_int32_t word, unsigned toPosition);
+  void insertWord(unsigned word, unsigned toPosition);
   void extract(unsigned char* to, unsigned numBytes, unsigned fromPosition);
-  u_int32_t extractWord(unsigned fromPosition);
+  unsigned extractWord(unsigned fromPosition);
 
   void skipBytes(unsigned numBytes);
 

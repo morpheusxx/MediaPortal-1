@@ -1,7 +1,7 @@
 /**********
 This library is free software; you can redistribute it and/or modify it under
 the terms of the GNU Lesser General Public License as published by the
-Free Software Foundation; either version 3 of the License, or (at your
+Free Software Foundation; either version 2.1 of the License, or (at your
 option) any later version. (See <http://www.gnu.org/copyleft/lesser.html>.)
 
 This library is distributed in the hope that it will be useful, but WITHOUT
@@ -14,7 +14,7 @@ along with this library; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 **********/
 // "liveMedia"
-// Copyright (c) 1996-2018 Live Networks, Inc.  All rights reserved.
+// Copyright (c) 1996-2009 Live Networks, Inc.  All rights reserved.
 // RTP sink for AC3 audio
 // Implementation
 
@@ -24,8 +24,7 @@ AC3AudioRTPSink::AC3AudioRTPSink(UsageEnvironment& env, Groupsock* RTPgs,
 				 u_int8_t rtpPayloadFormat,
 				 u_int32_t rtpTimestampFrequency)
   : AudioRTPSink(env, RTPgs, rtpPayloadFormat,
-		       rtpTimestampFrequency, "AC3"),
-    fTotNumFragmentsUsed(0) {
+		       rtpTimestampFrequency, "AC3") {
 }
 
 AC3AudioRTPSink::~AC3AudioRTPSink() {
@@ -50,31 +49,23 @@ void AC3AudioRTPSink
 ::doSpecialFrameHandling(unsigned fragmentationOffset,
 			 unsigned char* frameStart,
 			 unsigned numBytesInFrame,
-			 struct timeval framePresentationTime,
+			 struct timeval frameTimestamp,
 			 unsigned numRemainingBytes) {
-  // Set the 2-byte "payload header", as defined in RFC 4184.
+  // Update the "NDU" header.
+  // Also set the "Data Unit Header" for the frame, because we
+  // have already allotted space for this, by virtue of the fact that
+  // (for now) we pack only one frame in each RTP packet:
   unsigned char headers[2];
+  headers[0] = numFramesUsedSoFar() + 1;
 
   Boolean isFragment = numRemainingBytes > 0 || fragmentationOffset > 0;
-  if (!isFragment) {
-    headers[0] = 0; // One or more complete frames
-    headers[1] = 1; // because we (for now) allow at most 1 frame per packet
-  } else {
-    if (fragmentationOffset > 0) {
-      headers[0] = 3; // Fragment of frame other than initial fragment
-    } else {
-      // An initial fragment of the frame
-      unsigned const totalFrameSize = fragmentationOffset + numBytesInFrame + numRemainingBytes;
-      unsigned const fiveEighthsPoint = totalFrameSize/2 + totalFrameSize/8;
-      headers[0] = numBytesInFrame >= fiveEighthsPoint ? 1 : 2;
-
-      // Because this outgoing packet will be full (because it's an initial fragment), we can compute how many total
-      // fragments (and thus packets) will make up the complete AC-3 frame:
-      fTotNumFragmentsUsed = (totalFrameSize + (numBytesInFrame-1))/numBytesInFrame;
-    }
-
-    headers[1] = fTotNumFragmentsUsed;
-  }
+  unsigned const totalFrameSize
+    = fragmentationOffset + numBytesInFrame + numRemainingBytes;
+  unsigned const fiveEighthsPoint = totalFrameSize/2 + totalFrameSize/8;
+  Boolean haveFiveEighths
+    = fragmentationOffset == 0 && numBytesInFrame >= fiveEighthsPoint;
+  headers[1] = (isFragment<<5)|(haveFiveEighths<<4); // F|B
+      // Note: TYP==0, RDT==0 ???, T==0 ???
 
   setSpecialHeaderBytes(headers, sizeof headers);
 
@@ -88,10 +79,14 @@ void AC3AudioRTPSink
   // to set the packet's timestamp:
   MultiFramedRTPSink::doSpecialFrameHandling(fragmentationOffset,
 					     frameStart, numBytesInFrame,
-					     framePresentationTime,
+					     frameTimestamp,
 					     numRemainingBytes);
 }
 
 unsigned AC3AudioRTPSink::specialHeaderSize() const {
-  return 2;
+  // There's a 1 byte "NDU" header.
+  // There's also a 1-byte "Data Unit Header" preceding each frame in
+  // the RTP packet, but since we (for now) pack only one frame in
+  // each RTP packet, we also count this here:
+  return 1 + 1;
 }

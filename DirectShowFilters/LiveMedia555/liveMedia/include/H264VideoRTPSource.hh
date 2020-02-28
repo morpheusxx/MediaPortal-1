@@ -1,7 +1,7 @@
 /**********
 This library is free software; you can redistribute it and/or modify it under
 the terms of the GNU Lesser General Public License as published by the
-Free Software Foundation; either version 3 of the License, or (at your
+Free Software Foundation; either version 2.1 of the License, or (at your
 option) any later version. (See <http://www.gnu.org/copyleft/lesser.html>.)
 
 This library is distributed in the hope that it will be useful, but WITHOUT
@@ -14,7 +14,7 @@ along with this library; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 **********/
 // "liveMedia"
-// Copyright (c) 1996-2018 Live Networks, Inc.  All rights reserved.
+// Copyright (c) 1996-2009 Live Networks, Inc.  All rights reserved.
 // H.264 Video RTP Sources
 // C++ header
 
@@ -25,6 +25,8 @@ along with this library; if not, write to the Free Software Foundation, Inc.,
 #include "MultiFramedRTPSource.hh"
 #endif
 
+#define SPECIAL_HEADER_BUFFER_SIZE 1000
+
 class H264VideoRTPSource: public MultiFramedRTPSource {
 public:
   static H264VideoRTPSource*
@@ -32,7 +34,7 @@ public:
 	    unsigned char rtpPayloadFormat,
 	    unsigned rtpTimestampFrequency = 90000);
 
-protected:
+private:
   H264VideoRTPSource(UsageEnvironment& env, Groupsock* RTPgs,
 			 unsigned char rtpPayloadFormat,
 			 unsigned rtpTimestampFrequency);
@@ -40,7 +42,7 @@ protected:
 
   virtual ~H264VideoRTPSource();
 
-protected:
+private:
   // redefined virtual functions:
   virtual Boolean processSpecialHeader(BufferedPacket* packet,
                                        unsigned& resultSpecialHeaderSize);

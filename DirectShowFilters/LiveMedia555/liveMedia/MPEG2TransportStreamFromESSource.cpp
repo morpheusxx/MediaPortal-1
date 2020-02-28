@@ -1,7 +1,7 @@
 /**********
 This library is free software; you can redistribute it and/or modify it under
 the terms of the GNU Lesser General Public License as published by the
-Free Software Foundation; either version 3 of the License, or (at your
+Free Software Foundation; either version 2.1 of the License, or (at your
 option) any later version. (See <http://www.gnu.org/copyleft/lesser.html>.)
 
 This library is distributed in the hope that it will be useful, but WITHOUT
@@ -14,16 +14,17 @@ along with this library; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 **********/
 // "liveMedia"
-// Copyright (c) 1996-2018 Live Networks, Inc.  All rights reserved.
+// Copyright (c) 1996-2009 Live Networks, Inc.  All rights reserved.
 // A filter for converting one or more MPEG Elementary Streams
 // to a MPEG-2 Transport Stream
 // Implementation
 
 #include "MPEG2TransportStreamFromESSource.hh"
 
+#define MAX_INPUT_ES_FRAME_SIZE 50000
 #define SIMPLE_PES_HEADER_SIZE 14
-#define INPUT_BUFFER_SIZE (SIMPLE_PES_HEADER_SIZE + 2*MPEG2TransportStreamFromESSource::maxInputESFrameSize)
-#define LOW_WATER_MARK 1000 // <= MPEG2TransportStreamFromESSource::maxInputESFrameSize
+#define LOW_WATER_MARK 1000 // <= MAX_INPUT_ES_FRAME_SIZE
+#define INPUT_BUFFER_SIZE (SIMPLE_PES_HEADER_SIZE + 2*MAX_INPUT_ES_FRAME_SIZE)
 
 ////////// InputESSourceRecord definition //////////
 
@@ -32,7 +33,7 @@ public:
   InputESSourceRecord(MPEG2TransportStreamFromESSource& parent,
 		      FramedSource* inputSource,
 		      u_int8_t streamId, int mpegVersion,
-		      InputESSourceRecord* next, int16_t PID = -1);
+		      InputESSourceRecord* next);
   virtual ~InputESSourceRecord();
 
   InputESSourceRecord* next() const { return fNext; }
@@ -67,13 +68,10 @@ private:
   unsigned fInputBufferBytesAvailable;
   Boolean fInputBufferInUse;
   MPEG1or2Demux::SCR fSCR;
-  int16_t fPID;
 };
 
 
 ////////// MPEG2TransportStreamFromESSource implementation //////////
-
-unsigned MPEG2TransportStreamFromESSource::maxInputESFrameSize = 100000; // bytes
 
 MPEG2TransportStreamFromESSource* MPEG2TransportStreamFromESSource
 ::createNew(UsageEnvironment& env) {
@@ -81,28 +79,26 @@ MPEG2TransportStreamFromESSource* MPEG2TransportStreamFromESSource
 }
 
 void MPEG2TransportStreamFromESSource
-::addNewVideoSource(FramedSource* inputSource, int mpegVersion, int16_t PID) {
+::addNewVideoSource(FramedSource* inputSource, int mpegVersion) {
   u_int8_t streamId = 0xE0 | (fVideoSourceCounter++&0x0F);
-  addNewInputSource(inputSource, streamId, mpegVersion, PID);
+  addNewInputSource(inputSource, streamId, mpegVersion);
   fHaveVideoStreams = True;
 }
 
 void MPEG2TransportStreamFromESSource
-::addNewAudioSource(FramedSource* inputSource, int mpegVersion, int16_t PID) {
+::addNewAudioSource(FramedSource* inputSource, int mpegVersion) {
   u_int8_t streamId = 0xC0 | (fAudioSourceCounter++&0x0F);
-  addNewInputSource(inputSource, streamId, mpegVersion, PID);
+  addNewInputSource(inputSource, streamId, mpegVersion);
 }
 
 MPEG2TransportStreamFromESSource
 ::MPEG2TransportStreamFromESSource(UsageEnvironment& env)
   : MPEG2TransportStreamMultiplexor(env),
-    fInputSources(NULL), fVideoSourceCounter(0), fAudioSourceCounter(0),
-    fAwaitingBackgroundDelivery(False) {
+    fInputSources(NULL), fVideoSourceCounter(0), fAudioSourceCounter(0) {
   fHaveVideoStreams = False; // unless we add a video source
 }
 
 MPEG2TransportStreamFromESSource::~MPEG2TransportStreamFromESSource() {
-  doStopGettingFrames();
   delete fInputSources;
 }
 
@@ -126,16 +122,14 @@ void MPEG2TransportStreamFromESSource
 	break;
       }
     }
-    fAwaitingBackgroundDelivery = False;
   }
 
   if (isCurrentlyAwaitingData()) {
     // Try to deliver one filled-in buffer to the client:
     for (sourceRec = fInputSources; sourceRec != NULL;
 	 sourceRec = sourceRec->next()) {
-      if (sourceRec->deliverBufferToClient()) return;
+      if (sourceRec->deliverBufferToClient()) break;
     }
-    fAwaitingBackgroundDelivery = True;
   }
 
   // No filled-in buffers are available. Ask each of our inputs for data:
@@ -143,14 +137,15 @@ void MPEG2TransportStreamFromESSource
        sourceRec = sourceRec->next()) {
     sourceRec->askForNewData();
   }
+
 }
 
 void MPEG2TransportStreamFromESSource
 ::addNewInputSource(FramedSource* inputSource,
-		    u_int8_t streamId, int mpegVersion, int16_t PID) {
+		    u_int8_t streamId, int mpegVersion) {
   if (inputSource == NULL) return;
   fInputSources = new InputESSourceRecord(*this, inputSource, streamId,
-					  mpegVersion, fInputSources, PID);
+					  mpegVersion, fInputSources);
 }
 
 
@@ -160,9 +155,9 @@ InputESSourceRecord
 ::InputESSourceRecord(MPEG2TransportStreamFromESSource& parent,
 		      FramedSource* inputSource,
 		      u_int8_t streamId, int mpegVersion,
-		      InputESSourceRecord* next, int16_t PID)
+		      InputESSourceRecord* next)
   : fNext(next), fParent(parent), fInputSource(inputSource),
-    fStreamId(streamId), fMPEGVersion(mpegVersion), fPID(PID) {
+    fStreamId(streamId), fMPEGVersion(mpegVersion) {
   fInputBuffer = new unsigned char[INPUT_BUFFER_SIZE];
   reset();
 }
@@ -220,7 +215,7 @@ Boolean InputESSourceRecord::deliverBufferToClient() {
 
   // Do the delivery:
   fParent.handleNewBuffer(fInputBuffer, fInputBufferBytesAvailable,
-			 fMPEGVersion, fSCR, fPID);
+			 fMPEGVersion, fSCR);
 
   return True;
 }
@@ -237,7 +232,7 @@ void InputESSourceRecord
 ::afterGettingFrame1(unsigned frameSize, unsigned numTruncatedBytes,
 		     struct timeval presentationTime) {
   if (numTruncatedBytes > 0) {
-    fParent.envir() << "MPEG2TransportStreamFromESSource: input buffer too small; increase \"MPEG2TransportStreamFromESSource::maxInputESFrameSize\" by at least "
+    fParent.envir() << "MPEG2TransportStreamFromESSource: input buffer too small; increase \"MAX_INPUT_ES_FRAME_SIZE\" in \"MPEG2TransportStreamFromESSource\" by at least "
 		    << numTruncatedBytes << " bytes!\n";
   }
 
@@ -259,8 +254,5 @@ void InputESSourceRecord
   fParent.fPresentationTime = presentationTime;
 
   // Now that we have new input data, check if we can deliver to the client:
-  if (fParent.fAwaitingBackgroundDelivery) {
-    fParent.fAwaitingBackgroundDelivery = False;
-    fParent.awaitNewBuffer(NULL);
-  }
+  fParent.awaitNewBuffer(NULL);
 }

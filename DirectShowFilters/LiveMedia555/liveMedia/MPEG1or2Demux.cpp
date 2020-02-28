@@ -1,7 +1,7 @@
 /**********
 This library is free software; you can redistribute it and/or modify it under
 the terms of the GNU Lesser General Public License as published by the
-Free Software Foundation; either version 3 of the License, or (at your
+Free Software Foundation; either version 2.1 of the License, or (at your
 option) any later version. (See <http://www.gnu.org/copyleft/lesser.html>.)
 
 This library is distributed in the hope that it will be useful, but WITHOUT
@@ -14,7 +14,7 @@ along with this library; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 **********/
 // "liveMedia"
-// Copyright (c) 1996-2018 Live Networks, Inc.  All rights reserved.
+// Copyright (c) 1996-2009 Live Networks, Inc.  All rights reserved.
 // Demultiplexer for a MPEG 1 or 2 Program Stream
 // Implementation
 
@@ -34,7 +34,7 @@ enum MPEGParseState {
 
 class MPEGProgramStreamParser: public StreamParser {
 public:
-  MPEGProgramStreamParser(MPEG1or2Demux* usingDemux, FramedSource* inputSource);
+  MPEGProgramStreamParser(MPEG1or2Demux* usingSource, FramedSource* inputSource);
   virtual ~MPEGProgramStreamParser();
 
 public:
@@ -53,7 +53,7 @@ private:
   // for PES packet header parsing
 
 private:
-  MPEG1or2Demux* fUsingDemux;
+  MPEG1or2Demux* fUsingSource;
   MPEGParseState fCurrentParseState;
 };
 
@@ -160,8 +160,9 @@ void MPEG1or2Demux::registerReadInterest(u_int8_t streamIdTag,
 
   // Make sure this stream is not already being read:
   if (out.isCurrentlyAwaitingData) {
-    envir() << "MPEG1or2Demux::registerReadInterest(): attempt to read stream more than once!\n";
-    envir().internalError();
+    envir() << "MPEG1or2Demux::registerReadInterest(): attempt to read stream id "
+	    << (void*)streamIdTag << " more than once!\n";
+    exit(1);
   }
 
   out.to = to; out.maxSize = maxSize;
@@ -280,9 +281,6 @@ void MPEG1or2Demux::getNextFrame(u_int8_t streamIdTag,
 
 void MPEG1or2Demux::stopGettingFrames(u_int8_t streamIdTag) {
     struct OutputDescriptor& out = fOutput[streamIdTag];
-
-    if (out.isCurrentlyAwaitingData && fNumPendingReads > 0) --fNumPendingReads;
-
     out.isCurrentlyActive = out.isCurrentlyAwaitingData = False;
 }
 
@@ -324,11 +322,11 @@ void MPEG1or2Demux::handleClosure(void* clientData) {
 
 #include <string.h>
 
-MPEGProgramStreamParser::MPEGProgramStreamParser(MPEG1or2Demux* usingDemux,
+MPEGProgramStreamParser::MPEGProgramStreamParser(MPEG1or2Demux* usingSource,
 						 FramedSource* inputSource)
-  : StreamParser(inputSource, MPEG1or2Demux::handleClosure, usingDemux,
-		 &MPEG1or2Demux::continueReadProcessing, usingDemux),
-  fUsingDemux(usingDemux), fCurrentParseState(PARSING_PACK_HEADER) {
+  : StreamParser(inputSource, MPEG1or2Demux::handleClosure, usingSource,
+		 &MPEG1or2Demux::continueReadProcessing, usingSource),
+  fUsingSource(usingSource), fCurrentParseState(PARSING_PACK_HEADER) {
 }
 
 MPEGProgramStreamParser::~MPEGProgramStreamParser() {
@@ -389,15 +387,12 @@ void MPEGProgramStreamParser::parsePackHeader() {
 
     // We're supposed to have a pack header here, but check also for
     // a system header or a PES packet, just in case:
-    // START Team MediaPortal modification - for MPFileWriter compatibility.
-    // I'm not sure of the specifics. Perhaps this it relates to a certain
-    // muxer, demuxer or encoder?
-    if ((first4Bytes & 0xffffff00) == 0x0001ba00)
+	// MEDIAPORTAL MODIFICATION: The following if statement is needed to get MPFILEWRITER working.
+    if ( (first4Bytes&0xffffff00) == 0x0001ba00)
     {
       skipBytes(3);
       break;
     }
-    // END Team MediaPortal modification
     if (first4Bytes == PACK_START_CODE) {
       skipBytes(4);
       break;
@@ -426,9 +421,9 @@ void MPEGProgramStreamParser::parsePackHeader() {
   // The size of the pack header differs depending on whether it's
   // MPEG-1 or MPEG-2.  The next byte tells us this:
   unsigned char nextByte = get1Byte();
-  MPEG1or2Demux::SCR& scr = fUsingDemux->fLastSeenSCR; // alias
+  MPEG1or2Demux::SCR& scr = fUsingSource->fLastSeenSCR; // alias
   if ((nextByte&0xF0) == 0x20) { // MPEG-1
-    fUsingDemux->fMPEGversion = 1;
+    fUsingSource->fMPEGversion = 1;
     scr.highBit =  (nextByte&0x08)>>3;
     scr.remainingBits = (nextByte&0x06)<<29;
     unsigned next4Bytes = get4Bytes();
@@ -444,7 +439,7 @@ void MPEGProgramStreamParser::parsePackHeader() {
     fprintf(stderr, "%08x\n", scr.remainingBits);
 #endif
   } else if ((nextByte&0xC0) == 0x40) { // MPEG-2
-    fUsingDemux->fMPEGversion = 2;
+    fUsingSource->fMPEGversion = 2;
     scr.highBit =  (nextByte&0x20)>>5;
     scr.remainingBits = (nextByte&0x18)<<27;
     scr.remainingBits |= (nextByte&0x03)<<28;
@@ -467,7 +462,9 @@ void MPEGProgramStreamParser::parsePackHeader() {
     unsigned char pack_stuffing_length = getBits(3);
     skipBytes(pack_stuffing_length);
   } else { // unknown
-    fUsingDemux->envir() << "StreamParser::parsePack() saw strange byte following pack_start_code\n";
+    fUsingSource->envir() << "StreamParser::parsePack() saw strange byte "
+			  << (void*)nextByte
+			  << " following pack_start_code\n";
   }
 
   // Check for a System Header next:
@@ -495,7 +492,7 @@ void MPEGProgramStreamParser::parseSystemHeader() {
   // According to the MPEG-1 and MPEG-2 specs, "remaining_header_length" should be
   // at least 6 bytes.  Check this now:
   if (remaining_header_length < 6) {
-    fUsingDemux->envir() << "StreamParser::parseSystemHeader(): saw strange header_length: "
+    fUsingSource->envir() << "StreamParser::parseSystemHeader(): saw strange header_length: "
 			  << remaining_header_length << " < 6\n";
   }
   skipBytes(remaining_header_length);
@@ -512,7 +509,7 @@ Boolean MPEGProgramStreamParser
 ::isSpecialStreamId(unsigned char stream_id) const {
   if (stream_id == RAW_PES) return True; // hack
 
-  if (fUsingDemux->fMPEGversion == 1) {
+  if (fUsingSource->fMPEGversion == 1) {
     return stream_id == private_stream_2;
   } else { // assume MPEG-2
     if (stream_id <= private_stream_2) {
@@ -547,7 +544,7 @@ unsigned char MPEGProgramStreamParser::parsePESPacket() {
   unsigned char stream_id = get1Byte();
 #if defined(DEBUG) || defined(DEBUG_TIMESTAMPS)
   unsigned char streamNum = stream_id;
-  char const* streamTypeStr;
+  char* streamTypeStr;
   if ((stream_id&0xE0) == 0xC0) {
     streamTypeStr = "audio";
     streamNum = stream_id&~0xE0;
@@ -578,7 +575,7 @@ unsigned char MPEGProgramStreamParser::parsePESPacket() {
 
   // Parse over the rest of the header, until we get to the packet data itself.
   // This varies depending upon the MPEG version:
-  if (fUsingDemux->fOutput[RAW_PES].isPotentiallyReadable) {
+  if (fUsingSource->fOutput[RAW_PES].isPotentiallyReadable) {
     // Hack: We've been asked to return raw PES packets, for every stream:
     stream_id = RAW_PES;
   }
@@ -589,7 +586,7 @@ unsigned char MPEGProgramStreamParser::parsePESPacket() {
   unsigned char dts_highBit = 0;
   unsigned dts_remainingBits = 0;
 #endif
-  if (fUsingDemux->fMPEGversion == 1) {
+  if (fUsingSource->fMPEGversion == 1) {
     if (!isSpecialStreamId(stream_id)) {
       unsigned char nextByte;
       while ((nextByte = get1Byte()) == 0xFF) { // stuffing_byte
@@ -694,7 +691,7 @@ unsigned char MPEGProgramStreamParser::parsePESPacket() {
     bytesSkipped = 0;
   }
   if (PES_packet_length < bytesSkipped) {
-    fUsingDemux->envir() << "StreamParser::parsePESPacket(): saw inconsistent PES_packet_length "
+    fUsingSource->envir() << "StreamParser::parsePESPacket(): saw inconsistent PES_packet_length "
 			  << PES_packet_length << " < "
 			  << bytesSkipped << "\n";
   } else {
@@ -705,11 +702,11 @@ unsigned char MPEGProgramStreamParser::parsePESPacket() {
 
     // Check whether our using source is interested in this stream type.
     // If so, deliver the frame to him:
-    MPEG1or2Demux::OutputDescriptor_t& out = fUsingDemux->fOutput[stream_id];
+    MPEG1or2Demux::OutputDescriptor_t& out = fUsingSource->fOutput[stream_id];
     if (out.isCurrentlyAwaitingData) {
       unsigned numBytesToCopy;
       if (PES_packet_length > out.maxSize) {
-	fUsingDemux->envir() << "MPEGProgramStreamParser::parsePESPacket() error: PES_packet_length ("
+	fUsingSource->envir() << "MPEGProgramStreamParser::parsePESPacket() error: PES_packet_length ("
 			      << PES_packet_length
 			      << ") exceeds max frame size asked for ("
 			      << out.maxSize << ")\n";
@@ -734,7 +731,7 @@ unsigned char MPEGProgramStreamParser::parsePESPacket() {
       fprintf(stderr, "%d, currently undeliverable PES data; first 4 bytes: 0x%08x - currently undeliverable!\n", frameCount, next4Bytes); fflush(stderr);
 #endif
       restoreSavedParserState(); // so we read from the beginning next time
-      fUsingDemux->fHaveUndeliveredData = True;
+      fUsingSource->fHaveUndeliveredData = True;
       throw READER_NOT_READY;
     } else if (out.isPotentiallyReadable &&
 	       out.savedDataTotalSize + PES_packet_length < 1000000 /*limit*/) {
