@@ -2,6 +2,9 @@ rem @echo off
 rem set TARGET=Debug
 set TARGET=Release
 set PKG=MediaPortal.TvEngine.Core
+set MB="C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\MSBuild\15.0\Bin\MSBuild.exe"
+ 
+%MB% Mediaportal.TV.Server.sln /p:Configuration=Release
 
 rem "lib" (direct references)
 xcopy "TvService\bin\%TARGET%\Common.Utils.dll" "_MP2SlimTV\%PKG%\lib" /R /Y  || exit /b 1
