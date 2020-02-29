@@ -197,7 +197,7 @@
     <PreBuildEvent>rem xcopy "$(SolutionDir)\..\ExternalBinaries\*.*"  /s /i /y || exit /b 1
 rem xcopy "$(SolutionDir)TVServer.Base\*.*" "$(TargetDir)" /C/Y/S || exit /b 1
 xcopy "$(SolutionDir)Plugins\XmlTvImport\$(OutDir)Mediaportal.TV.Server.Plugins.XmlTvImport.*" "$(TargetDir)"Plugins\ /C/Y/S || exit /b 1
-xcopy "$(SolutionDir)Plugins\XmlTvImport\$(OutDir)Ionic.Zip.Reduced.dll" "$(TargetDir)" /C/Y/S || exit /b 2
+rem xcopy "$(SolutionDir)Plugins\XmlTvImport\$(OutDir)Ionic.Zip.Reduced.dll" "$(TargetDir)" /C/Y/S || exit /b 2
 xcopy "$(SolutionDir)Plugins\ComSkipLauncher\$(OutDir)Mediaportal.TV.Server.Plugins.ComSkipLauncher.*" "$(TargetDir)"Plugins\ /C/Y/S || exit /b 3
 xcopy "$(SolutionDir)Plugins\ConflictsManager\$(OutDir)Mediaportal.TV.Server.Plugins.ConflictsManager.*" "$(TargetDir)"Plugins\ /C/Y/S || exit /b 4
 xcopy "$(SolutionDir)Plugins\PluginBase\$(OutDir)Mediaportal.TV.Server.Plugins.Base.*" "$(TargetDir)"Plugins\ /C/Y/S || exit /b 5
@@ -211,8 +211,10 @@ xcopy "$(SolutionDir)Plugins\WebEPG\WebEPG\$(OutDir)Mediaportal.TV.Server.Plugin
 rem xcopy "$(SolutionDir)\ServiceAgents\$(OutDir)Mediaportal.TV.Server.Plugins.WebEPG.*" "$(TargetDir)" /C/Y/S || exit /b 13
 xcopy "$(SolutionDir)\SetupControls\$(OutDir)Mediaportal.TV.Server.SetupControls.*" "$(TargetDir)" /C/Y/S || exit /b 14
 rem xcopy "$(SolutionDir)..\..\..\..\Common-MP-TVE3\PowerScheduler.Interfaces\$(OutDir)Mediaportal.TV.Server.Plugins.PowerScheduler.Interfaces" "$(TargetDir)" /C/Y/S || exit /b 15
-xcopy "$(SolutionDir)..\..\..\..\DirectShowFilters\TsWriter\bin\Release\*.ax" "$(TargetDir)" /C/Y/S || exit /b 16
-xcopy "$(SolutionDir)..\..\..\..\DirectShowFilters\streamingserver\bin\Release\*.dll" "$(TargetDir)" /C/Y/S || exit /b 17
+xcopy "$(SolutionDir)..\..\..\..\DirectShowFilters\Win32\Release\*.ax" "$(TargetDir)\x86\" /C/Y/S || exit /b 16
+xcopy "$(SolutionDir)..\..\..\..\DirectShowFilters\Win32\Release\*.dll" "$(TargetDir)\x86\" /C/Y/S || exit /b 16
+xcopy "$(SolutionDir)..\..\..\..\DirectShowFilters\x64\Release\*.ax" "$(TargetDir)\x64\" /C/Y/S || exit /b 17
+xcopy "$(SolutionDir)..\..\..\..\DirectShowFilters\x64\Release\*.dll" "$(TargetDir)\x64\" /C/Y/S || exit /b 17
 xcopy "$(SolutionDir)Plugins\CustomDevices\Anysee\$(OutDir)Mediaportal.TV.Server.Plugins.TunerExtension.Anysee.*" "$(TargetDir)Plugins\CustomDevices\" /C/Y/S || exit /b 18
 xcopy "$(SolutionDir)Plugins\CustomDevices\AutumnWave\$(OutDir)Mediaportal.TV.Server.Plugins.TunerExtension.*" "$(TargetDir)Plugins\CustomDevices\" /C/Y/S || exit /b 19
 xcopy "$(SolutionDir)Plugins\CustomDevices\AVerMedia\$(OutDir)Mediaportal.TV.Server.Plugins.TunerExtension.*" "$(TargetDir)Plugins\CustomDevices\" /C/Y/S || exit /b 20

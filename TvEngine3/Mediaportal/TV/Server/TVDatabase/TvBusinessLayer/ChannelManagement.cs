@@ -45,7 +45,7 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
       {
         using (var context = new TvEngineDbContext())
         {
-          IQueryable<Channel> query = context.GetAllChannelsByGroupId(idGroup).IncludeAllRelations();
+          IQueryable<Channel> query = context.Channels.GetAllChannelsByGroupId(idGroup).IncludeAllRelations();
           return query.ToList();
         }
       }
@@ -62,7 +62,7 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
       {
         using (var context = new TvEngineDbContext())
         {
-          var query = context.GetAllChannelsByGroupIdAndMediaType(idGroup, mediaType);
+          var query = context.GroupMaps.GetAllChannelsByGroupIdAndMediaType(idGroup, mediaType);
           return query.ToList();
         }
       }
