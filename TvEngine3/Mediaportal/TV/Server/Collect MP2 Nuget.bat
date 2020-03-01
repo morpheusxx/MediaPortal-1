@@ -26,9 +26,11 @@ xcopy "TvService\bin\%TARGET%\Mediaportal.TV.Server.TVLibrary.Interfaces.dll" "_
 xcopy "TvService\bin\%TARGET%\Mediaportal.TV.Server.TVLibrary.Services.dll" "_MP2SlimTV\%PKG%\lib\" /R /Y  || exit /b 11
 xcopy "TvService\bin\%TARGET%\Mediaportal.TV.Server.TvLibrary.Utils.dll" "_MP2SlimTV\%PKG%\lib\" /R /Y  || exit /b 12
 xcopy "TvService\bin\%TARGET%\Mediaportal.TV.Server.TVService.Interfaces.dll" "_MP2SlimTV\%PKG%\lib\" /R /Y  || exit /b 13
+xcopy /E "TvService\bin\%TARGET%\runtimes\*.dll" "_MP2SlimTV\%PKG%\references\runtimes\" /R /Y  || exit /b 13
 
 rem "references\"
 xcopy "TvService\bin\%TARGET%\Microsoft.*.dll" "_MP2SlimTV\%PKG%\references\" /R /Y  || exit /b 14
+xcopy "TvService\bin\%TARGET%\DirectShowLib.dll" "_MP2SlimTV\%PKG%\references\" /R /Y  || exit /b 14
 xcopy "TvService\bin\%TARGET%\SQLite*.dll" "_MP2SlimTV\%PKG%\references\" /R /Y  || exit /b 15
 rem xcopy "TvService\bin\%TARGET%\x86\SQLite.Interop.dll" "_MP2SlimTV\%PKG%\references\x86\" /R /Y  || exit /b 15
 rem xcopy "TvService\bin\%TARGET%\x64\SQLite.Interop.dll" "_MP2SlimTV\%PKG%\references\x64\" /R /Y  || exit /b 15
