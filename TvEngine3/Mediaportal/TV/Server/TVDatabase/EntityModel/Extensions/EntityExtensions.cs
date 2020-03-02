@@ -216,6 +216,7 @@ namespace Mediaportal.TV.Server.TVDatabase.EntityModel.Extensions
       bool channelLinkMapsChannelPortal = includeRelations.HasFlag(ChannelIncludeRelationEnum.ChannelLinkMapsChannelPortal);
       bool channelMaps = includeRelations.HasFlag(ChannelIncludeRelationEnum.ChannelMaps);
       bool groupMaps = includeRelations.HasFlag(ChannelIncludeRelationEnum.GroupMaps);
+      bool groupMapsGroup = includeRelations.HasFlag(ChannelIncludeRelationEnum.GroupMapsChannelGroup);
       bool tuningDetails = includeRelations.HasFlag(ChannelIncludeRelationEnum.TuningDetails);
       bool recordings = includeRelations.HasFlag(ChannelIncludeRelationEnum.Recordings);
 
@@ -248,7 +249,10 @@ namespace Mediaportal.TV.Server.TVDatabase.EntityModel.Extensions
       //}
       if (groupMaps)
       {
-        query = query.Include(c => c.GroupMaps);
+        if (groupMapsGroup)
+          query = query.Include(c => c.GroupMaps).ThenInclude(m => m.ChannelGroup);
+        else
+          query = query.Include(c => c.GroupMaps);
       }
 
       //too slow, handle in LoadNavigationProperties instead

@@ -53,12 +53,12 @@ namespace Mediaportal.TV.Server.TVDatabase.Entities
     public bool UseConditionalAccess { get; set; }
 
     [DataMember]
-    public virtual ICollection<CardGroupMap> CardGroupMaps { get; set; }
+    public virtual List<CardGroupMap> CardGroupMaps { get; set; } = new List<CardGroupMap>();
     [DataMember]
-    public virtual ICollection<DisEqcMotor> DisEqcMotors { get; set; }
+    public virtual List<DisEqcMotor> DisEqcMotors { get; set; } = new List<DisEqcMotor>();
     [DataMember]
-    public virtual ICollection<ChannelMap> ChannelMaps { get; set; }
+    public virtual List<ChannelMap> ChannelMaps { get; set; } = new List<ChannelMap>();
     [DataMember]
-    public virtual ICollection<Conflict> Conflicts { get; set; }
+    public virtual List<Conflict> Conflicts { get; set; } = new List<Conflict>();
   }
 }

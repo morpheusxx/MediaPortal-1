@@ -59,8 +59,8 @@ namespace Mediaportal.TV.Server.TVDatabase.Entities
     [DataMember]
     public ProgramCategory ProgramCategory { get; set; }
     [DataMember]
-    public virtual ICollection<ProgramCredit> ProgramCredits { get; set; }
+    public virtual List<ProgramCredit> ProgramCredits { get; set; } = new List<ProgramCredit>();
     [DataMember]
-    public virtual ICollection<PersonalTVGuideMap> PersonalTVGuideMaps { get; set; }
+    public virtual List<PersonalTVGuideMap> PersonalTVGuideMaps { get; set; } = new List<PersonalTVGuideMap>();
   }
 }

@@ -8,7 +8,9 @@ namespace Mediaportal.TV.Server.TVDatabase.Entities
   [KnownType(typeof(KeywordMap))]
   public class ChannelGroup
   {
-    [DataMember] public int ChannelGroupId { get; set; }
+    [DataMember]
+    public int ChannelGroupId { get; set; }
+    [DataMember]
     public string GroupName { get; set; }
     [DataMember]
     public int SortOrder { get; set; }
@@ -16,8 +18,8 @@ namespace Mediaportal.TV.Server.TVDatabase.Entities
     public int MediaType { get; set; }
 
     [DataMember]
-    public virtual ICollection<GroupMap> GroupMaps { get; set; }
+    public virtual List<GroupMap> GroupMaps { get; set; } = new List<GroupMap>();
     [DataMember]
-    public virtual ICollection<KeywordMap> KeywordMap { get; set; }
+    public virtual List<KeywordMap> KeywordMap { get; set; } = new List<KeywordMap>();
   }
 }

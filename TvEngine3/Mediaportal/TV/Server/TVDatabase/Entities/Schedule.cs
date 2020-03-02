@@ -53,15 +53,15 @@ namespace Mediaportal.TV.Server.TVDatabase.Entities
     [DataMember]
     public Channel Channel { get; set; }
     [DataMember]
-    public virtual ICollection<Schedule> SubSchedules { get; set; }
+    public virtual List<Schedule> SubSchedules { get; set; } = new List<Schedule>();
     [DataMember]
     public Schedule ParentSchedule { get; set; }
     [DataMember]
-    public virtual ICollection<Recording> Recordings { get; set; }
+    public virtual List<Recording> Recordings { get; set; } = new List<Recording>();
     [DataMember]
-    public virtual ICollection<CanceledSchedule> CanceledSchedules { get; set; }
+    public virtual List<CanceledSchedule> CanceledSchedules { get; set; } = new List<CanceledSchedule>();
     [DataMember]
-    public virtual ICollection<Conflict> Conflicts { get; set; }
-    //public virtual ICollection<Conflict> ConflictingSchedules { get; set; }
+    public virtual List<Conflict> Conflicts { get; set; } = new List<Conflict>();
+    //public virtual List<Conflict> ConflictingSchedules { get; set; }
   }
 }

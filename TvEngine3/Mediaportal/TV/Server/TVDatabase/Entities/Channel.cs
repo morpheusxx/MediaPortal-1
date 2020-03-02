@@ -44,28 +44,27 @@ namespace Mediaportal.TV.Server.TVDatabase.Entities
     public int ChannelNumber { get; set; }
 
     [DataMember]
-    public virtual ICollection<GroupMap> GroupMaps { get; set; }
+    public virtual List<GroupMap> GroupMaps { get; set; } = new List<GroupMap>();
     [DataMember]
-    public virtual ICollection<Recording> Recordings { get; set; }
+    public virtual List<Recording> Recordings { get; set; } = new List<Recording>();
     [DataMember]
-    public virtual ICollection<Program> Programs { get; set; }
+    public virtual List<Program> Programs { get; set; } = new List<Program>();
     [DataMember]
-    public virtual ICollection<ChannelMap> ChannelMaps { get; set; }
+    public virtual List<ChannelMap> ChannelMaps { get; set; } = new List<ChannelMap>();
     [DataMember]
-    public virtual ICollection<Schedule> Schedules { get; set; }
+    public virtual List<Schedule> Schedules { get; set; } = new List<Schedule>();
     [DataMember]
-    public virtual ICollection<History> Histories { get; set; }
+    public virtual List<History> Histories { get; set; } = new List<History>();
     [DataMember]
-    public virtual ICollection<TuningDetail> TuningDetails { get; set; }
+    public virtual List<TuningDetail> TuningDetails { get; set; } = new List<TuningDetail>();
     [DataMember]
-    public virtual ICollection<TvMovieMapping> TvMovieMappings { get; set; }
-
+    public virtual List<TvMovieMapping> TvMovieMappings { get; set; } = new List<TvMovieMapping>();
     [DataMember]
-    public virtual ICollection<ChannelLinkageMap> ChannelLinkMaps { get; set; }
+    public virtual List<ChannelLinkageMap> ChannelLinkMaps { get; set; } = new List<ChannelLinkageMap>();
     [DataMember]
-    public virtual ICollection<ChannelLinkageMap> ChannelPortalMaps { get; set; }
+    public virtual List<ChannelLinkageMap> ChannelPortalMaps { get; set; } = new List<ChannelLinkageMap>();
     [DataMember]
-    public virtual ICollection<Conflict> Conflicts { get; set; }
+    public virtual List<Conflict> Conflicts { get; set; } = new List<Conflict>();
 
     public override string ToString()
     {

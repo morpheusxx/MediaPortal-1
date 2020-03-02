@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using AutoMapper;
 using Mediaportal.TV.Server.TVDatabase.Entities.Enums;
 

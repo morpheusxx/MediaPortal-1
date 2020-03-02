@@ -55,7 +55,7 @@ namespace Mediaportal.TV.Server.TVDatabase.Entities
     [DataMember]
     public Schedule Schedule { get; set; }
     [DataMember]
-    public virtual ICollection<RecordingCredit> RecordingCredits { get; set; }
+    public virtual List<RecordingCredit> RecordingCredits { get; set; } = new List<RecordingCredit>();
     [DataMember]
     public ProgramCategory ProgramCategory { get; set; }
   }

@@ -23,7 +23,7 @@ namespace Mediaportal.TV.Server.TVDatabase.Entities
     public bool IsToroidal { get; set; }
 
     [DataMember]
-    public virtual ICollection<TuningDetail> TuningDetails { get; set; }
+    public virtual List<TuningDetail> TuningDetails { get; set; } = new List<TuningDetail>();
 
     public LnbType Clone()
     {

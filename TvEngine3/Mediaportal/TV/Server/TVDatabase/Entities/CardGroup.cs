@@ -12,6 +12,6 @@ namespace Mediaportal.TV.Server.TVDatabase.Entities
     [DataMember]
     public string Name { get; set; }
     [DataMember]
-    public virtual ICollection<CardGroupMap> CardGroupMaps { get; set; }
+    public virtual List<CardGroupMap> CardGroupMaps { get; set; } = new List<CardGroupMap>();
   }
 }

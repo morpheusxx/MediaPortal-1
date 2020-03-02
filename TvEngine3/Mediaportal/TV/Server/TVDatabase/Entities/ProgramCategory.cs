@@ -18,11 +18,11 @@ namespace Mediaportal.TV.Server.TVDatabase.Entities
     public int? TvGuideCategoryId { get; set; }
 
     [DataMember]
-    public virtual ICollection<Program> Programs { get; set; }
+    public virtual List<Program> Programs { get; set; } = new List<Program>();
     [DataMember]
-    public virtual ICollection<Recording> Recordings { get; set; }
+    public virtual List<Recording> Recordings { get; set; } = new List<Recording>();
     [DataMember]
-    public virtual ICollection<History> Histories { get; set; }
+    public virtual List<History> Histories { get; set; } = new List<History>();
     [DataMember]
     public TvGuideCategory TvGuideCategory { get; set; }
 

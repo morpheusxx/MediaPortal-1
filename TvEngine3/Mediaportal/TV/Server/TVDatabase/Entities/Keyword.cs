@@ -20,8 +20,8 @@ namespace Mediaportal.TV.Server.TVDatabase.Entities
     public int SearchIn { get; set; }
 
     [DataMember]
-    public virtual ICollection<PersonalTVGuideMap> PersonalTVGuideMaps { get; set; }
+    public virtual List<PersonalTVGuideMap> PersonalTVGuideMaps { get; set; } = new List<PersonalTVGuideMap>();
     [DataMember]
-    public virtual ICollection<KeywordMap> KeywordMaps { get; set; }
+    public virtual List<KeywordMap> KeywordMaps { get; set; } = new List<KeywordMap>();
   }
 }

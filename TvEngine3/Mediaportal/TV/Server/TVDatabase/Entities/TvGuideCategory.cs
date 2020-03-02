@@ -17,6 +17,6 @@ namespace Mediaportal.TV.Server.TVDatabase.Entities
     public bool IsEnabled { get; set; }
 
     [DataMember]
-    public virtual ICollection<ProgramCategory> ProgramCategories { get; set; }
+    public virtual List<ProgramCategory> ProgramCategories { get; set; } = new List<ProgramCategory>();
   }
 }

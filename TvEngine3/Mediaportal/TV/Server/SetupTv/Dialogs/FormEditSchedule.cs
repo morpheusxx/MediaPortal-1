@@ -132,7 +132,7 @@ namespace Mediaportal.TV.Server.SetupTV.Dialogs
 
       if (programCredits.Count == 0)
       {
-        programCredits = ServiceAgents.Instance.ProgramServiceAgent.ListAllCredits();
+        programCredits = new List<ProgramCredit>(ServiceAgents.Instance.ProgramServiceAgent.ListAllCredits());
       }
 
       if (programCredits != null)

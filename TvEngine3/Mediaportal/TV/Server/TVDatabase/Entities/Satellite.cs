@@ -15,6 +15,6 @@ namespace Mediaportal.TV.Server.TVDatabase.Entities
     public string TransponderFileName { get; set; }
 
     [DataMember]
-    public virtual ICollection<DisEqcMotor> DisEqcMotors { get; set; }
+    public virtual List<DisEqcMotor> DisEqcMotors { get; set; } = new List<DisEqcMotor>();
   }
 }
