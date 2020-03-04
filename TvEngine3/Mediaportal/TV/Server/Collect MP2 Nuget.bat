@@ -30,16 +30,30 @@ xcopy /E "TvService\bin\%TARGET%\runtimes\*.dll" "_MP2SlimTV\%PKG%\references\ru
 
 rem "references\"
 xcopy "TvService\bin\%TARGET%\Microsoft.*.dll" "_MP2SlimTV\%PKG%\references\" /R /Y  || exit /b 14
+xcopy "TvService\bin\%TARGET%\Castle.*.dll" "_MP2SlimTV\%PKG%\references\" /R /Y  || exit /b 21
 xcopy "TvService\bin\%TARGET%\DirectShowLib.dll" "_MP2SlimTV\%PKG%\references\" /R /Y  || exit /b 14
 xcopy "TvService\bin\%TARGET%\SQLite*.dll" "_MP2SlimTV\%PKG%\references\" /R /Y  || exit /b 15
-rem xcopy "TvService\bin\%TARGET%\x86\SQLite.Interop.dll" "_MP2SlimTV\%PKG%\references\x86\" /R /Y  || exit /b 15
-rem xcopy "TvService\bin\%TARGET%\x64\SQLite.Interop.dll" "_MP2SlimTV\%PKG%\references\x64\" /R /Y  || exit /b 15
 xcopy "TvService\bin\%TARGET%\System.*.dll" "_MP2SlimTV\%PKG%\references\" /R /Y  || exit /b 16
 xcopy "TvService\bin\%TARGET%\Plugins\*.dll" "_MP2SlimTV\%PKG%\references\Plugins\" /R /Y  || exit /b 18
 xcopy "TvService\bin\%TARGET%\Plugins\*.exe" "_MP2SlimTV\%PKG%\references\Plugins\" /R /Y  || exit /b 19
 xcopy /E "TvService\bin\%TARGET%\Plugins\CustomDevices\*.dll" "_MP2SlimTV\%PKG%\references\Plugins\CustomDevices\" /R /Y  || exit /b 20
 
-xcopy "TvService\bin\%TARGET%\Castle.*.dll" "_MP2SlimTV\%PKG%\references\" /R /Y  || exit /b 21
+rem "references\SetupTv"
+xcopy "SetupTv\bin\%TARGET%\SetupTv.exe" "_MP2SlimTV\%PKG%\references\SetupTv\" /R /Y  || exit /b 14
+xcopy "SetupTv\bin\%TARGET%\MediaPortal.*.dll" "_MP2SlimTV\%PKG%\references\SetupTv\" /R /Y  || exit /b 14
+xcopy "SetupTv\bin\%TARGET%\Microsoft.*.dll" "_MP2SlimTV\%PKG%\references\SetupTv\" /R /Y  || exit /b 14
+xcopy "SetupTv\bin\%TARGET%\Castle.*.dll" "_MP2SlimTV\%PKG%\references\SetupTv\" /R /Y  || exit /b 21
+xcopy "SetupTv\bin\%TARGET%\Common.Utils.dll" "_MP2SlimTV\%PKG%\references\SetupTv\" /R /Y  || exit /b 14
+xcopy "SetupTv\bin\%TARGET%\DirectShowLib.dll" "_MP2SlimTV\%PKG%\references\SetupTv\" /R /Y  || exit /b 14
+xcopy "SetupTv\bin\%TARGET%\SQLite*.dll" "_MP2SlimTV\%PKG%\references\SetupTv\" /R /Y  || exit /b 15
+xcopy "SetupTv\bin\%TARGET%\System.*.dll" "_MP2SlimTV\%PKG%\references\SetupTv\" /R /Y  || exit /b 16
+xcopy "SetupTv\bin\%TARGET%\UPnP.dll" "_MP2SlimTV\%PKG%\references\SetupTv\" /R /Y  || exit /b 16
+xcopy "SetupTv\bin\%TARGET%\log4net.dll" "_MP2SlimTV\%PKG%\references\SetupTv\" /R /Y  || exit /b 16
+xcopy "SetupTv\bin\%TARGET%\*.config" "_MP2SlimTV\%PKG%\references\SetupTv\" /R /Y  || exit /b 16
+xcopy /E "SetupTv\bin\%TARGET%\x64\*.*" "_MP2SlimTV\%PKG%\references\SetupTv\x64\" /R /Y  || exit /b 16
+xcopy /E "SetupTv\bin\%TARGET%\x86\*.*" "_MP2SlimTV\%PKG%\references\SetupTv\x86\" /R /Y  || exit /b 16
+xcopy /E "SetupTv\bin\%TARGET%\Integration\*.*" "_MP2SlimTV\%PKG%\references\SetupTv\Integration\" /R /Y  || exit /b 16
+
 xcopy "..\..\..\..\DirectShowFilters\Win32\%TARGET%\MPIPTVSource.ax" "_MP2SlimTV\%PKG%\references\x86\" /R /Y  || exit /b 22
 xcopy "..\..\..\..\DirectShowFilters\Win32\%TARGET%\MPIPTV_FILE.dll" "_MP2SlimTV\%PKG%\references\x86\" /R /Y  || exit /b 23
 xcopy "..\..\..\..\DirectShowFilters\Win32\%TARGET%\MPIPTV_HTTP.dll" "_MP2SlimTV\%PKG%\references\x86\" /R /Y  || exit /b 24
@@ -65,3 +79,4 @@ cd TVServer.Base
 "c:\Program Files\7-Zip\7z.exe" a -r ..\_MP2SlimTV\%PKG%\references\ProgramData\ProgramData.zip .
 cd ..
 
+nuget pack _MP2SlimTV\MediaPortal.TvEngine.Core\MediaPortal.TvEngine.Core.nuspec -Version %1
