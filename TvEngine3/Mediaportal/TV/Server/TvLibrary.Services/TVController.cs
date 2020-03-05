@@ -118,7 +118,7 @@ namespace Mediaportal.TV.Server.TVLibrary
     /// </summary>
     private int _maxFreeCardsToTry;
 
-    private IDictionary<int, ITvCardHandler> _cards = new ConcurrentDictionary<int, ITvCardHandler>();
+    private readonly IDictionary<int, ITvCardHandler> _cards = new ConcurrentDictionary<int, ITvCardHandler>();
 
     /// 
     // contains a cached copy of all the channels in the user defined groups (excl. the all channels group)
@@ -442,8 +442,6 @@ namespace Mediaportal.TV.Server.TVLibrary
       GlobalServiceProvider.Instance.Add<ITvServerEvent>(this);
       try
       {
-        _cards = new Dictionary<int, ITvCardHandler>();
-
         //log all local ip adresses, usefull for debugging problems
         this.LogDebug("Controller: started at {0}", Dns.GetHostName());
         IPHostEntry local = Dns.GetHostEntry(Dns.GetHostName());
@@ -461,7 +459,6 @@ namespace Mediaportal.TV.Server.TVLibrary
         //enumerate all tv cards in this pc...
         _maxFreeCardsToTry = SettingsManagement.GetValue("timeshiftMaxFreeCardsToTry", 0);
 
-        _cards = new Dictionary<int, ITvCardHandler>();
         _tunerDetector = new TunerDetector(this);
         // Logic here to delay starting to detect tuners.
         // Ideally this should also apply after resuming from standby.
