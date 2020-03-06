@@ -314,10 +314,9 @@ namespace Mediaportal.TV.Server.TVDatabase.EntityModel.Extensions
     public static IQueryable<ChannelGroup> IncludeAllRelations(this IQueryable<ChannelGroup> query)
     {
       var includeRelations = query.
-        Include(r => r.GroupMaps.Select(c => c.Channel.TuningDetails)).
-        Include(r => r.GroupMaps).
+        Include(r => r.GroupMaps).ThenInclude(c => c.Channel.TuningDetails).
         Include(r => r.KeywordMap).
-        Include(r => r.GroupMaps.Select(c => c.Channel));
+        Include(r => r.GroupMaps).ThenInclude(c => c.Channel);
       return includeRelations;
     }
 
@@ -340,12 +339,12 @@ namespace Mediaportal.TV.Server.TVDatabase.EntityModel.Extensions
 
       if (groupMapsChannel)
       {
-        query = query.Include(r => r.GroupMaps.Select(c => c.Channel));
+        query = query.Include(r => r.GroupMaps).ThenInclude(c => c.Channel);
       }
 
       if (groupMapsTuningDetails)
       {
-        query = query.Include(r => r.GroupMaps.Select(c => c.Channel.TuningDetails));
+        query = query.Include(r => r.GroupMaps).ThenInclude(c => c.Channel.TuningDetails);
       }
 
       return query;
@@ -382,7 +381,7 @@ namespace Mediaportal.TV.Server.TVDatabase.EntityModel.Extensions
       }
       if (channelMapsChannelTuningDetails)
       {
-        query = query.Include(c => c.ChannelMaps.Select(m => m.Channel).Select(ch => ch.TuningDetails));
+        query = query.Include(c => c.ChannelMaps).ThenInclude(m => m.Channel).ThenInclude(ch => ch.TuningDetails);
       }
       if (disEqcMotors)
       {
