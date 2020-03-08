@@ -1,4 +1,5 @@
 ﻿using Mediaportal.TV.Server.TVDatabase.Entities;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Internal;
 
 namespace Mediaportal.TV.Server.TVDatabase.EntityModel.Context
@@ -9,6 +10,12 @@ namespace Mediaportal.TV.Server.TVDatabase.EntityModel.Context
     {
       if (ctx.LnbTypes.Any())
         return;
+
+      // Enable write-ahead logging
+      ctx.Database.OpenConnection();
+      var cmd = ctx.Database.GetDbConnection().CreateCommand();
+      cmd.CommandText = @"PRAGMA journal_mode = 'wal'";
+      cmd.ExecuteNonQuery();
 
       ctx.LnbTypes.Add(new LnbType { LnbTypeId = 1, Name = "Universal", LowBandFrequency = 9750000, HighBandFrequency = 10600000, SwitchFrequency = 11700000, IsBandStacked = false, IsToroidal = false });
       ctx.LnbTypes.Add(new LnbType { LnbTypeId = 2, Name = "C-Band", LowBandFrequency = 5150000, HighBandFrequency = 5650000, SwitchFrequency = 18000000, IsBandStacked = false, IsToroidal = false });
@@ -56,6 +63,7 @@ namespace Mediaportal.TV.Server.TVDatabase.EntityModel.Context
       ctx.SoftwareEncoders.Add(new SoftwareEncoder { SoftwareEncoderId = 28, Name = "Ulead MPEG Audio Encoder", Priority = 15, Reusable = true, Type = 1 });
 
       ctx.SaveChanges(true);
+      ctx.Database.CloseConnection();
     }
   }
 }
