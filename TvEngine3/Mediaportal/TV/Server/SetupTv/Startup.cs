@@ -101,7 +101,7 @@ namespace Mediaportal.TV.Server.SetupTV
     public static void Main(string[] arguments)
     {
       // Initialize hosting environment, check for provider inside "Integration" subfolder. This helps to avoid assembly version conflicts.
-      IntegrationProviderHelper.Register(PathManager.BuildAssemblyRelativePath("Integration"));
+      IntegrationProviderHelper.Register(PathManager.BuildAssemblyRelativePath("Integration"), "none");
 
       if (System.IO.File.Exists("c:\\debug_setuptv.txt"))
       {

@@ -693,7 +693,7 @@ namespace Mediaportal.TV.Server.TVLibrary.Implementations.SatIp
 
       try
       {
-        _streamTuner.PerformSetTunerState(state);
+        _streamTuner?.PerformSetTunerState(state);
       }
       catch
       {
@@ -723,10 +723,7 @@ namespace Mediaportal.TV.Server.TVLibrary.Implementations.SatIp
     public override void PerformUnloading()
     {
       _channelScanner = null;
-      if (_streamTuner != null)
-      {
-        _streamTuner.PerformUnloading();
-      }
+      _streamTuner?.PerformUnloading();
     }
 
     #endregion
@@ -785,7 +782,7 @@ namespace Mediaportal.TV.Server.TVLibrary.Implementations.SatIp
     {
       get
       {
-        return _streamTuner.InternalEpgGrabberInterface;
+        return _streamTuner?.InternalEpgGrabberInterface;
       }
     }
 
