@@ -80,8 +80,8 @@ void CSectionDecoder::OnTsPacket(byte* tsPacket)
 
 int CSectionDecoder::StartNewSection(byte* tsPacket, int index, int sectionLen)
 {
-  size_t newstart = -1;
-  size_t len = -1;
+  int newstart = -1;
+  int len = -1;
   if (sectionLen > -1)
   {
     if (index + sectionLen < 185)
@@ -109,8 +109,8 @@ int CSectionDecoder::StartNewSection(byte* tsPacket, int index, int sectionLen)
 
 int CSectionDecoder::AppendSection(byte* tsPacket, int index, int sectionLen)
 {
-  size_t newstart = -1;
-  size_t len = -1;
+  int newstart = -1;
+  int len = -1;
   if (index + sectionLen < 185)
   {
     len = sectionLen + 3;
@@ -146,8 +146,8 @@ void CSectionDecoder::OnTsPacket(CTsHeader& header, byte* tsPacket)
     if (header.Pid != m_pid) return;
     if (!header.HasPayload) return;
 
-    size_t start = header.PayLoadStart;
-    size_t pointer_field = 0;
+    int start = header.PayLoadStart;
+    int pointer_field = 0;
 
     if (header.PayloadUnitStart)
     {
@@ -160,7 +160,7 @@ void CSectionDecoder::OnTsPacket(CTsHeader& header, byte* tsPacket)
       else
         start++;
     }
-    size_t numloops = 0;
+    int numloops = 0;
     while (start < 188)
     {
       numloops++;
@@ -168,7 +168,7 @@ void CSectionDecoder::OnTsPacket(CTsHeader& header, byte* tsPacket)
       {
         if (!header.PayloadUnitStart) return;
         if (tsPacket[start] == 0xFF) return;
-        size_t section_length = SnapshotSectionLength(tsPacket, start);
+        int section_length = SnapshotSectionLength(tsPacket, start);
         start = StartNewSection(tsPacket, start, section_length);
       }
       else
@@ -182,7 +182,7 @@ void CSectionDecoder::OnTsPacket(CTsHeader& header, byte* tsPacket)
           m_section.Reset();
           return;
         }
-        size_t len = m_section.section_length - m_section.BufferPos;
+        int len = m_section.section_length - m_section.BufferPos;
         if (pointer_field != 0 && ((start + len) > pointer_field))
         {
           // We have an incomplete section here

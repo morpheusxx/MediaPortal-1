@@ -93,28 +93,28 @@ void CSdtParser::OnNewSection(CSection& sections)
 
   try
   {
-    size_t section_syntax_indicator = section[1] & 0x80;
-    size_t section_length = ((section[1] & 0xf) << 8) + section[2];
+    int section_syntax_indicator = section[1] & 0x80;
+    int section_length = ((section[1] & 0xf) << 8) + section[2];
     if (section_length > 1021 || section_length < 12)
     {
       LogDebug("SdtParser: invalid section length = %d", section_length);
       return;
     }
-    size_t transport_stream_id = (section[3] << 8) + section[4];
-    size_t version_number = (section[5] >> 1) & 0x1f;
-    size_t current_next_indicator = section[5] & 1;
+    int transport_stream_id = (section[3] << 8) + section[4];
+    int version_number = (section[5] >> 1) & 0x1f;
+    int current_next_indicator = section[5] & 1;
     if (current_next_indicator == 0)
     {
       // Details do not apply yet...
       return;
     }
-    size_t section_number = section[6];
-    size_t last_section_number = section[7];
-    size_t original_network_id = (section[8] << 8) + section[9];
+    int section_number = section[6];
+    int last_section_number = section[7];
+    int original_network_id = (section[8] << 8) + section[9];
 
-    ptrdiff_t endOfSection = section_length - 1;
-    //LogDebug("SdtParser: TSID = 0x%x, ONID = 0x%x, table ID = 0x%x, section number = %d, version number = %d, last section number = %d, section length = %d, end of section = %d",
-    //          transport_stream_id, original_network_id, sections.table_id, section_number, version_number, last_section_number, section_length, endOfSection);
+    int endOfSection = section_length - 1;
+    LogDebug("SdtParser: TSID = 0x%x, ONID = 0x%x, table ID = 0x%x, section number = %d, version number = %d, last section number = %d, section length = %d, end of section = %d",
+              transport_stream_id, original_network_id, sections.table_id, section_number, version_number, last_section_number, section_length, endOfSection);
 
     unsigned __int64 key = ((unsigned __int64)sections.table_id << 40) + ((unsigned __int64)original_network_id << 24) + (transport_stream_id << 8) + section_number;
     map<unsigned __int64, bool>::iterator it = m_mSeenSections.find(key);
@@ -162,16 +162,16 @@ void CSdtParser::OnNewSection(CSection& sections)
       }
     }
 
-    ptrdiff_t pointer = 11; // points to the first byte in the service loop
+    int pointer = 11; // points to the first byte in the service loop
     while (pointer + 4 < endOfSection)
     {
-      size_t service_id = (section[pointer] << 8) + section[pointer + 1];
+      int service_id = (section[pointer] << 8) + section[pointer + 1];
       pointer += 2;
-      size_t eit_schedule_flag = (section[pointer] >> 1) & 1;
-      size_t eit_present_following_flag = section[pointer] & 1;
+      int eit_schedule_flag = (section[pointer] >> 1) & 1;
+      int eit_present_following_flag = section[pointer] & 1;
       pointer++;
-      size_t running_status = (section[pointer] >> 5) & 7;
-      size_t free_ca_mode = (section[pointer] >> 4) & 1;
+      int running_status = (section[pointer] >> 5) & 7;
+      int free_ca_mode = (section[pointer] >> 4) & 1;
 
       CChannelInfo info;
       info.OriginalNetworkId = original_network_id;
@@ -180,12 +180,12 @@ void CSdtParser::OnNewSection(CSection& sections)
       info.IsOtherTransportStream = (sections.table_id == 0x46);
       info.IsRunning = (running_status == 2 || running_status == 4);    // running or starting in a few seconds
       info.IsEncrypted = (free_ca_mode == 1);
-      //LogDebug("SdtParser: service ID = 0x%x, EIT schedule flag = %d, EIT present following flag = %d, running status = %d, free CA mode = %d",
-      //          service_id, eit_schedule_flag, eit_present_following_flag, running_status, free_ca_mode);
+      LogDebug("SdtParser: service ID = 0x%x, EIT schedule flag = %d, EIT present following flag = %d, running status = %d, free CA mode = %d",
+                service_id, eit_schedule_flag, eit_present_following_flag, running_status, free_ca_mode);
 
-      size_t descriptors_loop_length = ((section[pointer] & 0xf) << 8) + section[pointer + 1];
+      int descriptors_loop_length = ((section[pointer] & 0xf) << 8) + section[pointer + 1];
       pointer += 2;
-      ptrdiff_t endOfDescriptorLoop = pointer + descriptors_loop_length;
+      int endOfDescriptorLoop = pointer + descriptors_loop_length;
       //LogDebug("SdtParser: pointer = %d, descriptor loop length = %d, end of descriptor loop = %d", pointer, descriptors_loop_length, endOfDescriptorLoop);
       if (endOfDescriptorLoop > endOfSection)
       {
@@ -199,9 +199,9 @@ void CSdtParser::OnNewSection(CSection& sections)
 
       while (pointer + 1 < endOfDescriptorLoop)
       {
-        size_t tag = section[pointer++];
-        size_t length = section[pointer++];
-        ptrdiff_t endOfDescriptor = pointer + length;
+        int tag = section[pointer++];
+        int length = section[pointer++];
+        int endOfDescriptor = pointer + length;
         //LogDebug("SdtParser: descriptor, tag = 0x%x, length = %d, pointer = %d, end of descriptor = %d", tag, length, pointer, endOfDescriptor);
         if (endOfDescriptor > endOfDescriptorLoop)
         {
