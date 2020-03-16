@@ -73,6 +73,7 @@
     <Compile Include="ComboBoxEx .cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="FormDpiAwareness.cs" />
     <Compile Include="FormTuningDetailCommon.cs">
       <SubType>Form</SubType>
     </Compile>

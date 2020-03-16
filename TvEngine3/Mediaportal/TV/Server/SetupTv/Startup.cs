@@ -25,6 +25,7 @@ using System.Diagnostics;
 using System.Reflection;
 using System.Threading;
 using System.Windows.Forms;
+using MediaPortal.Common.UI;
 using Mediaportal.TV.Server.TVControl.ServiceAgents;
 using Mediaportal.TV.Server.TVDatabase.Entities.Enums;
 using Mediaportal.TV.Server.TVLibrary.Interfaces;
@@ -88,6 +89,8 @@ namespace Mediaportal.TV.Server.SetupTV
 
       if (applicationForm != null)
       {
+        Application.EnableVisualStyles();
+        FormDpiAwarenessExtension.TryEnableDPIAwareness();
         Application.Run(applicationForm);
       }
     }
