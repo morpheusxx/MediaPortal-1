@@ -178,6 +178,21 @@ namespace Mediaportal.TV.Server.TVDatabase.EntityModel.Extensions
       return query;
     }
 
+    /// <summary>
+    /// Selects a matching comparision based on the given <paramref name="search"/>. If it contains a SQL wildcard '%', then the EF core "Like" method is used.
+    /// Otherwise an equality comparision is used.
+    /// </summary>
+    /// <param name="query">Programs query</param>
+    /// <param name="search">Search term</param>
+    /// <returns><c>true</c> if matched</returns>
+    public static IQueryable<Program> SmartCompare(this IQueryable<Program> query, string search)
+    {
+      query = search.Contains("%") ?
+        query.Where(p => EF.Functions.Like(p.Title, search)) : 
+        query.Where(p => p.Title == search);
+      return query;
+    }
+
     #endregion
 
     #region ProgramCategory query extensions

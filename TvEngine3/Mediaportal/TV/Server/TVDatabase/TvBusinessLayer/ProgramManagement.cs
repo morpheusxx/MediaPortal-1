@@ -262,7 +262,7 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
         var query = context.Programs.IncludeAllRelations()
           .GetProgramsByStartEndTimes(startTime, endTime)
           .Where(p => p.ChannelId == idChannel)
-          .Where(p => p.Title == title)
+          .SmartCompare(title)
           .OrderBy(p => p.StartTime);
         return query.ToList();
       }
@@ -274,7 +274,7 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
       {
         var query = context.Programs.IncludeAllRelations()
           .GetProgramsByStartEndTimes(startTime, endTime)
-          .Where(p => p.Title == title)
+          .SmartCompare(title)
           .OrderBy(p => p.StartTime);
         return query.ToList();
       }
@@ -698,7 +698,8 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
       {
         var programsByTitleAndTimesInterval = context.Programs
             .Include(p => p.ProgramCategory)
-            .Where(p => p.Title == title && p.EndTime >= startTime && p.StartTime <= startTime);
+            .SmartCompare(title)
+            .Where(p => p.EndTime >= startTime && p.StartTime <= startTime);
         return programsByTitleAndTimesInterval.ToList();
       }
     }
@@ -729,7 +730,8 @@ namespace Mediaportal.TV.Server.TVDatabase.TVBusinessLayer
       {
         var programByTitleAndTimes = context.Programs
           .Include(p => p.ProgramCategory)
-          .FirstOrDefault(p => p.Title == programName && p.StartTime == startTime && p.EndTime == endTime);
+          .SmartCompare(programName)
+          .FirstOrDefault(p => p.StartTime == startTime && p.EndTime == endTime);
         return programByTitleAndTimes;
       }
     }
