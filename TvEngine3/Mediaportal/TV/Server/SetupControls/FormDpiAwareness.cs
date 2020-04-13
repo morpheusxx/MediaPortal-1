@@ -22,7 +22,10 @@
 
 #endregion
 
+using System;
+using System.Drawing;
 using System.Runtime.InteropServices;
+using System.Windows.Forms;
 
 namespace MediaPortal.Common.UI
 {
@@ -40,6 +43,19 @@ namespace MediaPortal.Common.UI
 
     [DllImport("user32.dll", SetLastError = true)]
     private static extern bool SetProcessDPIAware();
+    [DllImport("user32.dll")]
+    private static extern int GetDpiForWindow(IntPtr hWnd);
+
+    public static void ScaleByDpi(this Form form)
+    {
+      // Restore the DefaultFonts, this makes the form to re-arrange sizes and locations.
+      form.Font = SystemFonts.DefaultFont;
+
+      // Get scaling factor and manually apply it to form
+      int dpi = GetDpiForWindow(form.Handle);
+      float ratio = (float)dpi / 96f;
+      form.Scale(new SizeF(ratio, ratio));
+    }
 
     /// <summary>
     /// Sets the current process to DPI aware. This allows the Form to scale fonts properly.

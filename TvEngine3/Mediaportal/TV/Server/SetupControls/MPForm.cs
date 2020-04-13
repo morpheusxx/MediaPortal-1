@@ -19,6 +19,7 @@
 #endregion
 
 using System.Windows.Forms;
+using MediaPortal.Common.UI;
 
 namespace Mediaportal.TV.Server.SetupControls
 {
@@ -27,6 +28,7 @@ namespace Mediaportal.TV.Server.SetupControls
     public MPForm()
     {
       InitializeComponent();
+      this.ScaleByDpi();
     }
   }
 }
