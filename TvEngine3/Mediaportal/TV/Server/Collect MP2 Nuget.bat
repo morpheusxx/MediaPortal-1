@@ -6,7 +6,9 @@ set                   MB="%ProgramFiles(x86)%\Microsoft Visual Studio\2019\Commu
 if not exist %MB% set MB="%ProgramFiles(x86)%\Microsoft Visual Studio\2017\Community\MSBuild\15.0\Bin\MSBUILD.exe"
 rem set BUILD_OPTS=" /t:Rebuild"
 set BUILD_OPTS=
- 
+
+%MB% Nuget.targets /target:DownloadNuGet 
+
 %MB% ..\..\..\..\DirectShowFilters\Filters.sln /P:Configuration=%TARGET% /P:Platform=Win32 %BUILD_OPTS% || exit /b 1
 %MB% ..\..\..\..\DirectShowFilters\Filters.sln /P:Configuration=%TARGET% /P:Platform=x64 %BUILD_OPTS% || exit /b 1
 nuget update -self
