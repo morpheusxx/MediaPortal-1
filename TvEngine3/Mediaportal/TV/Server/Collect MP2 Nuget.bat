@@ -2,7 +2,8 @@ rem @echo off
 rem set TARGET=Debug
 set TARGET=Release
 set PKG=MediaPortal.TvEngine.Core
-set MB="C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\MSBuild\15.0\Bin\MSBuild.exe"
+set                   MB="%ProgramFiles(x86)%\Microsoft Visual Studio\2019\Community\MSBuild\Current\Bin\MSBuild.exe"
+if not exist %MB% set MB="%ProgramFiles(x86)%\Microsoft Visual Studio\2017\Community\MSBuild\15.0\Bin\MSBUILD.exe"
 rem set BUILD_OPTS=" /t:Rebuild"
 set BUILD_OPTS=
  
