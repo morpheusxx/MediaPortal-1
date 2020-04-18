@@ -44,6 +44,7 @@ xcopy /E "TvService\bin\%TARGET%\Plugins\CustomDevices\*.dll" "_MP2SlimTV\%PKG%\
 
 rem "references\SetupTv"
 xcopy "SetupTv\bin\%TARGET%\SetupTv.exe" "_MP2SlimTV\%PKG%\references\SetupTv\" /R /Y  || exit /b 14
+xcopy "SetupTv\bin\%TARGET%\AutoMapper.dll" "_MP2SlimTV\%PKG%\references\SetupTv\" /R /Y  || exit /b 14
 xcopy "SetupTv\bin\%TARGET%\Mediaportal.TV.Server.Plugins.Base.dll" "_MP2SlimTV\%PKG%\references\SetupTv\" /R /Y  || exit /b 14
 xcopy "SetupTv\bin\%TARGET%\Mediaportal.TV.Server.RuleBasedScheduler.dll" "_MP2SlimTV\%PKG%\references\SetupTv\" /R /Y  || exit /b 14
 xcopy "SetupTv\bin\%TARGET%\Mediaportal.TV.Server.SetupControls.dll" "_MP2SlimTV\%PKG%\references\SetupTv\" /R /Y  || exit /b 14
