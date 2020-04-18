@@ -71,6 +71,7 @@ namespace Mediaportal.TV.Server.SetupTV
     public void Start()
     {
       Form applicationForm = null;
+      FormDpiAwarenessExtension.TryEnableDPIAwareness();
 
       switch (_startupMode)
       {
@@ -90,7 +91,6 @@ namespace Mediaportal.TV.Server.SetupTV
       if (applicationForm != null)
       {
         Application.EnableVisualStyles();
-        FormDpiAwarenessExtension.TryEnableDPIAwareness();
         Application.Run(applicationForm);
       }
     }

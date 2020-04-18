@@ -50,11 +50,15 @@ namespace MediaPortal.Common.UI
     {
       // Restore the DefaultFonts, this makes the form to re-arrange sizes and locations.
       form.Font = SystemFonts.DefaultFont;
-
-      // Get scaling factor and manually apply it to form
-      int dpi = GetDpiForWindow(form.Handle);
-      float ratio = (float)dpi / 96f;
-      form.Scale(new SizeF(ratio, ratio));
+      try
+      {
+        // Get scaling factor and manually apply it to form
+        int dpi = GetDpiForWindow(form.Handle);
+        float ratio = (float)dpi / 96f;
+        form.Scale(new SizeF(ratio, ratio));
+      }
+      // Not supported by older Win10 versions and earlier
+      catch  { }
     }
 
     /// <summary>
