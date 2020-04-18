@@ -21,6 +21,7 @@
 using System;
 using System.Collections.Generic;
 using Castle.Core.Logging;
+using Castle.Services.Logging.Log4netIntegration;
 using Castle.Windsor;
 using MediaPortal.Common.Utils;
 
@@ -31,6 +32,7 @@ namespace Mediaportal.TV.Server.TVLibrary.Integration.MP1
     private readonly Type _runtimeType;
     private static readonly IDictionary<Type, ILogger> _logCache = new Dictionary<Type, ILogger>();
     private static readonly object _logCacheLock = new object();
+    private static readonly ILoggerFactory _loggerFactory = new Log4netFactory();
 
     public Logger()
     {
@@ -50,8 +52,7 @@ namespace Mediaportal.TV.Server.TVLibrary.Integration.MP1
           {
             return NullLogger.Instance;
           }
-          var loggerFactory = container.Resolve<ILoggerFactory>();
-          logger = loggerFactory.Create(type);
+          logger = _loggerFactory.Create(type);
           _logCache[type] = logger;
         }
       }

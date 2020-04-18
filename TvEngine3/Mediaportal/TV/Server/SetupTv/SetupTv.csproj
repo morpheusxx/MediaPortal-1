@@ -680,8 +680,8 @@
   </Target>
   -->
   <PropertyGroup>
-    <PostBuildEvent>
-    </PostBuildEvent>
+    <PostBuildEvent>if not exist $(TargetDir)\Integration mkdir $(TargetDir)\Integration
+move $(TargetDir)\Mediaportal.TV.Server.TVLibrary.Integration.MP1.dll $(TargetDir)\Integration</PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
     <PreBuildEvent>xcopy "$(SolutionDir)TVServer.Base\TuningParameters" "%25ProgramData%25\Team MediaPortal\\MediaPortal TV Server\TuningParameters\" /C/Y/S</PreBuildEvent>
