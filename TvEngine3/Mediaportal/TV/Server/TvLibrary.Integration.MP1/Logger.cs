@@ -32,11 +32,11 @@ namespace Mediaportal.TV.Server.TVLibrary.Integration.MP1
     private static readonly IDictionary<Type, ILogger> _logCache = new Dictionary<Type, ILogger>();
     private static readonly object _logCacheLock = new object();
 
-    public Logger ()
+    public Logger()
     {
       _runtimeType = GetType();
     }
-    
+
     private static ILogger GetLogger(Type type)
     {
       ILogger logger;
@@ -45,19 +45,19 @@ namespace Mediaportal.TV.Server.TVLibrary.Integration.MP1
         bool hasLogger = _logCache.TryGetValue(type, out logger);
         if (!hasLogger)
         {
-          var container = GlobalServiceProvider.Instance.Get<IWindsorContainer>();      
+          var container = GlobalServiceProvider.Instance.Get<IWindsorContainer>();
           if (container == null)
           {
             return NullLogger.Instance;
-          }          
+          }
           var loggerFactory = container.Resolve<ILoggerFactory>();
-          logger = loggerFactory.Create(type);      
+          logger = loggerFactory.Create(type);
           _logCache[type] = logger;
         }
       }
       return logger;
     }
-   
+
     /// <summary>
     /// Writes a debug message to the log.
     /// </summary>
@@ -132,7 +132,7 @@ namespace Mediaportal.TV.Server.TVLibrary.Integration.MP1
       if (logger.IsInfoEnabled)
       {
         logger.Info(string.Format(format, args), ex);
-      }      
+      }
     }
 
     public void Info(string format, Exception ex, params object[] args)
@@ -152,7 +152,7 @@ namespace Mediaportal.TV.Server.TVLibrary.Integration.MP1
       if (logger.IsWarnEnabled)
       {
         logger.WarnFormat(format, args);
-      }      
+      }
     }
 
     public void Warn(string format, params object[] args)
@@ -173,7 +173,7 @@ namespace Mediaportal.TV.Server.TVLibrary.Integration.MP1
       if (logger.IsWarnEnabled)
       {
         logger.Warn(string.Format(format, args), ex);
-      }      
+      }
     }
 
     public void Warn(string format, Exception ex, params object[] args)
@@ -214,7 +214,7 @@ namespace Mediaportal.TV.Server.TVLibrary.Integration.MP1
       if (logger.IsErrorEnabled)
       {
         logger.Error(string.Format(format, args), ex);
-      }      
+      }
     }
 
     public void Error(string format, Exception ex, params object[] args)
@@ -253,7 +253,7 @@ namespace Mediaportal.TV.Server.TVLibrary.Integration.MP1
       if (logger.IsFatalEnabled)
       {
         logger.FatalFormat(format, args);
-      }      
+      }
     }
 
     public void Critical(string format, params object[] args)
@@ -270,11 +270,11 @@ namespace Mediaportal.TV.Server.TVLibrary.Integration.MP1
     /// <param name="args">An array of objects to write using format.</param>
     public void Critical(Type caller, string format, Exception ex, params object[] args)
     {
-       ILogger logger = GetLogger(caller);
-       if (logger.IsFatalEnabled)
-       {
-         logger.Fatal(string.Format(format, args), ex);
-       }
+      ILogger logger = GetLogger(caller);
+      if (logger.IsFatalEnabled)
+      {
+        logger.Fatal(string.Format(format, args), ex);
+      }
     }
 
     public void Critical(string format, Exception ex, params object[] args)
