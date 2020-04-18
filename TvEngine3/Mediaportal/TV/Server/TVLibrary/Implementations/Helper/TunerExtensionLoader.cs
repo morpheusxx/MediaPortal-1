@@ -110,7 +110,7 @@ namespace Mediaportal.TV.Server.TVLibrary.Implementations.Helper
 
         // There is a well defined loading/checking order for extensions: priority, name.
         extensions.Sort(
-          delegate(ICustomDevice e1, ICustomDevice e2)
+          delegate (ICustomDevice e1, ICustomDevice e2)
           {
             int priorityCompare = e2.Priority.CompareTo(e1.Priority);
             if (priorityCompare != 0)
@@ -168,8 +168,17 @@ namespace Mediaportal.TV.Server.TVLibrary.Implementations.Helper
           }
 
           this.LogDebug("tuner extension loader: try extension \"{0}\"", e.Name);
-          if (!e.Initialise(tuner.ExternalId, tuner.TunerType, loadContext))
+          try
           {
+            if (!e.Initialise(tuner.ExternalId, tuner.TunerType, loadContext))
+            {
+              e.Dispose();
+              continue;
+            }
+          }
+          catch (DllNotFoundException)
+          {
+            this.LogWarn("tuner extension loader: extension is missing DLL (probably not 64-bit compatible)");
             e.Dispose();
             continue;
           }
