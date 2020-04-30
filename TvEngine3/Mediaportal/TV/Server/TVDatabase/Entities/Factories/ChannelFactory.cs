@@ -15,7 +15,10 @@ namespace Mediaportal.TV.Server.TVDatabase.Entities.Factories
     }
     public static Channel Clone(Channel source)
     {
-      return _mapper.Map<Channel>(source);
+      var clone = _mapper.Map<Channel>(source);
+      // Clear primary key, so EF core creates a new key when saving. Otherwise you get unique constraint violations.
+      clone.ChannelId = 0;
+      return clone;
     }
 
     public static Channel CreateChannel(MediaTypeEnum mediaType, int timesWatched, DateTime totalTimeWatched, bool grabEpg,

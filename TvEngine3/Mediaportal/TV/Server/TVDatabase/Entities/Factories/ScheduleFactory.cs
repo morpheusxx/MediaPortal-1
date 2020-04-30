@@ -41,7 +41,10 @@ namespace Mediaportal.TV.Server.TVDatabase.Entities.Factories
 
     public static Schedule Clone(Schedule baseSchedule)
     {
-      return _mapper.Map<Schedule>(baseSchedule);
+      var clone = _mapper.Map<Schedule>(baseSchedule);
+      // Clear primary key, so EF core creates a new key when saving. Otherwise you get unique constraint violations.
+      clone.ScheduleId = 0;
+      return clone;
     }
   }
 }

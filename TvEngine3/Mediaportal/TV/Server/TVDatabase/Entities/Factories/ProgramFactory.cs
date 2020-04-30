@@ -16,7 +16,10 @@ namespace Mediaportal.TV.Server.TVDatabase.Entities.Factories
 
     public static Program Clone(Program source)
     {
-      return _mapper.Map<Program>(source);
+      var clone = _mapper.Map<Program>(source);
+      // Clear primary key, so EF core creates a new key when saving. Otherwise you get unique constraint violations.
+      clone.ProgramId = 0;
+      return clone;
     }
 
     public static Program CreateProgram(int idChannel, DateTime startTime, DateTime endTime, string title, string description, ProgramCategory category,

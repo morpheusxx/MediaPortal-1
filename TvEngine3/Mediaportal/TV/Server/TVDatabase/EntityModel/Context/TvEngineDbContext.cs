@@ -58,6 +58,11 @@ namespace Mediaportal.TV.Server.TVDatabase.EntityModel.Context
         .HasOne(p => p.Schedule)
         .WithMany(b => b.Conflicts);
 
+      modelBuilder.Entity<Schedule>()
+       .HasOne(r => r.ParentSchedule)
+       .WithMany(c => c.SubSchedules)
+       .OnDelete(DeleteBehavior.Cascade);
+
       modelBuilder.Entity<Recording>()
        .HasOne(r => r.Channel)
        .WithMany(c => c.Recordings)
@@ -77,6 +82,8 @@ namespace Mediaportal.TV.Server.TVDatabase.EntityModel.Context
     protected override void OnConfiguring(DbContextOptionsBuilder options)
     {
       var container = Instantiator.Instance.Container();
+      // Helps to create log entries that contain primary key numbers for diagnostics
+      // options.EnableSensitiveDataLogging();
       ConnectionStringSettings connection = container.Resolve<ConnectionStringSettings>();
       if (connection.ProviderName == "SQLite")
       {
