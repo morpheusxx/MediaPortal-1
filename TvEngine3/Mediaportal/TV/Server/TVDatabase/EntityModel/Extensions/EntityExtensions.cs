@@ -278,7 +278,7 @@ namespace Mediaportal.TV.Server.TVDatabase.EntityModel.Extensions
 
       if (tuningDetails)
       {
-        query = query.Include(c => c.TuningDetails);
+        query = query.Include(c => c.TuningDetails).ThenInclude(t => t.LnbType);
       }
 
       return query;
@@ -318,7 +318,10 @@ namespace Mediaportal.TV.Server.TVDatabase.EntityModel.Extensions
 
     public static IQueryable<TuningDetail> IncludeAllRelations(this IQueryable<TuningDetail> query)
     {
-      IQueryable<TuningDetail> includeRelations = query.Include(c => c.Channel).ThenInclude(c => c.GroupMaps);
+      IQueryable<TuningDetail> includeRelations = query
+        .Include(t => t.LnbType)
+        .Include(c => c.Channel)
+        .ThenInclude(c => c.GroupMaps);
       return includeRelations;
     }
 
